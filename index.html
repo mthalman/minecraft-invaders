@@ -246,7 +246,7 @@
                     <div style="font-size: 18px; margin-top: 10px;">Press R to restart</div>
                 </div>
                 <div class="instructions">
-                    Use arrow keys to move • Spacebar to shoot fire • Defeat all hostile mobs!
+                    Use arrow keys to move • Spacebar to shoot eggs • Defeat all hostile mobs!
                 </div>
             </div>
         </div>
@@ -285,7 +285,7 @@
                 <h3>🎮 Controls</h3>
                 <div style="font-size: 12px; line-height: 1.4;">
                     <div>🔄 Arrow Keys: Move</div>
-                    <div>🔥 Spacebar: Shoot Fire</div>
+                    <div>🥚 Spacebar: Shoot Eggs</div>
                     <div>🔄 R: Restart Game</div>
                 </div>
             </div>
@@ -318,6 +318,7 @@
         const game = {
             canvas: document.getElementById('gameCanvas'),
             player: null,
+            capturedPlayer: null,
             enemies: [],
             projectiles: [],
             enemyProjectiles: [],
@@ -326,15 +327,17 @@
             gameRunning: true,
             keys: {},
             lastShot: 0,
-            enemyDirection: 1,
-            enemySpeed: 1,
             level: 1,
             snowballFrequency: 1,
             enemiesDefeated: 0,
             totalEnemiesInLevel: 0,
             lastPowerUpSpawn: 0,
             nextExplosiveShot: false,
-            fireSpreadEffects: []
+            fireSpreadEffects: [],
+            formationPositions: [],
+            enemySpawnQueue: [],
+            lastEnemySpawn: 0,
+            formationComplete: false
         };
 
         // Initialize UI
@@ -520,11 +523,9 @@
                     <!-- Beak -->
                     <rect x="25" y="20" width="10" height="8" fill="#FFA500"/>
                     <rect x="20" y="22" width="8" height="4" fill="#FF8C00"/>
-                    <!-- Eyes -->
-                    <rect x="40" y="18" width="6" height="6" fill="#000000"/>
-                    <rect x="54" y="18" width="6" height="6" fill="#000000"/>
-                    <rect x="42" y="20" width="2" height="2" fill="#FFFFFF"/>
-                    <rect x="56" y="20" width="2" height="2" fill="#FFFFFF"/>
+                    <!-- Eye -->
+                    <rect x="47" y="18" width="6" height="6" fill="#000000"/>
+                    <rect x="49" y="20" width="2" height="2" fill="#FFFFFF"/>
                     <!-- Comb (red crest on top) -->
                     <rect x="42" y="5" width="6" height="8" fill="#DC143C"/>
                     <rect x="48" y="3" width="6" height="10" fill="#DC143C"/>
@@ -651,16 +652,20 @@
                     <rect x="43" y="40" width="2" height="2" fill="#8A2BE2" opacity="0.7"/>
                 </svg>
             `,
-            fire: `
+            egg: `
                 <svg width="16" height="24" viewBox="0 0 16 24">
-                    <rect x="6" y="0" width="4" height="6" fill="#ffff00"/>
-                    <rect x="4" y="6" width="8" height="6" fill="#ff8800"/>
-                    <rect x="2" y="12" width="12" height="6" fill="#ff4400"/>
-                    <rect x="4" y="18" width="8" height="6" fill="#ff0000"/>
-                    <!-- Fire flicker effect -->
-                    <rect x="7" y="2" width="2" height="2" fill="#ffffff"/>
-                    <rect x="5" y="8" width="2" height="2" fill="#ffaa00"/>
-                    <rect x="9" y="8" width="2" height="2" fill="#ffaa00"/>
+                    <!-- Egg body -->
+                    <rect x="4" y="4" width="8" height="16" fill="#F5F5DC"/>
+                    <rect x="3" y="6" width="10" height="12" fill="#FFFEF7"/>
+                    <rect x="5" y="2" width="6" height="4" fill="#F0F0F0"/>
+                    <rect x="5" y="18" width="6" height="4" fill="#F0F0F0"/>
+                    <!-- Egg highlights -->
+                    <rect x="6" y="6" width="4" height="8" fill="#FFFFFF" opacity="0.6"/>
+                    <rect x="7" y="8" width="2" height="4" fill="#FFFFFF" opacity="0.8"/>
+                    <!-- Small speckles -->
+                    <rect x="5" y="10" width="1" height="1" fill="#DDD"/>
+                    <rect x="10" y="12" width="1" height="1" fill="#DDD"/>
+                    <rect x="7" y="14" width="1" height="1" fill="#DDD"/>
                 </svg>
             `,
             snowball: `
@@ -761,6 +766,22 @@
                     <rect x="28" y="26" width="2" height="2" fill="#FF6347" opacity="0.7"/>
                 </svg>
             `,
+            tractorBeam: `
+                <svg width="60" height="100" viewBox="0 0 60 100">
+                    <!-- Tractor beam effect -->
+                    <rect x="10" y="0" width="40" height="20" fill="#9370DB" opacity="0.3"/>
+                    <rect x="8" y="20" width="44" height="20" fill="#8A2BE2" opacity="0.3"/>
+                    <rect x="6" y="40" width="48" height="20" fill="#9932CC" opacity="0.3"/>
+                    <rect x="4" y="60" width="52" height="20" fill="#BA55D3" opacity="0.3"/>
+                    <rect x="2" y="80" width="56" height="20" fill="#DDA0DD" opacity="0.3"/>
+                    <!-- Beam particles -->
+                    <rect x="15" y="10" width="2" height="2" fill="#FFFFFF" opacity="0.8"/>
+                    <rect x="43" y="25" width="2" height="2" fill="#FFFFFF" opacity="0.8"/>
+                    <rect x="20" y="45" width="2" height="2" fill="#FFFFFF" opacity="0.8"/>
+                    <rect x="35" y="65" width="2" height="2" fill="#FFFFFF" opacity="0.8"/>
+                    <rect x="28" y="85" width="2" height="2" fill="#FFFFFF" opacity="0.8"/>
+                </svg>
+            `,
             fireSpread: `
                 <svg width="24" height="24" viewBox="0 0 24 24">
                     <rect x="8" y="4" width="8" height="16" fill="#FF4500"/>
@@ -806,45 +827,217 @@
             game.canvas.appendChild(game.player.element);
         }
 
-        // Create enemy wave
+        // Create enemy formation positions and spawn queue
         function createEnemies() {
             const canvasSize = getCanvasDimensions();
             const enemyTypes = ['zombie', 'creeper', 'skeleton', 'enderman'];
             
-            // Calculate grid based on canvas size
-            const maxCols = Math.floor((canvasSize.width - 120) / 70);
-            const maxRows = Math.floor((canvasSize.height * 0.4) / 60);
-            
-            // Ensure we always have at least 4 rows to include all enemy types
-            const rows = Math.max(4, Math.min(3 + Math.floor(game.level / 3), maxRows));
-            const cols = Math.max(6, Math.min(6 + Math.floor(game.level / 2), maxCols));
-            
-            game.totalEnemiesInLevel = rows * cols;
             game.enemiesDefeated = 0;
+            game.formationComplete = false;
+            game.formationPositions = [];
+            game.enemySpawnQueue = [];
             
-            // Center the enemy grid with tighter spacing
-            const gridWidth = cols * 70;
-            const startX = (canvasSize.width - gridWidth) / 2;
+            // Get formation pattern based on level
+            const formationPattern = getFormationPattern(game.level);
+            createFormationPositions(formationPattern, canvasSize);
+            
+            game.totalEnemiesInLevel = game.formationPositions.length;
+            
+            // Create spawn queue with level-appropriate enemy distribution
+            game.formationPositions.forEach((pos, index) => {
+                const enemyType = getEnemyTypeForLevel(game.level, index, game.formationPositions.length);
+                game.enemySpawnQueue.push({
+                    type: enemyType,
+                    formationIndex: index
+                });
+            });
+            
+            // Shuffle spawn queue for more varied entry
+            for (let i = game.enemySpawnQueue.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [game.enemySpawnQueue[i], game.enemySpawnQueue[j]] = [game.enemySpawnQueue[j], game.enemySpawnQueue[i]];
+            }
+        }
+        
+        function getFormationPattern(level) {
+            // Different formation patterns based on level
+            const patterns = ['grid', 'diamond', 'circle', 'triangle', 'zigzag', 'double_diamond', 'spiral'];
+            return patterns[Math.min(level - 1, patterns.length - 1)];
+        }
+        
+        function createFormationPositions(pattern, canvasSize) {
+            const centerX = canvasSize.width / 2;
+            const centerY = canvasSize.height * 0.25;
+            const spacing = 70;
+            
+            switch(pattern) {
+                case 'grid':
+                    createGridFormation(centerX, centerY, spacing);
+                    break;
+                case 'diamond':
+                    createDiamondFormation(centerX, centerY, spacing);
+                    break;
+                case 'circle':
+                    createCircleFormation(centerX, centerY, spacing);
+                    break;
+                case 'triangle':
+                    createTriangleFormation(centerX, centerY, spacing);
+                    break;
+                case 'zigzag':
+                    createZigzagFormation(centerX, centerY, spacing);
+                    break;
+                case 'double_diamond':
+                    createDoubleDiamondFormation(centerX, centerY, spacing);
+                    break;
+                case 'spiral':
+                    createSpiralFormation(centerX, centerY, spacing);
+                    break;
+            }
+        }
+        
+        function createGridFormation(centerX, centerY, spacing) {
+            const rows = Math.min(4 + Math.floor(game.level / 2), 6);
+            const cols = Math.min(6 + Math.floor(game.level / 2), 8);
+            const startX = centerX - (cols * spacing) / 2;
             
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
-                    const enemyType = enemyTypes[row % enemyTypes.length];
-                    const enemy = {
-                        element: createSprite('enemy', startX + col * 70, 60 + row * 60),
-                        x: startX + col * 70,
-                        y: 60 + row * 60,
-                        type: enemyType,
-                        lastShot: 0
-                    };
-                    enemy.element.innerHTML = sprites[enemyType];
-                    game.enemies.push(enemy);
-                    game.canvas.appendChild(enemy.element);
+                    game.formationPositions.push({
+                        x: startX + col * spacing,
+                        y: centerY + row * spacing * 0.8,
+                        occupied: false
+                    });
                 }
             }
+        }
+        
+        function createDiamondFormation(centerX, centerY, spacing) {
+            const size = Math.min(3 + Math.floor(game.level / 3), 5);
+            
+            for (let row = 0; row < size * 2 - 1; row++) {
+                const width = row < size ? row + 1 : (size * 2 - 1) - row;
+                const startCol = Math.floor((size - width) / 2);
+                
+                for (let col = 0; col < width; col++) {
+                    game.formationPositions.push({
+                        x: centerX + (startCol + col - size / 2) * spacing,
+                        y: centerY + (row - size / 2) * spacing * 0.8,
+                        occupied: false
+                    });
+                }
+            }
+        }
+        
+        function createCircleFormation(centerX, centerY, spacing) {
+            const radius = spacing * 2;
+            const enemyCount = Math.min(12 + game.level * 2, 24);
+            
+            for (let i = 0; i < enemyCount; i++) {
+                const angle = (i / enemyCount) * Math.PI * 2;
+                game.formationPositions.push({
+                    x: centerX + Math.cos(angle) * radius,
+                    y: centerY + Math.sin(angle) * radius * 0.6,
+                    occupied: false
+                });
+            }
+        }
+        
+        function createTriangleFormation(centerX, centerY, spacing) {
+            const rows = Math.min(4 + Math.floor(game.level / 2), 7);
+            
+            for (let row = 0; row < rows; row++) {
+                const width = row + 1;
+                for (let col = 0; col < width; col++) {
+                    game.formationPositions.push({
+                        x: centerX + (col - width / 2) * spacing,
+                        y: centerY + row * spacing * 0.8,
+                        occupied: false
+                    });
+                }
+            }
+        }
+        
+        function createZigzagFormation(centerX, centerY, spacing) {
+            const rows = Math.min(3 + Math.floor(game.level / 2), 5);
+            const cols = Math.min(6 + game.level, 10);
+            
+            for (let row = 0; row < rows; row++) {
+                const offset = (row % 2) * spacing * 0.5;
+                for (let col = 0; col < cols; col++) {
+                    game.formationPositions.push({
+                        x: centerX + (col - cols / 2) * spacing + offset,
+                        y: centerY + row * spacing * 0.8,
+                        occupied: false
+                    });
+                }
+            }
+        }
+        
+        function createDoubleDiamondFormation(centerX, centerY, spacing) {
+            // Create two diamond formations
+            createDiamondAtPosition(centerX - spacing * 1.5, centerY, spacing * 0.8);
+            createDiamondAtPosition(centerX + spacing * 1.5, centerY, spacing * 0.8);
+        }
+        
+        function createDiamondAtPosition(centerX, centerY, spacing) {
+            const size = Math.min(2 + Math.floor(game.level / 4), 4);
+            
+            for (let row = 0; row < size * 2 - 1; row++) {
+                const width = row < size ? row + 1 : (size * 2 - 1) - row;
+                const startCol = Math.floor((size - width) / 2);
+                
+                for (let col = 0; col < width; col++) {
+                    game.formationPositions.push({
+                        x: centerX + (startCol + col - size / 2) * spacing,
+                        y: centerY + (row - size / 2) * spacing * 0.8,
+                        occupied: false
+                    });
+                }
+            }
+        }
+        
+        function createSpiralFormation(centerX, centerY, spacing) {
+            const turns = Math.min(2 + Math.floor(game.level / 3), 4);
+            const pointsPerTurn = 8;
+            const totalPoints = turns * pointsPerTurn;
+            
+            for (let i = 0; i < totalPoints; i++) {
+                const progress = i / totalPoints;
+                const angle = progress * turns * Math.PI * 2;
+                const radius = progress * spacing * 2;
+                
+                game.formationPositions.push({
+                    x: centerX + Math.cos(angle) * radius,
+                    y: centerY + Math.sin(angle) * radius * 0.6,
+                    occupied: false
+                });
+            }
+        }
+        
+        function getEnemyTypeForLevel(level, index, totalEnemies) {
+            const enemyTypes = ['zombie', 'creeper', 'skeleton', 'enderman'];
+            
+            // Higher levels have more dangerous enemies
+            if (level >= 7) {
+                // 50% endermen at level 7+
+                if (Math.random() < 0.5) return 'enderman';
+            } else if (level >= 5) {
+                // 30% endermen at level 5-6
+                if (Math.random() < 0.3) return 'enderman';
+            } else if (level >= 3) {
+                // 15% endermen at level 3-4
+                if (Math.random() < 0.15) return 'enderman';
+            }
+            
+            // Remaining enemies distributed among other types
+            const remainingTypes = ['zombie', 'creeper', 'skeleton'];
+            return remainingTypes[index % remainingTypes.length];
         }
 
         // Move player
         function movePlayer() {
+            if (!game.player || game.capturedPlayer) return;
+            
             const canvasSize = getCanvasDimensions();
             const minY = canvasSize.height * 0.6; // Player can only move in bottom 40% of screen
             
@@ -863,6 +1056,14 @@
             
             game.player.element.style.left = game.player.x + 'px';
             game.player.element.style.top = game.player.y + 'px';
+            
+            // Move dual ship if it exists
+            if (game.player.dualShip) {
+                game.player.dualShip.x = game.player.x - 60;
+                game.player.dualShip.y = game.player.y;
+                game.player.dualShip.element.style.left = game.player.dualShip.x + 'px';
+                game.player.dualShip.element.style.top = game.player.dualShip.y + 'px';
+            }
         }
 
         // Power-up functions
@@ -1057,10 +1258,13 @@
 
         // Shoot projectile
         function shoot() {
+            if (!game.player || game.capturedPlayer) return;
+            
             const now = Date.now();
             const fireRate = powerUps.active.rapidFire && powerUps.active.rapidFire > now ? 66 : 200; // 3x faster with rapid fire
             
             if (now - game.lastShot > fireRate) {
+                // Main ship projectile
                 const projectile = {
                     element: createSprite('projectile', game.player.x + 42, game.player.y),
                     x: game.player.x + 42,
@@ -1069,14 +1273,30 @@
                     explosive: game.nextExplosiveShot
                 };
                 
+                projectile.element.innerHTML = sprites.egg;
+                game.projectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+                
+                // Dual ship projectile if available
+                if (game.player.dualShip) {
+                    const dualProjectile = {
+                        element: createSprite('projectile', game.player.dualShip.x + 42, game.player.dualShip.y),
+                        x: game.player.dualShip.x + 42,
+                        y: game.player.dualShip.y,
+                        speed: 10,
+                        explosive: false
+                    };
+                    
+                    dualProjectile.element.innerHTML = sprites.egg;
+                    game.projectiles.push(dualProjectile);
+                    game.canvas.appendChild(dualProjectile.element);
+                }
+                
                 if (game.nextExplosiveShot) {
                     game.nextExplosiveShot = false;
                     updatePowerUpDisplay();
                 }
                 
-                projectile.element.innerHTML = sprites.fire;
-                game.projectiles.push(projectile);
-                game.canvas.appendChild(projectile.element);
                 game.lastShot = now;
                 sounds.shoot();
             }
@@ -1085,50 +1305,339 @@
         // Enemy shooting
         function enemyShoot() {
             const now = Date.now();
-            const baseChance = 0.001 * game.snowballFrequency;
+            const levelMultiplier = 1 + (game.level * 0.2); // More aggressive shooting at higher levels
+            const baseChance = 0.001 * game.snowballFrequency * levelMultiplier;
+            const shootCooldown = Math.max(1000, 2000 - (game.level * 100)); // Faster shooting at higher levels
+            
             game.enemies.forEach(enemy => {
-                if (now - enemy.lastShot > 2000 && Math.random() < baseChance) {
-                    const projectile = {
-                        element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 60),
-                        x: enemy.x + 20,
-                        y: enemy.y + 60,
-                        speed: 4
-                    };
-                    projectile.element.innerHTML = sprites.snowball;
-                    game.enemyProjectiles.push(projectile);
-                    game.canvas.appendChild(projectile.element);
+                if (now - enemy.lastShot > shootCooldown && Math.random() < baseChance) {
+                    // Higher level enemies have enhanced shooting patterns
+                    if (game.level >= 5 && enemy.type === 'enderman' && Math.random() < 0.3) {
+                        // Endermen shoot multiple projectiles at high levels
+                        createMultipleProjectiles(enemy, now);
+                    } else if (game.level >= 3 && enemy.type === 'creeper' && Math.random() < 0.4) {
+                        // Creepers shoot faster projectiles at medium levels
+                        createFastProjectile(enemy, now);
+                    } else {
+                        // Standard projectile
+                        createStandardProjectile(enemy, now);
+                    }
                     enemy.lastShot = now;
                 }
             });
         }
+        
+        function createStandardProjectile(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 60),
+                x: enemy.x + 20,
+                y: enemy.y + 60,
+                speed: 4 + (game.level * 0.2)
+            };
+            projectile.element.innerHTML = sprites.snowball;
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+        
+        function createFastProjectile(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 60),
+                x: enemy.x + 20,
+                y: enemy.y + 60,
+                speed: 6 + (game.level * 0.3)
+            };
+            projectile.element.innerHTML = sprites.snowball;
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+        
+        function createMultipleProjectiles(enemy, now) {
+            // Create 3 projectiles in a spread pattern
+            for (let i = -1; i <= 1; i++) {
+                const projectile = {
+                    element: createSprite('enemy-projectile', enemy.x + 20 + (i * 15), enemy.y + 60),
+                    x: enemy.x + 20 + (i * 15),
+                    y: enemy.y + 60,
+                    speed: 5 + (game.level * 0.2),
+                    vx: i * 1.5 // Slight horizontal velocity for spread
+                };
+                projectile.element.innerHTML = sprites.snowball;
+                game.enemyProjectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+            }
+        }
 
-        // Move enemies
-        function moveEnemies() {
-            const canvasSize = getCanvasDimensions();
-            let changeDirection = false;
+        // Spawn enemies flying in from sides
+        function spawnEnemies() {
+            const now = Date.now();
+            const spawnRate = Math.max(200, 500 - (game.level * 30)); // Faster spawning at higher levels
+            if (game.enemySpawnQueue.length === 0 || now - game.lastEnemySpawn < spawnRate) return;
             
-            // Apply slow effect if redstone power-up is active
+            const canvasSize = getCanvasDimensions();
+            const spawnData = game.enemySpawnQueue.shift();
+            const formationPos = game.formationPositions[spawnData.formationIndex];
+            
+            // Choose random side to spawn from
+            const fromLeft = Math.random() < 0.5;
+            const startX = fromLeft ? -60 : canvasSize.width + 60;
+            const startY = Math.random() * (canvasSize.height * 0.3) + 50;
+            
+            const enemy = {
+                element: createSprite('enemy', startX, startY),
+                x: startX,
+                y: startY,
+                formationX: formationPos.x,
+                formationY: formationPos.y,
+                formationIndex: spawnData.formationIndex,
+                type: spawnData.type,
+                lastShot: 0,
+                state: 'entering',
+                progress: 0,
+                capturedPlayer: null,
+                canCapture: spawnData.type === 'enderman'
+            };
+            
+            enemy.element.innerHTML = sprites[spawnData.type];
+            game.enemies.push(enemy);
+            game.canvas.appendChild(enemy.element);
+            game.lastEnemySpawn = now;
+            
+            // Mark formation position as occupied
+            formationPos.occupied = true;
+            
+            // Check if formation is complete
+            if (game.enemySpawnQueue.length === 0) {
+                game.formationComplete = true;
+            }
+        }
+        
+        // Move enemies with new Galaga-style patterns
+        function moveEnemies() {
             const now = Date.now();
             const speedMultiplier = (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) ? 0.3 : 1;
             
+            // Spawn new enemies if needed
+            spawnEnemies();
+            
+            // Handle each enemy based on state
             game.enemies.forEach(enemy => {
-                if (enemy.x <= 0 || enemy.x >= canvasSize.width - 60) {
-                    changeDirection = true;
+                if (enemy.state === 'entering') {
+                    moveToFormation(enemy, speedMultiplier);
+                } else if (enemy.state === 'formation') {
+                    // Enemies in formation stay put until diving
+                    const diveChance = Math.min(0.001 + (game.level * 0.0003), 0.005); // Higher dive frequency at higher levels
+                    if (game.formationComplete && Math.random() < diveChance) {
+                        startDiveAttack(enemy);
+                    }
+                } else if (enemy.state === 'diving') {
+                    performDiveAttack(enemy, speedMultiplier);
+                } else if (enemy.state === 'flyingUp') {
+                    flyBackUp(enemy, speedMultiplier);
+                } else if (enemy.state === 'returning') {
+                    returnToFormation(enemy, speedMultiplier);
+                } else if (enemy.state === 'capturing') {
+                    performCaptureAttack(enemy, speedMultiplier);
+                }
+                
+                // Update captured player position
+                if (enemy.capturedPlayer) {
+                    enemy.capturedPlayer.x = enemy.x;
+                    enemy.capturedPlayer.y = enemy.y - 50;
+                    enemy.capturedPlayer.element.style.left = enemy.capturedPlayer.x + 'px';
+                    enemy.capturedPlayer.element.style.top = enemy.capturedPlayer.y + 'px';
                 }
             });
+        }
+        
+        function moveToFormation(enemy, speedMultiplier) {
+            const baseSpeed = 3 + (game.level * 0.3); // Faster movement at higher levels
+            const speed = baseSpeed * speedMultiplier;
+            const dx = enemy.formationX - enemy.x;
+            const dy = enemy.formationY - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (changeDirection) {
-                game.enemyDirection *= -1;
-                game.enemies.forEach(enemy => {
-                    enemy.y += 30 * speedMultiplier;
-                    enemy.element.style.top = enemy.y + 'px';
-                });
+            if (distance > 5) {
+                enemy.x += (dx / distance) * speed;
+                enemy.y += (dy / distance) * speed;
+                enemy.element.style.left = enemy.x + 'px';
+                enemy.element.style.top = enemy.y + 'px';
+            } else {
+                // Reached formation
+                enemy.state = 'formation';
+                enemy.x = enemy.formationX;
+                enemy.y = enemy.formationY;
+                enemy.element.style.left = enemy.x + 'px';
+                enemy.element.style.top = enemy.y + 'px';
+            }
+        }
+        
+        function startDiveAttack(specificEnemy) {
+            let enemy;
+            if (specificEnemy) {
+                enemy = specificEnemy;
+            } else {
+                const formationEnemies = game.enemies.filter(e => e.state === 'formation');
+                if (formationEnemies.length === 0) return;
+                enemy = formationEnemies[Math.floor(Math.random() * formationEnemies.length)];
             }
             
-            game.enemies.forEach(enemy => {
-                enemy.x += game.enemyDirection * game.enemySpeed * speedMultiplier;
+            enemy.state = 'diving';
+            enemy.diveProgress = 0;
+            
+            // Set dive target near player
+            const canvasSize = getCanvasDimensions();
+            enemy.diveTarget = {
+                x: game.player.x + Math.random() * 200 - 100,
+                y: canvasSize.height - 100
+            };
+        }
+        
+        function performDiveAttack(enemy, speedMultiplier) {
+            const baseSpeed = 4 + (game.level * 0.4); // Faster diving at higher levels
+            const speed = baseSpeed * speedMultiplier;
+            const canvasSize = getCanvasDimensions();
+            
+            if (enemy.diveTarget) {
+                // Diving down toward target
+                const dx = enemy.diveTarget.x - enemy.x;
+                const dy = enemy.diveTarget.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 10) {
+                    // Move towards target
+                    enemy.x += (dx / distance) * speed;
+                    enemy.y += (dy / distance) * speed;
+                    enemy.element.style.left = enemy.x + 'px';
+                    enemy.element.style.top = enemy.y + 'px';
+                } else {
+                    // Reached bottom, start flying back up
+                    enemy.diveTarget = null;
+                    enemy.state = 'flyingUp';
+                }
+            }
+        }
+        
+        function flyBackUp(enemy, speedMultiplier) {
+            const baseSpeed = 4 + (game.level * 0.3); // Faster exit at higher levels
+            const speed = baseSpeed * speedMultiplier;
+            
+            // Fly straight up and off screen
+            enemy.y -= speed;
+            enemy.element.style.top = enemy.y + 'px';
+            
+            // Remove enemy when it goes off screen
+            if (enemy.y < -60) {
+                if (enemy.element && enemy.element.parentNode) {
+                    game.canvas.removeChild(enemy.element);
+                }
+                const index = game.enemies.indexOf(enemy);
+                if (index > -1) {
+                    game.enemies.splice(index, 1);
+                }
+                
+                // Free up formation position
+                if (enemy.formationIndex !== undefined) {
+                    game.formationPositions[enemy.formationIndex].occupied = false;
+                }
+            }
+        }
+        
+        function returnToFormation(enemy, speedMultiplier) {
+            const speed = 3 * speedMultiplier;
+            const dx = enemy.formationX - enemy.x;
+            const dy = enemy.formationY - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 5) {
+                enemy.x += (dx / distance) * speed;
+                enemy.y += (dy / distance) * speed;
                 enemy.element.style.left = enemy.x + 'px';
-            });
+                enemy.element.style.top = enemy.y + 'px';
+            } else {
+                // Back in formation
+                enemy.state = 'formation';
+                enemy.x = enemy.formationX;
+                enemy.y = enemy.formationY;
+                enemy.element.style.left = enemy.x + 'px';
+                enemy.element.style.top = enemy.y + 'px';
+            }
+        }
+        
+        function performCaptureAttack(enemy, speedMultiplier) {
+            const speed = 3 * speedMultiplier;
+            
+            if (!enemy.capturedPlayer) {
+                // Move towards player for capture
+                const dx = game.player.x - enemy.x;
+                const dy = game.player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 50) {
+                    enemy.x += (dx / distance) * speed;
+                    enemy.y += (dy / distance) * speed;
+                    enemy.element.style.left = enemy.x + 'px';
+                    enemy.element.style.top = enemy.y + 'px';
+                } else {
+                    // Capture player
+                    capturePlayer(enemy);
+                }
+            } else {
+                // Return to formation with captured player
+                returnToFormation(enemy, speedMultiplier);
+            }
+        }
+        
+        // Capture player mechanics
+        function capturePlayer(enemy) {
+            if (game.capturedPlayer || !game.player) return;
+            
+            // Create captured player sprite
+            game.capturedPlayer = {
+                element: createSprite('player', enemy.x, enemy.y - 50),
+                x: enemy.x,
+                y: enemy.y - 50,
+                capturingEnemy: enemy
+            };
+            
+            // Hide original player temporarily
+            game.player.element.style.display = 'none';
+            
+            enemy.capturedPlayer = game.capturedPlayer;
+            enemy.state = 'returning';
+            
+            game.canvas.appendChild(game.capturedPlayer.element);
+        }
+        
+        function rescuePlayer(enemy) {
+            if (!enemy.capturedPlayer) return;
+            
+            // Create dual ship mode
+            const rescuedShip = {
+                element: createSprite('player', game.player.x - 60, game.player.y),
+                x: game.player.x - 60,
+                y: game.player.y,
+                isDual: true
+            };
+            
+            game.canvas.appendChild(rescuedShip.element);
+            
+            // Clean up captured player
+            if (enemy.capturedPlayer.element && enemy.capturedPlayer.element.parentNode) {
+                game.canvas.removeChild(enemy.capturedPlayer.element);
+            }
+            
+            enemy.capturedPlayer = null;
+            game.capturedPlayer = null;
+            game.player.element.style.display = 'block';
+            game.player.dualShip = rescuedShip;
+        }
+        
+        function startCaptureAttack() {
+            const capableEnemies = game.enemies.filter(e => e.canCapture && e.state === 'formation');
+            if (capableEnemies.length === 0 || game.capturedPlayer) return;
+            
+            const enemy = capableEnemies[Math.floor(Math.random() * capableEnemies.length)];
+            enemy.state = 'capturing';
         }
 
         // Move projectiles
@@ -1155,10 +1664,14 @@
                 if (!projectile || !projectile.element) continue;
                 
                 projectile.y += projectile.speed;
+                if (projectile.vx) {
+                    projectile.x += projectile.vx; // Handle spread projectiles
+                }
                 projectile.element.style.top = projectile.y + 'px';
+                projectile.element.style.left = projectile.x + 'px';
                 
                 const canvasSize = getCanvasDimensions();
-                if (projectile.y > canvasSize.height) {
+                if (projectile.y > canvasSize.height || projectile.x < 0 || projectile.x > canvasSize.width) {
                     if (projectile.element && projectile.element.parentNode) {
                         game.canvas.removeChild(projectile.element);
                     }
@@ -1214,6 +1727,11 @@
                                 }
                             }
                         } else {
+                            // Check if this enemy has captured player
+                            if (enemy.capturedPlayer) {
+                                rescuePlayer(enemy);
+                            }
+                            
                             // Normal single enemy hit
                             if (enemy.element && enemy.element.parentNode) {
                                 game.canvas.removeChild(enemy.element);
@@ -1353,10 +1871,30 @@
                 }
             }
             
-            // Enemies reaching player
+            // Direct enemy-player collision for life loss
             game.enemies.forEach(enemy => {
-                if (enemy.y + 60 >= game.player.y) {
-                    gameOver();
+                if (enemy.x < game.player.x + 100 &&
+                    enemy.x + 60 > game.player.x &&
+                    enemy.y < game.player.y + 80 &&
+                    enemy.y + 60 > game.player.y) {
+                    
+                    // Enemy hit player directly
+                    sounds.hit();
+                    game.lives--;
+                    document.getElementById('lives').textContent = game.lives;
+                    
+                    // Remove the enemy that hit the player
+                    if (enemy.element && enemy.element.parentNode) {
+                        game.canvas.removeChild(enemy.element);
+                    }
+                    const index = game.enemies.indexOf(enemy);
+                    if (index > -1) {
+                        game.enemies.splice(index, 1);
+                    }
+                    
+                    if (game.lives <= 0) {
+                        gameOver();
+                    }
                 }
             });
         }
@@ -1418,16 +1956,19 @@
             
             // Reset game state
             game.player = null;
+            game.capturedPlayer = null;
             game.enemies = [];
             game.projectiles = [];
             game.enemyProjectiles = [];
             game.score = 0;
             game.lives = 3;
             game.gameRunning = true;
-            game.enemyDirection = 1;
             game.level = 1;
-            game.enemySpeed = 1;
             game.enemiesDefeated = 0;
+            game.formationPositions = [];
+            game.enemySpawnQueue = [];
+            game.lastEnemySpawn = 0;
+            game.formationComplete = false;
             
             // Update UI displays
             document.getElementById('score').textContent = game.score;
