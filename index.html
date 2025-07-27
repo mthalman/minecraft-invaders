@@ -33,8 +33,8 @@
             background: #000;
             border: 4px solid #444;
             position: relative;
-            width: min(1000px, 70vw);
-            height: min(700px, 80vh);
+            width: min(1250px, 70vw);
+            height: min(875px, 80vh);
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -45,7 +45,7 @@
             border-radius: 10px;
             padding: 15px;
             width: min(220px, 25vw);
-            max-height: min(700px, 80vh);
+            max-height: min(875px, 80vh);
             color: #fff;
             font-size: 13px;
             overflow-y: auto;
@@ -163,6 +163,13 @@
             height: 24px;
         }
 
+        .vertical-blast {
+            width: 40px;
+            position: absolute;
+            pointer-events: none;
+            z-index: 150;
+        }
+
         .slider-container {
             display: flex;
             flex-direction: column;
@@ -227,9 +234,70 @@
             border-radius: 5px;
             border: 2px solid #444;
         }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: #fff;
+            text-align: center;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            color: #00ff00;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-bottom: 2rem;
+            font-weight: bold;
+        }
+
+        .start-subtitle {
+            font-size: 1.5rem;
+            color: #ffff00;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .start-instruction {
+            font-size: 1.8rem;
+            color: #fff;
+            padding: 15px 30px;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
+    <div class="start-screen" id="startScreen">
+        <div class="game-title">MINECRAFT INVADERS</div>
+        <div class="start-subtitle">Defend against waves of hostile mobs!</div>
+        <div class="start-instruction">Press ENTER to Start</div>
+    </div>
+    
+    <audio id="startMusic" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcAzqH0fPTfSkEMHy88+OLTAQYSM" type="audio/wav">
+    </audio>
+    
     <div class="main-container">
         <div class="game-container">
             <div class="game-canvas" id="gameCanvas">
@@ -310,7 +378,10 @@
                 totem: { name: 'Totem of Undying', duration: 0, effect: 'extraLife' },
                 redstone: { name: 'Redstone', duration: 15000, effect: 'slowEnemies' },
                 tnt: { name: 'TNT', duration: 0, effect: 'explosion' },
-                blazeRod: { name: 'Blaze Rod', duration: 25000, effect: 'spreadingFire' }
+                blazeRod: { name: 'Blaze Rod', duration: 25000, effect: 'spreadingFire' },
+                stevesLavaChicken: { name: "Steve's Lava Chicken", duration: 5000, effect: 'lavaChicken' },
+                shield: { name: 'Shield', duration: 10000, effect: 'shield' },
+                iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' }
             }
         };
 
@@ -324,7 +395,8 @@
             enemyProjectiles: [],
             score: 0,
             lives: 3,
-            gameRunning: true,
+            gameRunning: false,
+            gameStarted: false,
             keys: {},
             lastShot: 0,
             level: 1,
@@ -510,6 +582,43 @@
                 
                 echoOsc.start(startTime + 1.5);
                 echoOsc.stop(startTime + duration);
+            },
+            chicken: () => {
+                // Create chicken sound with multiple frequencies to simulate clucking
+                const startTime = audioContext.currentTime;
+                const duration = 0.3;
+                
+                // Main cluck sound
+                const oscillator1 = audioContext.createOscillator();
+                const gain1 = audioContext.createGain();
+                oscillator1.connect(gain1);
+                gain1.connect(audioContext.destination);
+                
+                oscillator1.frequency.setValueAtTime(300, startTime);
+                oscillator1.frequency.exponentialRampToValueAtTime(150, startTime + 0.1);
+                oscillator1.type = 'square';
+                
+                gain1.gain.setValueAtTime(0.3, startTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                oscillator1.start(startTime);
+                oscillator1.stop(startTime + duration);
+                
+                // Second cluck for harmony
+                const oscillator2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                oscillator2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                
+                oscillator2.frequency.setValueAtTime(450, startTime + 0.05);
+                oscillator2.frequency.exponentialRampToValueAtTime(200, startTime + 0.15);
+                oscillator2.type = 'triangle';
+                
+                gain2.gain.setValueAtTime(0.2, startTime + 0.05);
+                gain2.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                oscillator2.start(startTime + 0.05);
+                oscillator2.stop(startTime + duration);
             }
         };
 
@@ -766,6 +875,42 @@
                     <rect x="28" y="26" width="2" height="2" fill="#FF6347" opacity="0.7"/>
                 </svg>
             `,
+            stevesLavaChicken: `
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <!-- Lava Chicken Body -->
+                    <rect x="10" y="15" width="20" height="15" fill="#FF4500"/>
+                    <rect x="8" y="17" width="24" height="11" fill="#FF6347"/>
+                    <!-- Chicken Head -->
+                    <rect x="14" y="8" width="12" height="10" fill="#FFD700"/>
+                    <rect x="12" y="10" width="16" height="6" fill="#FFA500"/>
+                    <!-- Lava Eyes -->
+                    <rect x="16" y="11" width="2" height="2" fill="#FF0000"/>
+                    <rect x="22" y="11" width="2" height="2" fill="#FF0000"/>
+                    <!-- Molten Beak -->
+                    <rect x="10" y="12" width="4" height="3" fill="#FF8C00"/>
+                    <!-- Lava Comb -->
+                    <rect x="16" y="4" width="2" height="6" fill="#DC143C"/>
+                    <rect x="18" y="2" width="2" height="8" fill="#DC143C"/>
+                    <rect x="20" y="4" width="2" height="6" fill="#DC143C"/>
+                    <!-- Molten Wings -->
+                    <rect x="6" y="18" width="6" height="8" fill="#FF8C00"/>
+                    <rect x="28" y="18" width="6" height="8" fill="#FF8C00"/>
+                    <!-- Lava Tail -->
+                    <rect x="30" y="15" width="8" height="10" fill="#FF4500"/>
+                    <rect x="32" y="12" width="6" height="8" fill="#FFD700"/>
+                    <!-- Lava Legs -->
+                    <rect x="15" y="30" width="3" height="6" fill="#8B4513"/>
+                    <rect x="22" y="30" width="3" height="6" fill="#8B4513"/>
+                    <!-- Lava Feet -->
+                    <rect x="13" y="35" width="7" height="2" fill="#FF8C00"/>
+                    <rect x="20" y="35" width="7" height="2" fill="#FF8C00"/>
+                    <!-- Lava Particles -->
+                    <rect x="5" y="8" width="1" height="1" fill="#FF0000" opacity="0.8"/>
+                    <rect x="34" y="10" width="1" height="1" fill="#FF0000" opacity="0.8"/>
+                    <rect x="8" y="25" width="1" height="1" fill="#FFD700" opacity="0.7"/>
+                    <rect x="31" y="28" width="1" height="1" fill="#FFD700" opacity="0.7"/>
+                </svg>
+            `,
             tractorBeam: `
                 <svg width="60" height="100" viewBox="0 0 60 100">
                     <!-- Tractor beam effect -->
@@ -792,6 +937,44 @@
                     <!-- Animated flicker effect -->
                     <rect x="2" y="10" width="2" height="4" fill="#FF0000" opacity="0.6"/>
                     <rect x="20" y="8" width="2" height="6" fill="#FF0000" opacity="0.6"/>
+                </svg>
+            `,
+            shield: `
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <!-- Shield Base -->
+                    <path d="M20 2 L30 10 L30 25 L20 38 L10 25 L10 10 Z" fill="#4A90E2" stroke="#2C5A80" stroke-width="2"/>
+                    <!-- Shield Highlight -->
+                    <path d="M20 4 L28 11 L28 24 L20 35 L12 24 L12 11 Z" fill="#5BA0F2" opacity="0.8"/>
+                    <!-- Shield Center Gem -->
+                    <circle cx="20" cy="18" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="1"/>
+                    <!-- Shield Decorative Lines -->
+                    <line x1="15" y1="12" x2="25" y2="12" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+                    <line x1="14" y1="16" x2="26" y2="16" stroke="#FFFFFF" stroke-width="1" opacity="0.4"/>
+                    <line x1="14" y1="24" x2="26" y2="24" stroke="#FFFFFF" stroke-width="1" opacity="0.4"/>
+                    <!-- Shield Glow Effect -->
+                    <path d="M20 2 L30 10 L30 25 L20 38 L10 25 L10 10 Z" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.7"/>
+                </svg>
+            `,
+            iceBlock: `
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <!-- Ice Block Base -->
+                    <rect x="6" y="6" width="28" height="28" fill="#B0E0E6" stroke="#4682B4" stroke-width="2"/>
+                    <!-- Ice Block Highlight -->
+                    <rect x="8" y="8" width="24" height="24" fill="#E0F6FF" opacity="0.8"/>
+                    <!-- Ice Crystals -->
+                    <polygon points="20,10 22,14 18,14" fill="#FFFFFF" opacity="0.9"/>
+                    <polygon points="20,30 22,26 18,26" fill="#FFFFFF" opacity="0.9"/>
+                    <polygon points="10,20 14,22 14,18" fill="#FFFFFF" opacity="0.9"/>
+                    <polygon points="30,20 26,22 26,18" fill="#FFFFFF" opacity="0.9"/>
+                    <!-- Ice Sparkles -->
+                    <circle cx="15" cy="15" r="1" fill="#FFFFFF" opacity="0.8"/>
+                    <circle cx="25" cy="15" r="1" fill="#FFFFFF" opacity="0.8"/>
+                    <circle cx="15" cy="25" r="1" fill="#FFFFFF" opacity="0.8"/>
+                    <circle cx="25" cy="25" r="1" fill="#FFFFFF" opacity="0.8"/>
+                    <circle cx="20" cy="20" r="1.5" fill="#FFFFFF" opacity="1"/>
+                    <!-- Ice Shine Effect -->
+                    <rect x="10" y="8" width="4" height="2" fill="#FFFFFF" opacity="0.6"/>
+                    <rect x="26" y="12" width="2" height="4" fill="#FFFFFF" opacity="0.6"/>
                 </svg>
             `
         };
@@ -1090,6 +1273,15 @@
                 case 'spreadingFire':
                     powerUps.active.spreadingFire = Date.now() + powerUp.duration;
                     break;
+                case 'lavaChicken':
+                    powerUps.active.lavaChicken = Date.now() + powerUp.duration;
+                    break;
+                case 'shield':
+                    powerUps.active.shield = Date.now() + powerUp.duration;
+                    break;
+                case 'freezeEnemies':
+                    powerUps.active.freezeEnemies = Date.now() + powerUp.duration;
+                    break;
             }
             
             updatePowerUpDisplay();
@@ -1146,6 +1338,81 @@
                 
                 console.log('PowerUp spawned:', randomType, 'at', x, -40);
             }
+        }
+        
+        function triggerVerticalBlast() {
+            if (!game.player) return;
+            
+            const canvasSize = getCanvasDimensions();
+            const blastX = game.player.x + 50; // Center of player
+            
+            // Create vertical blast effect
+            const blastEffect = {
+                element: createSprite('vertical-blast', blastX - 20, 0),
+                x: blastX - 20,
+                y: 0,
+                width: 40,
+                height: canvasSize.height,
+                life: 60, // frames to show effect
+                maxLife: 60
+            };
+            
+            // Create custom SVG for vertical blast effect
+            blastEffect.element.innerHTML = `
+                <svg width="40" height="${canvasSize.height}" viewBox="0 0 40 ${canvasSize.height}">
+                    <rect x="0" y="0" width="40" height="${canvasSize.height}" fill="#FF4500" opacity="0.8"/>
+                    <rect x="5" y="0" width="30" height="${canvasSize.height}" fill="#FF6347" opacity="0.9"/>
+                    <rect x="10" y="0" width="20" height="${canvasSize.height}" fill="#FFD700" opacity="0.7"/>
+                    <rect x="15" y="0" width="10" height="${canvasSize.height}" fill="#FFFFFF" opacity="0.5"/>
+                </svg>
+            `;
+            
+            blastEffect.element.style.pointerEvents = 'none';
+            blastEffect.element.style.zIndex = '150';
+            game.canvas.appendChild(blastEffect.element);
+            
+            // Destroy all enemies in the vertical line
+            for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+                const enemy = game.enemies[eIndex];
+                if (!enemy || !enemy.element) continue;
+                
+                const enemyCenterX = enemy.x + 30; // Enemy width is 60
+                
+                // Check if enemy is within the vertical blast line
+                if (enemyCenterX >= blastX - 20 && enemyCenterX <= blastX + 20) {
+                    // Check if this enemy has captured player
+                    if (enemy.capturedPlayer) {
+                        rescuePlayer(enemy);
+                    }
+                    
+                    // Remove enemy
+                    if (enemy.element && enemy.element.parentNode) {
+                        game.canvas.removeChild(enemy.element);
+                    }
+                    
+                    // Award points
+                    let points = 150 + (game.level - 1) * 15; // Bonus points for vertical blast
+                    if (enemy.type === 'enderman') points = 250 + (game.level - 1) * 25;
+                    else if (enemy.type === 'creeper') points = 200 + (game.level - 1) * 20;
+                    
+                    game.score += points;
+                    game.enemiesDefeated++;
+                    game.enemies.splice(eIndex, 1);
+                    
+                    sounds.enemyHit();
+                }
+            }
+            
+            // Update score display
+            document.getElementById('score').textContent = game.score;
+            updateHighScore();
+            
+            // Remove blast effect after duration
+            setTimeout(() => {
+                if (blastEffect.element && blastEffect.element.parentNode) {
+                    game.canvas.removeChild(blastEffect.element);
+                }
+            }, 500); // Show for 500ms
         }
         
         function createFireSpreadEffect(startX, startY) {
@@ -1237,6 +1504,125 @@
             }
         }
         
+        function updateShieldEffect() {
+            const now = Date.now();
+            
+            // Remove existing shield effect if shield is not active
+            const existingShield = document.getElementById('playerShield');
+            if (!powerUps.active.shield || powerUps.active.shield <= now) {
+                if (existingShield) {
+                    existingShield.remove();
+                }
+                return;
+            }
+            
+            // Create shield effect if it doesn't exist and shield is active
+            if (!existingShield && game.player) {
+                const shieldEffect = document.createElement('div');
+                shieldEffect.id = 'playerShield';
+                shieldEffect.className = 'sprite';
+                shieldEffect.style.width = '160px';
+                shieldEffect.style.height = '160px';
+                shieldEffect.style.pointerEvents = 'none';
+                shieldEffect.style.zIndex = '50';
+                
+                // Create animated shield SVG
+                shieldEffect.innerHTML = `
+                    <svg width="160" height="160" viewBox="0 0 160 160">
+                        <defs>
+                            <radialGradient id="shieldGradient" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
+                                <stop offset="70%" style="stop-color:#4A90E2;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#2C5A80;stop-opacity:0.8" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="75" fill="url(#shieldGradient)" stroke="#87CEEB" stroke-width="2" opacity="0.7">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="80" cy="80" r="60" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.5">
+                            <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                `;
+                
+                game.canvas.appendChild(shieldEffect);
+            }
+            
+            // Update shield position to follow player
+            if (existingShield && game.player) {
+                const shieldX = game.player.x - 30; // Center the shield around player
+                const shieldY = game.player.y - 40;
+                existingShield.style.left = shieldX + 'px';
+                existingShield.style.top = shieldY + 'px';
+            }
+        }
+        
+        function updateFreezeEffect() {
+            const now = Date.now();
+            const isFrozen = powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now;
+            
+            game.enemies.forEach((enemy, index) => {
+                if (!enemy || !enemy.element) return;
+                
+                const freezeId = `freeze-${index}`;
+                const existingFreeze = document.getElementById(freezeId);
+                
+                if (isFrozen && !existingFreeze) {
+                    // Add freeze effect
+                    const freezeEffect = document.createElement('div');
+                    freezeEffect.id = freezeId;
+                    freezeEffect.className = 'sprite';
+                    freezeEffect.style.width = '60px';
+                    freezeEffect.style.height = '60px';
+                    freezeEffect.style.pointerEvents = 'none';
+                    freezeEffect.style.zIndex = '60';
+                    freezeEffect.style.left = enemy.x + 'px';
+                    freezeEffect.style.top = enemy.y + 'px';
+                    
+                    // Create ice overlay effect
+                    freezeEffect.innerHTML = `
+                        <svg width="60" height="60" viewBox="0 0 60 60">
+                            <!-- Ice overlay -->
+                            <rect x="0" y="0" width="60" height="60" fill="#B0E0E6" opacity="0.5"/>
+                            <!-- Ice crystals -->
+                            <polygon points="30,8 32,12 28,12" fill="#FFFFFF" opacity="0.8"/>
+                            <polygon points="30,52 32,48 28,48" fill="#FFFFFF" opacity="0.8"/>
+                            <polygon points="8,30 12,32 12,28" fill="#FFFFFF" opacity="0.8"/>
+                            <polygon points="52,30 48,32 48,28" fill="#FFFFFF" opacity="0.8"/>
+                            <!-- Ice sparkles -->
+                            <circle cx="20" cy="20" r="1" fill="#FFFFFF" opacity="1">
+                                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="40" cy="20" r="1" fill="#FFFFFF" opacity="1">
+                                <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="20" cy="40" r="1" fill="#FFFFFF" opacity="1">
+                                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="40" cy="40" r="1" fill="#FFFFFF" opacity="1">
+                                <animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                    `;
+                    
+                    game.canvas.appendChild(freezeEffect);
+                } else if (!isFrozen && existingFreeze) {
+                    // Remove freeze effect
+                    existingFreeze.remove();
+                } else if (isFrozen && existingFreeze) {
+                    // Update freeze effect position
+                    existingFreeze.style.left = enemy.x + 'px';
+                    existingFreeze.style.top = enemy.y + 'px';
+                }
+            });
+            
+            // Clean up freeze effects for destroyed enemies
+            if (!isFrozen) {
+                const allFreezeEffects = document.querySelectorAll('[id^="freeze-"]');
+                allFreezeEffects.forEach(effect => effect.remove());
+            }
+        }
+        
         function movePowerUps() {
             for (let index = powerUps.items.length - 1; index >= 0; index--) {
                 const powerUp = powerUps.items[index];
@@ -1297,14 +1683,27 @@
                     updatePowerUpDisplay();
                 }
                 
+                // Check for lava chicken effect
+                if (powerUps.active.lavaChicken && powerUps.active.lavaChicken > now) {
+                    triggerVerticalBlast();
+                    sounds.chicken();
+                } else {
+                    sounds.shoot();
+                }
+                
                 game.lastShot = now;
-                sounds.shoot();
             }
         }
 
         // Enemy shooting
         function enemyShoot() {
             const now = Date.now();
+            
+            // Don't shoot if enemies are frozen
+            if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
+                return;
+            }
+            
             const levelMultiplier = 1 + (game.level * 0.2); // More aggressive shooting at higher levels
             const baseChance = 0.001 * game.snowballFrequency * levelMultiplier;
             const shootCooldown = Math.max(1000, 2000 - (game.level * 100)); // Faster shooting at higher levels
@@ -1334,7 +1733,7 @@
                 y: enemy.y + 60,
                 speed: 4 + (game.level * 0.2)
             };
-            projectile.element.innerHTML = sprites.snowball;
+            projectile.element.innerHTML = sprites.enderPearl;
             game.enemyProjectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
         }
@@ -1346,7 +1745,7 @@
                 y: enemy.y + 60,
                 speed: 6 + (game.level * 0.3)
             };
-            projectile.element.innerHTML = sprites.snowball;
+            projectile.element.innerHTML = sprites.enderPearl;
             game.enemyProjectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
         }
@@ -1361,7 +1760,7 @@
                     speed: 5 + (game.level * 0.2),
                     vx: i * 1.5 // Slight horizontal velocity for spread
                 };
-                projectile.element.innerHTML = sprites.snowball;
+                projectile.element.innerHTML = sprites.enderPearl;
                 game.enemyProjectiles.push(projectile);
                 game.canvas.appendChild(projectile.element);
             }
@@ -1414,7 +1813,14 @@
         // Move enemies with new Galaga-style patterns
         function moveEnemies() {
             const now = Date.now();
-            const speedMultiplier = (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) ? 0.3 : 1;
+            
+            // Check for freeze effect first, then slow effect
+            let speedMultiplier = 1;
+            if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
+                speedMultiplier = 0; // Completely freeze enemies
+            } else if (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) {
+                speedMultiplier = 0.3; // Slow enemies
+            }
             
             // Spawn new enemies if needed
             spawnEnemies();
@@ -1669,6 +2075,42 @@
                 }
                 projectile.element.style.top = projectile.y + 'px';
                 projectile.element.style.left = projectile.x + 'px';
+                
+                // Check for shield reflection
+                const now = Date.now();
+                if (powerUps.active.shield && powerUps.active.shield > now && game.player && !projectile.reflected) {
+                    const playerCenterX = game.player.x + 50;
+                    const playerCenterY = game.player.y + 40;
+                    const projCenterX = projectile.x + 10;
+                    const projCenterY = projectile.y + 10;
+                    
+                    // Check if projectile is within shield radius (80px)
+                    const distance = Math.sqrt(
+                        Math.pow(projCenterX - playerCenterX, 2) + 
+                        Math.pow(projCenterY - playerCenterY, 2)
+                    );
+                    
+                    if (distance <= 80) {
+                        // Reflect the projectile
+                        projectile.speed = -Math.abs(projectile.speed); // Reverse direction
+                        if (projectile.vx) projectile.vx = -projectile.vx; // Reverse horizontal velocity
+                        projectile.reflected = true; // Mark as reflected to prevent multiple reflections
+                        
+                        // Convert to player projectile for hitting enemies
+                        const reflectedProjectile = {
+                            element: projectile.element,
+                            x: projectile.x,
+                            y: projectile.y,
+                            speed: 8, // Set upward speed
+                            explosive: false
+                        };
+                        
+                        // Remove from enemy projectiles and add to player projectiles
+                        game.enemyProjectiles.splice(index, 1);
+                        game.projectiles.push(reflectedProjectile);
+                        continue; // Skip rest of processing for this projectile
+                    }
+                }
                 
                 const canvasSize = getCanvasDimensions();
                 if (projectile.y > canvasSize.height || projectile.x < 0 || projectile.x > canvasSize.width) {
@@ -1963,6 +2405,7 @@
             game.score = 0;
             game.lives = 3;
             game.gameRunning = true;
+            game.gameStarted = true;
             game.level = 1;
             game.enemiesDefeated = 0;
             game.formationPositions = [];
@@ -1981,16 +2424,45 @@
             createEnemies();
         }
 
+        // Start the game
+        function startGame() {
+            game.gameStarted = true;
+            game.gameRunning = true;
+            
+            // Hide start screen
+            document.getElementById('startScreen').classList.add('hidden');
+            
+            // Stop start music
+            const startMusic = document.getElementById('startMusic');
+            startMusic.pause();
+            
+            // Initialize game
+            createEnemies();
+        }
+
         // Event listeners
         document.addEventListener('keydown', (e) => {
             game.keys[e.code] = true;
+            
+            // Start game with Enter key
+            if (e.code === 'Enter' && !game.gameStarted) {
+                e.preventDefault();
+                startGame();
+                return;
+            }
+            
+            // Try to play start music on first interaction if not started
+            if (!game.gameStarted) {
+                const startMusic = document.getElementById('startMusic');
+                startMusic.play().catch(() => {});
+            }
             
             if (e.code === 'Space' && game.gameRunning) {
                 e.preventDefault();
                 shoot();
             }
             
-            if (e.code === 'KeyR' && !game.gameRunning) {
+            if (e.code === 'KeyR' && !game.gameRunning && game.gameStarted) {
                 restartGame();
             }
             
@@ -2009,6 +2481,8 @@
                 moveProjectiles();
                 movePowerUps();
                 moveFireSpreadEffects();
+                updateShieldEffect();
+                updateFreezeEffect();
                 enemyShoot();
                 checkCollisions();
                 spawnPowerUp();
@@ -2026,7 +2500,16 @@
         // Initialize game
         initUI();
         initPlayer();
-        createEnemies();
+        
+        // Start background music
+        const startMusic = document.getElementById('startMusic');
+        startMusic.volume = 0.3;
+        
+        // Auto-play music (may be blocked by browser)
+        startMusic.play().catch(e => {
+            console.log('Music autoplay blocked, will start when user interacts');
+        });
+        
         gameLoop();
     </script>
 </body>
