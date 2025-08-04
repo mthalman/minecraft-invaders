@@ -8,7 +8,18 @@
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #228B22 100%);
+            background: 
+                radial-gradient(circle at 25% 25%, #654321 2px, transparent 3px),
+                radial-gradient(circle at 75% 75%, #5D4037 1px, transparent 2px),
+                radial-gradient(circle at 50% 10%, #8B4513 1px, transparent 2px),
+                radial-gradient(circle at 10% 90%, #654321 1px, transparent 2px),
+                linear-gradient(to bottom, #8B4513 0%, #654321 25%, #8B4513 50%, #5D4037 75%, #8B4513 100%);
+            background-size: 
+                20px 20px,
+                15px 15px,
+                12px 12px,
+                18px 18px,
+                100% 100%;
             font-family: 'Courier New', monospace;
             display: flex;
             flex-direction: column;
@@ -89,7 +100,16 @@
             width: 100%;
             height: 100%;
             position: relative;
-            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: 
+                radial-gradient(circle at 20% 30%, #2C1810 1px, transparent 2px),
+                radial-gradient(circle at 80% 70%, #1A0F08 1px, transparent 1.5px),
+                radial-gradient(circle at 60% 20%, #3D2914 1px, transparent 2px),
+                linear-gradient(to bottom, #3D2914 0%, #2C1810 25%, #3D2914 50%, #2C1810 75%, #3D2914 100%);
+            background-size: 
+                16px 16px,
+                12px 12px,
+                14px 14px,
+                100% 100%;
         }
 
         .score {
@@ -217,6 +237,47 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
+        .boss-health {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 18px;
+            z-index: 100;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .boss-name {
+            margin-bottom: 5px;
+            font-size: 20px;
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .health-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .health-bar-bg {
+            width: 200px;
+            height: 12px;
+            background: #333;
+            border: 2px solid #666;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff4444, #ff8844, #44ff44);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
         .powerup {
             width: 40px;
             height: 40px;
@@ -285,12 +346,111 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        .dimension-selection {
+            margin: 2rem 0;
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dimension-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 3px solid #666;
+            border-radius: 15px;
+            padding: 2rem;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dimension-option:hover {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .dimension-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .dimension-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .overworld .dimension-title {
+            color: #00ff00;
+        }
+
+        .nether .dimension-title {
+            color: #ff4444;
+        }
+
+        .dimension-description {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+        }
+
+        .dimension-enemies {
+            font-size: 0.9rem;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .dimension-bosses {
+            font-size: 0.85rem;
+            color: #ff6666;
+            margin-top: 0.5rem;
+        }
+
+        /* Nether dimension background */
+        body.nether-dimension {
+            background: 
+                radial-gradient(circle at 20% 30%, #8B0000 2px, transparent 3px),
+                radial-gradient(circle at 80% 20%, #DC143C 1px, transparent 2px),
+                radial-gradient(circle at 40% 80%, #B22222 1px, transparent 2px),
+                radial-gradient(circle at 60% 60%, #8B0000 1px, transparent 2px),
+                linear-gradient(to bottom, #B22222 0%, #8B0000 25%, #DC143C 50%, #8B0000 75%, #B22222 100%);
+            background-size: 
+                25px 25px,
+                18px 18px,
+                15px 15px,
+                20px 20px,
+                100% 100%;
+        }
     </style>
 </head>
 <body>
     <div class="start-screen" id="startScreen">
         <div class="game-title">MINECRAFT INVADERS</div>
-        <div class="start-subtitle">Defend against waves of hostile mobs!</div>
+        <div class="start-subtitle">Choose Your Dimension</div>
+        
+        <div class="dimension-selection">
+            <div class="dimension-option overworld selected" data-dimension="overworld">
+                <div class="dimension-title">OVERWORLD</div>
+                <div class="dimension-description">The familiar realm with grassy plains and diverse creatures</div>
+                <div class="dimension-enemies">Enemies: Zombies, Creepers, Skeletons</div>
+                <div class="dimension-bosses">Bosses: Witch, Evoker, Ravager, Warden</div>
+            </div>
+            
+            <div class="dimension-option nether" data-dimension="nether">
+                <div class="dimension-title">NETHER</div>
+                <div class="dimension-description">A hellish dimension with crimson landscapes and fiery foes</div>
+                <div class="dimension-enemies">Enemies: Piglins, Zombie Piglins, Wither Skeletons</div>
+                <div class="dimension-bosses">Bosses: Blaze, Ghast, Wither</div>
+            </div>
+        </div>
+        
         <div class="start-instruction">Press ENTER to Start</div>
     </div>
     
@@ -304,6 +464,16 @@
                 <div class="score">Score: <span id="score">0</span></div>
                 <div class="lives">Lives: <span id="lives">3</span></div>
                 <div class="level-display">Level <span id="level">1</span></div>
+                
+                <div class="boss-health" id="bossHealth" style="display: none;">
+                    <div class="boss-name" id="bossName">Boss</div>
+                    <div class="health-bar">
+                        <div class="health-bar-bg">
+                            <div class="health-bar-fill" id="healthBarFill"></div>
+                        </div>
+                        <span id="healthText">10/10</span>
+                    </div>
+                </div>
                 
                 <div class="powerup-indicator" id="powerupIndicator" style="display: none;">
                     Active: <span id="activePowerup"></span>
@@ -406,10 +576,14 @@
             lastPowerUpSpawn: 0,
             nextExplosiveShot: false,
             fireSpreadEffects: [],
+            bossEntranceInProgress: false,
+            bossCreated: false,
+            levelCompleting: false,
             formationPositions: [],
             enemySpawnQueue: [],
             lastEnemySpawn: 0,
-            formationComplete: false
+            formationComplete: false,
+            selectedDimension: 'overworld'
         };
 
         // Initialize UI
@@ -441,6 +615,42 @@
                 document.getElementById('highScore').textContent = gameStats.highScore;
                 saveStats();
             }
+        }
+
+        function showBossHealth(bossType, currentHealth, maxHealth) {
+            const bossHealthEl = document.getElementById('bossHealth');
+            const bossNameEl = document.getElementById('bossName');
+            const healthBarFill = document.getElementById('healthBarFill');
+            const healthText = document.getElementById('healthText');
+            
+            const bossNames = {
+                'witch': 'Witch',
+                'evoker': 'Evoker', 
+                'ravager': 'Ravager',
+                'warden': 'Warden'
+            };
+            
+            bossNameEl.textContent = bossNames[bossType] || 'Boss';
+            healthText.textContent = `${currentHealth}/${maxHealth}`;
+            
+            const healthPercent = (currentHealth / maxHealth) * 100;
+            healthBarFill.style.width = healthPercent + '%';
+            
+            bossHealthEl.style.display = 'block';
+        }
+
+        function updateBossHealth(currentHealth, maxHealth) {
+            const healthBarFill = document.getElementById('healthBarFill');
+            const healthText = document.getElementById('healthText');
+            
+            healthText.textContent = `${currentHealth}/${maxHealth}`;
+            
+            const healthPercent = (currentHealth / maxHealth) * 100;
+            healthBarFill.style.width = healthPercent + '%';
+        }
+
+        function hideBossHealth() {
+            document.getElementById('bossHealth').style.display = 'none';
         }
 
         // Sound effects using Web Audio API
@@ -619,6 +829,80 @@
                 
                 oscillator2.start(startTime + 0.05);
                 oscillator2.stop(startTime + duration);
+            },
+            bossEntrance: () => {
+                const startTime = audioContext.currentTime;
+                
+                // Boss musical phrase - dramatic ascending notes
+                const notes = [100, 130, 164, 200, 260]; // Bass to mid range
+                const noteDuration = 0.4;
+                
+                notes.forEach((frequency, index) => {
+                    const noteStart = startTime + (index * 0.3);
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = 'sawtooth'; // Dramatic sound
+                    
+                    // Dramatic volume envelope
+                    gainNode.gain.setValueAtTime(0, noteStart);
+                    gainNode.gain.linearRampToValueAtTime(0.25, noteStart + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, noteStart + noteDuration);
+                    
+                    oscillator.start(noteStart);
+                    oscillator.stop(noteStart + noteDuration);
+                });
+                
+                // Add explosion at the end
+                setTimeout(() => {
+                    sounds.bossExplosion();
+                }, 1500); // After musical phrase completes
+            },
+            bossExplosion: () => {
+                const startTime = audioContext.currentTime;
+                const duration = 1.0;
+                
+                // Create explosive entrance sound
+                const explosion = audioContext.createOscillator();
+                const explosionGain = audioContext.createGain();
+                
+                explosion.connect(explosionGain);
+                explosionGain.connect(audioContext.destination);
+                
+                explosion.frequency.value = 60;
+                explosion.type = 'sawtooth';
+                
+                // Sharp explosion attack
+                explosionGain.gain.setValueAtTime(0.4, startTime);
+                explosionGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                explosion.start(startTime);
+                explosion.stop(startTime + duration);
+                
+                // Add some crackling effects
+                for (let i = 0; i < 4; i++) {
+                    const crackle = audioContext.createOscillator();
+                    const crackleGain = audioContext.createGain();
+                    
+                    crackle.connect(crackleGain);
+                    crackleGain.connect(audioContext.destination);
+                    
+                    crackle.frequency.value = 150 + Math.random() * 200;
+                    crackle.type = 'square';
+                    
+                    const crackleStart = startTime + (i * 0.1);
+                    const crackleDuration = 0.15;
+                    
+                    crackleGain.gain.setValueAtTime(0.1, crackleStart);
+                    crackleGain.gain.exponentialRampToValueAtTime(0.01, crackleStart + crackleDuration);
+                    
+                    crackle.start(crackleStart);
+                    crackle.stop(crackleStart + crackleDuration);
+                }
             }
         };
 
@@ -735,6 +1019,143 @@
                     <rect x="32" y="50" width="6" height="10" fill="#ddd"/>
                 </svg>
             `,
+            witch: `
+                <svg width="90" height="90" viewBox="0 0 90 90">
+                    <!-- Hat -->
+                    <rect x="30" y="0" width="30" height="25" fill="#654321"/>
+                    <rect x="25" y="20" width="40" height="8" fill="#654321"/>
+                    <rect x="50" y="0" width="15" height="5" fill="#8B4513"/>
+                    <!-- Head -->
+                    <rect x="25" y="20" width="40" height="30" fill="#228B22"/>
+                    <rect x="20" y="25" width="50" height="20" fill="#32CD32"/>
+                    <!-- Eyes -->
+                    <rect x="32" y="30" width="6" height="8" fill="#000"/>
+                    <rect x="52" y="30" width="6" height="8" fill="#000"/>
+                    <rect x="34" y="32" width="2" height="4" fill="#ff0000"/>
+                    <rect x="54" y="32" width="2" height="4" fill="#ff0000"/>
+                    <!-- Nose -->
+                    <rect x="42" y="36" width="6" height="10" fill="#32CD32"/>
+                    <rect x="44" y="38" width="4" height="6" fill="#228B22"/>
+                    <!-- Mouth -->
+                    <rect x="38" y="44" width="14" height="4" fill="#000"/>
+                    <rect x="40" y="46" width="2" height="2" fill="#fff"/>
+                    <rect x="48" y="46" width="2" height="2" fill="#fff"/>
+                    <!-- Body -->
+                    <rect x="25" y="50" width="40" height="40" fill="#8A2BE2"/>
+                    <rect x="20" y="55" width="50" height="30" fill="#9932CC"/>
+                    <!-- Arms -->
+                    <rect x="5" y="55" width="20" height="25" fill="#228B22"/>
+                    <rect x="65" y="55" width="20" height="25" fill="#228B22"/>
+                    <!-- Cauldron -->
+                    <rect x="70" y="70" width="15" height="12" fill="#2F4F4F"/>
+                    <rect x="72" y="72" width="11" height="8" fill="#00FF00" opacity="0.7"/>
+                </svg>
+            `,
+            evoker: `
+                <svg width="90" height="90" viewBox="0 0 90 90">
+                    <!-- Hood -->
+                    <rect x="20" y="5" width="50" height="40" fill="#4B0082"/>
+                    <rect x="15" y="10" width="60" height="30" fill="#6A0DAD"/>
+                    <!-- Face (partially hidden) -->
+                    <rect x="35" y="25" width="20" height="20" fill="#F5DEB3"/>
+                    <rect x="30" y="30" width="30" height="10" fill="#DDD"/>
+                    <!-- Eyes (glowing) -->
+                    <rect x="38" y="32" width="4" height="6" fill="#00FFFF"/>
+                    <rect x="48" y="32" width="4" height="6" fill="#00FFFF"/>
+                    <rect x="39" y="33" width="2" height="4" fill="#FFFFFF"/>
+                    <rect x="49" y="33" width="2" height="4" fill="#FFFFFF"/>
+                    <!-- Body -->
+                    <rect x="25" y="45" width="40" height="45" fill="#4B0082"/>
+                    <rect x="20" y="50" width="50" height="35" fill="#6A0DAD"/>
+                    <!-- Robe details -->
+                    <rect x="30" y="55" width="30" height="3" fill="#FFD700"/>
+                    <rect x="32" y="65" width="26" height="2" fill="#FFD700"/>
+                    <rect x="34" y="75" width="22" height="2" fill="#FFD700"/>
+                    <!-- Arms -->
+                    <rect x="5" y="50" width="20" height="30" fill="#4B0082"/>
+                    <rect x="65" y="50" width="20" height="30" fill="#4B0082"/>
+                    <!-- Staff -->
+                    <rect x="85" y="20" width="3" height="50" fill="#8B4513"/>
+                    <rect x="82" y="18" width="9" height="6" fill="#FFD700"/>
+                    <!-- Magic particles -->
+                    <rect x="10" y="15" width="3" height="3" fill="#FF00FF" opacity="0.8"/>
+                    <rect x="75" y="25" width="3" height="3" fill="#00FFFF" opacity="0.8"/>
+                    <rect x="15" y="35" width="2" height="2" fill="#FFD700" opacity="0.8"/>
+                </svg>
+            `,
+            ravager: `
+                <svg width="120" height="90" viewBox="0 0 120 90">
+                    <!-- Head -->
+                    <rect x="30" y="10" width="60" height="35" fill="#696969"/>
+                    <rect x="25" y="15" width="70" height="25" fill="#808080"/>
+                    <!-- Horns -->
+                    <rect x="20" y="5" width="8" height="20" fill="#2F2F2F"/>
+                    <rect x="92" y="5" width="8" height="20" fill="#2F2F2F"/>
+                    <rect x="18" y="3" width="4" height="10" fill="#1C1C1C"/>
+                    <rect x="98" y="3" width="4" height="10" fill="#1C1C1C"/>
+                    <!-- Eyes -->
+                    <rect x="40" y="22" width="8" height="10" fill="#ff0000"/>
+                    <rect x="72" y="22" width="8" height="10" fill="#ff0000"/>
+                    <rect x="42" y="24" width="4" height="6" fill="#FFFF00"/>
+                    <rect x="74" y="24" width="4" height="6" fill="#FFFF00"/>
+                    <!-- Mouth -->
+                    <rect x="50" y="32" width="20" height="8" fill="#000"/>
+                    <rect x="48" y="34" width="4" height="4" fill="#fff"/>
+                    <rect x="68" y="34" width="4" height="4" fill="#fff"/>
+                    <!-- Body -->
+                    <rect x="20" y="45" width="80" height="35" fill="#696969"/>
+                    <rect x="15" y="50" width="90" height="25" fill="#808080"/>
+                    <!-- Legs -->
+                    <rect x="25" y="75" width="15" height="15" fill="#2F2F2F"/>
+                    <rect x="50" y="75" width="15" height="15" fill="#2F2F2F"/>
+                    <rect x="70" y="75" width="15" height="15" fill="#2F2F2F"/>
+                    <rect x="95" y="75" width="15" height="15" fill="#2F2F2F"/>
+                    <!-- Saddle -->
+                    <rect x="35" y="45" width="50" height="8" fill="#8B4513"/>
+                    <rect x="40" y="40" width="40" height="5" fill="#654321"/>
+                    <!-- Armor spikes -->
+                    <rect x="30" y="38" width="5" height="10" fill="#2F2F2F"/>
+                    <rect x="85" y="38" width="5" height="10" fill="#2F2F2F"/>
+                </svg>
+            `,
+            warden: `
+                <svg width="100" height="120" viewBox="0 0 100 120">
+                    <!-- Head -->
+                    <rect x="20" y="10" width="60" height="40" fill="#0F0F23"/>
+                    <rect x="15" y="15" width="70" height="30" fill="#1C1C3A"/>
+                    <!-- Horns/Antlers -->
+                    <rect x="10" y="5" width="6" height="25" fill="#36454F"/>
+                    <rect x="84" y="5" width="6" height="25" fill="#36454F"/>
+                    <rect x="8" y="0" width="10" height="12" fill="#2F4F4F"/>
+                    <rect x="82" y="0" width="10" height="12" fill="#2F4F4F"/>
+                    <!-- Glowing heart -->
+                    <rect x="40" y="25" width="20" height="15" fill="#00FFFF"/>
+                    <rect x="42" y="27" width="16" height="11" fill="#87CEEB"/>
+                    <rect x="45" y="30" width="10" height="5" fill="#FFFFFF"/>
+                    <!-- Soul fire effects -->
+                    <rect x="25" y="20" width="3" height="6" fill="#00FFFF" opacity="0.7"/>
+                    <rect x="72" y="22" width="3" height="6" fill="#00FFFF" opacity="0.7"/>
+                    <rect x="35" y="15" width="2" height="4" fill="#87CEEB" opacity="0.8"/>
+                    <rect x="63" y="18" width="2" height="4" fill="#87CEEB" opacity="0.8"/>
+                    <!-- Body -->
+                    <rect x="15" y="50" width="70" height="50" fill="#0F0F23"/>
+                    <rect x="10" y="55" width="80" height="40" fill="#1C1C3A"/>
+                    <!-- Chest sculk -->
+                    <rect x="35" y="60" width="30" height="25" fill="#36454F"/>
+                    <rect x="38" y="63" width="24" height="19" fill="#4682B4"/>
+                    <rect x="42" y="67" width="16" height="11" fill="#00FFFF" opacity="0.6"/>
+                    <!-- Arms -->
+                    <rect x="0" y="55" width="15" height="40" fill="#0F0F23"/>
+                    <rect x="85" y="55" width="15" height="40" fill="#0F0F23"/>
+                    <!-- Legs -->
+                    <rect x="25" y="100" width="18" height="20" fill="#0F0F23"/>
+                    <rect x="57" y="100" width="18" height="20" fill="#0F0F23"/>
+                    <!-- Sculk tendrils -->
+                    <rect x="5" y="45" width="4" height="15" fill="#36454F"/>
+                    <rect x="91" y="48" width="4" height="15" fill="#36454F"/>
+                    <rect x="45" y="45" width="10" height="3" fill="#4682B4" opacity="0.7"/>
+                </svg>
+            `,
             egg: `
                 <svg width="16" height="24" viewBox="0 0 16 24">
                     <!-- Egg body -->
@@ -790,6 +1211,23 @@
                     <rect x="18" y="14" width="4" height="12" fill="#9370DB" opacity="0.8"/>
                     <rect x="10" y="18" width="2" height="2" fill="#DDA0DD" opacity="0.6"/>
                     <rect x="28" y="22" width="2" height="2" fill="#DDA0DD" opacity="0.6"/>
+                </svg>
+            `,
+            fireball: `
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <!-- Core fire -->
+                    <circle cx="20" cy="20" r="16" fill="#FF4500"/>
+                    <circle cx="20" cy="20" r="12" fill="#FF6600"/>
+                    <circle cx="20" cy="20" r="8" fill="#FF8800"/>
+                    <circle cx="20" cy="20" r="4" fill="#FFAA00"/>
+                    <!-- Fire particles -->
+                    <circle cx="15" cy="10" r="2" fill="#FF4500" opacity="0.8"/>
+                    <circle cx="25" cy="8" r="1.5" fill="#FF6600" opacity="0.7"/>
+                    <circle cx="30" cy="15" r="2" fill="#FF4500" opacity="0.6"/>
+                    <circle cx="8" cy="25" r="1.5" fill="#FF8800" opacity="0.7"/>
+                    <circle cx="32" cy="30" r="1" fill="#FFAA00" opacity="0.8"/>
+                    <!-- Hot center -->
+                    <circle cx="20" cy="20" r="2" fill="#FFFFFF" opacity="0.9"/>
                 </svg>
             `,
             firePotion: `
@@ -950,6 +1388,170 @@
                     <rect x="10" y="8" width="4" height="2" fill="#FFFFFF" opacity="0.6"/>
                     <rect x="26" y="12" width="2" height="4" fill="#FFFFFF" opacity="0.6"/>
                 </svg>
+            `,
+            piglin: `
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                    <!-- Head -->
+                    <rect x="15" y="5" width="30" height="25" fill="#F4A460"/>
+                    <rect x="12" y="8" width="36" height="19" fill="#DEB887"/>
+                    <!-- Snout -->
+                    <rect x="24" y="18" width="12" height="8" fill="#D2691E"/>
+                    <rect x="26" y="20" width="2" height="2" fill="#000"/>
+                    <rect x="32" y="20" width="2" height="2" fill="#000"/>
+                    <!-- Eyes -->
+                    <rect x="20" y="12" width="6" height="6" fill="#FF4500"/>
+                    <rect x="34" y="12" width="6" height="6" fill="#FF4500"/>
+                    <rect x="22" y="14" width="2" height="2" fill="#000"/>
+                    <rect x="36" y="14" width="2" height="2" fill="#000"/>
+                    <!-- Ears -->
+                    <rect x="10" y="10" width="8" height="12" fill="#F4A460"/>
+                    <rect x="42" y="10" width="8" height="12" fill="#F4A460"/>
+                    <!-- Body -->
+                    <rect x="18" y="30" width="24" height="20" fill="#8B4513"/>
+                    <rect x="15" y="33" width="30" height="14" fill="#A0522D"/>
+                    <!-- Arms -->
+                    <rect x="6" y="32" width="12" height="18" fill="#F4A460"/>
+                    <rect x="42" y="32" width="12" height="18" fill="#F4A460"/>
+                    <!-- Legs -->
+                    <rect x="20" y="50" width="8" height="10" fill="#8B4513"/>
+                    <rect x="32" y="50" width="8" height="10" fill="#8B4513"/>
+                </svg>
+            `,
+            zombie_piglin: `
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                    <!-- Head -->
+                    <rect x="15" y="5" width="30" height="25" fill="#228B22"/>
+                    <rect x="12" y="8" width="36" height="19" fill="#32CD32"/>
+                    <!-- Snout -->
+                    <rect x="24" y="18" width="12" height="8" fill="#8B4513"/>
+                    <rect x="26" y="20" width="2" height="2" fill="#000"/>
+                    <rect x="32" y="20" width="2" height="2" fill="#000"/>
+                    <!-- Eyes -->
+                    <rect x="20" y="12" width="6" height="6" fill="#8B0000"/>
+                    <rect x="34" y="12" width="6" height="6" fill="#8B0000"/>
+                    <rect x="22" y="14" width="2" height="2" fill="#FF0000"/>
+                    <rect x="36" y="14" width="2" height="2" fill="#FF0000"/>
+                    <!-- Ears -->
+                    <rect x="10" y="10" width="8" height="12" fill="#228B22"/>
+                    <rect x="42" y="10" width="8" height="12" fill="#228B22"/>
+                    <!-- Body -->
+                    <rect x="18" y="30" width="24" height="20" fill="#8B4513"/>
+                    <rect x="15" y="33" width="30" height="14" fill="#A0522D"/>
+                    <!-- Arms -->
+                    <rect x="6" y="32" width="12" height="18" fill="#228B22"/>
+                    <rect x="42" y="32" width="12" height="18" fill="#228B22"/>
+                    <!-- Legs -->
+                    <rect x="20" y="50" width="8" height="10" fill="#8B4513"/>
+                    <rect x="32" y="50" width="8" height="10" fill="#8B4513"/>
+                    <!-- Rotting effects -->
+                    <rect x="18" y="40" width="6" height="2" fill="#654321"/>
+                    <rect x="36" y="42" width="6" height="2" fill="#654321"/>
+                </svg>
+            `,
+            wither_skeleton: `
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                    <!-- Head -->
+                    <rect x="18" y="5" width="24" height="20" fill="#2F2F2F"/>
+                    <rect x="15" y="8" width="30" height="14" fill="#1C1C1C"/>
+                    <!-- Face -->
+                    <rect x="22" y="12" width="4" height="6" fill="#8B0000"/>
+                    <rect x="34" y="12" width="4" height="6" fill="#8B0000"/>
+                    <rect x="24" y="14" width="2" height="2" fill="#FF0000"/>
+                    <rect x="36" y="14" width="2" height="2" fill="#FF0000"/>
+                    <rect x="26" y="18" width="8" height="3" fill="#8B0000"/>
+                    <rect x="28" y="19" width="1" height="1" fill="#000"/>
+                    <rect x="31" y="19" width="1" height="1" fill="#000"/>
+                    <!-- Body -->
+                    <rect x="21" y="25" width="18" height="25" fill="#404040"/>
+                    <rect x="18" y="28" width="24" height="19" fill="#2F2F2F"/>
+                    <!-- Arms -->
+                    <rect x="9" y="30" width="12" height="18" fill="#2F2F2F"/>
+                    <rect x="39" y="30" width="12" height="18" fill="#2F2F2F"/>
+                    <!-- Legs -->
+                    <rect x="21" y="50" width="8" height="10" fill="#404040"/>
+                    <rect x="31" y="50" width="8" height="10" fill="#404040"/>
+                    <!-- Sword -->
+                    <rect x="3" y="25" width="4" height="20" fill="#C0C0C0"/>
+                    <rect x="1" y="20" width="8" height="8" fill="#8B4513"/>
+                </svg>
+            `,
+            blaze: `
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <!-- Main body -->
+                    <rect x="30" y="20" width="20" height="40" fill="#FFAA00"/>
+                    <rect x="25" y="25" width="30" height="30" fill="#FF8800"/>
+                    <!-- Fire rods rotating around -->
+                    <rect x="15" y="15" width="4" height="20" fill="#FF4500" transform="rotate(45 17 25)"/>
+                    <rect x="61" y="15" width="4" height="20" fill="#FF4500" transform="rotate(-45 63 25)"/>
+                    <rect x="15" y="45" width="4" height="20" fill="#FF4500" transform="rotate(-45 17 55)"/>
+                    <rect x="61" y="45" width="4" height="20" fill="#FF4500" transform="rotate(45 63 55)"/>
+                    <rect x="5" y="30" width="4" height="20" fill="#FF6600" transform="rotate(90 7 40)"/>
+                    <rect x="71" y="30" width="4" height="20" fill="#FF6600" transform="rotate(90 73 40)"/>
+                    <!-- Face -->
+                    <rect x="32" y="28" width="4" height="4" fill="#8B0000"/>
+                    <rect x="44" y="28" width="4" height="4" fill="#8B0000"/>
+                    <rect x="36" y="36" width="8" height="4" fill="#000"/>
+                    <!-- Inner fire glow -->
+                    <rect x="32" y="22" width="16" height="36" fill="#FFFF00" opacity="0.6"/>
+                    <rect x="35" y="25" width="10" height="30" fill="#FFFFFF" opacity="0.3"/>
+                </svg>
+            `,
+            ghast: `
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <!-- Main body -->
+                    <rect x="10" y="10" width="80" height="60" fill="#F5F5F5"/>
+                    <rect x="5" y="15" width="90" height="50" fill="#FFFFFF"/>
+                    <!-- Face -->
+                    <rect x="25" y="25" width="12" height="12" fill="#000"/>
+                    <rect x="63" y="25" width="12" height="12" fill="#000"/>
+                    <rect x="27" y="27" width="8" height="8" fill="#8B0000"/>
+                    <rect x="65" y="27" width="8" height="8" fill="#8B0000"/>
+                    <!-- Mouth -->
+                    <rect x="40" y="45" width="20" height="8" fill="#000"/>
+                    <rect x="42" y="47" width="4" height="4" fill="#FFFFFF"/>
+                    <rect x="50" y="47" width="4" height="4" fill="#FFFFFF"/>
+                    <rect x="58" y="47" width="4" height="4" fill="#FFFFFF"/>
+                    <!-- Tentacles -->
+                    <rect x="15" y="70" width="6" height="25" fill="#F0F0F0"/>
+                    <rect x="25" y="70" width="6" height="20" fill="#F0F0F0"/>
+                    <rect x="35" y="70" width="6" height="22" fill="#F0F0F0"/>
+                    <rect x="45" y="70" width="6" height="18" fill="#F0F0F0"/>
+                    <rect x="55" y="70" width="6" height="24" fill="#F0F0F0"/>
+                    <rect x="65" y="70" width="6" height="19" fill="#F0F0F0"/>
+                    <rect x="75" y="70" width="6" height="21" fill="#F0F0F0"/>
+                    <!-- Floating effect -->
+                    <rect x="12" y="68" width="76" height="2" fill="#E0E0E0" opacity="0.5"/>
+                </svg>
+            `,
+            wither: `
+                <svg width="100" height="80" viewBox="0 0 100 80">
+                    <!-- Main head (center) -->
+                    <rect x="35" y="5" width="30" height="25" fill="#1C1C1C"/>
+                    <rect x="32" y="8" width="36" height="19" fill="#000000"/>
+                    <!-- Side heads -->
+                    <rect x="10" y="15" width="20" height="18" fill="#1C1C1C"/>
+                    <rect x="70" y="15" width="20" height="18" fill="#1C1C1C"/>
+                    <!-- Main head face -->
+                    <rect x="40" y="12" width="4" height="6" fill="#4169E1"/>
+                    <rect x="56" y="12" width="4" height="6" fill="#4169E1"/>
+                    <rect x="44" y="18" width="12" height="4" fill="#4169E1"/>
+                    <!-- Side heads faces -->
+                    <rect x="15" y="20" width="3" height="4" fill="#4169E1"/>
+                    <rect x="22" y="20" width="3" height="4" fill="#4169E1"/>
+                    <rect x="75" y="20" width="3" height="4" fill="#4169E1"/>
+                    <rect x="82" y="20" width="3" height="4" fill="#4169E1"/>
+                    <!-- Body -->
+                    <rect x="25" y="30" width="50" height="30" fill="#2F2F2F"/>
+                    <rect x="20" y="35" width="60" height="20" fill="#1C1C1C"/>
+                    <!-- Ribs -->
+                    <rect x="30" y="40" width="40" height="2" fill="#696969"/>
+                    <rect x="30" y="45" width="40" height="2" fill="#696969"/>
+                    <rect x="30" y="50" width="40" height="2" fill="#696969"/>
+                    <!-- Spine -->
+                    <rect x="48" y="60" width="4" height="20" fill="#696969"/>
+                    <!-- Dark aura effect -->
+                    <circle cx="50" cy="40" r="45" fill="#000000" opacity="0.1"/>
+                </svg>
             `
         };
 
@@ -987,14 +1589,50 @@
         // Create enemy formation positions and spawn queue
         function createEnemies() {
             const canvasSize = getCanvasDimensions();
-            const enemyTypes = ['zombie', 'creeper', 'skeleton'];
+            
+            // Set enemy types based on selected dimension
+            let enemyTypes;
+            if (game.selectedDimension === 'nether') {
+                enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+            } else {
+                enemyTypes = ['zombie', 'creeper', 'skeleton'];
+            }
             
             game.enemiesDefeated = 0;
             game.formationComplete = false;
             game.formationPositions = [];
             game.enemySpawnQueue = [];
             
-            // Get formation pattern based on level
+            // Check if this is a boss level (every 5th level)
+            const isBossLevel = game.level % 5 === 0;
+            
+            if (isBossLevel) {
+                // Check if boss already created for this level
+                if (game.bossCreated) {
+                    return; // Boss already exists, don't create another
+                }
+                
+                // Play boss entrance music and delay boss spawn
+                sounds.bossEntrance();
+                
+                // Set flags to prevent multiple boss creation
+                game.bossEntranceInProgress = true;
+                game.bossCreated = true;
+                
+                // Delay actual boss creation until after musical phrase
+                setTimeout(() => {
+                    // Double-check boss hasn't been created already
+                    if (game.enemies.some(enemy => enemy.isBoss)) {
+                        game.bossEntranceInProgress = false;
+                        return;
+                    }
+                    createBossLevel(canvasSize);
+                }, 2500); // Wait for music + explosion to finish
+                
+                return; // Exit early for boss levels
+            }
+            
+            // Regular level - create formation
             const formationPattern = getFormationPattern(game.level);
             createFormationPositions(formationPattern, canvasSize);
             
@@ -1005,7 +1643,8 @@
                 const enemyType = getEnemyTypeForLevel(game.level, index, game.formationPositions.length);
                 game.enemySpawnQueue.push({
                     type: enemyType,
-                    formationIndex: index
+                    formationIndex: index,
+                    isBoss: false
                 });
             });
             
@@ -1014,6 +1653,50 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [game.enemySpawnQueue[i], game.enemySpawnQueue[j]] = [game.enemySpawnQueue[j], game.enemySpawnQueue[i]];
             }
+        }
+        
+        function createBossLevel(canvasSize) {
+            // Boss level - create and spawn single boss enemy directly
+            const bossType = getBossTypeForLevel(game.level);
+            const bossX = canvasSize.width / 2 - 50; // Center boss horizontally
+            const bossY = canvasSize.height * 0.2;   // Place boss higher up
+            
+            // Create boss enemy directly
+            const boss = {
+                element: createSprite('enemy', bossX, bossY),
+                x: bossX,
+                y: bossY,
+                formationX: bossX,
+                formationY: bossY,
+                formationIndex: 0,
+                type: bossType,
+                lastShot: 0,
+                state: 'formation', // Boss starts in formation immediately
+                progress: 0,
+                capturedPlayer: null,
+                canCapture: false,
+                isBoss: true,
+                maxHealth: getBossHealth(bossType),
+                health: getBossHealth(bossType)
+            };
+            
+            boss.element.innerHTML = sprites[bossType];
+            
+            // Show boss health bar
+            showBossHealth(boss.type, boss.health, boss.maxHealth);
+            
+            // Add boss to game
+            game.enemies.push(boss);
+            game.canvas.appendChild(boss.element);
+            
+            // Set up level completion tracking
+            game.formationPositions = [{ x: bossX, y: bossY, occupied: true }];
+            game.enemySpawnQueue = []; // Empty queue for boss levels
+            game.totalEnemiesInLevel = 1;
+            game.formationComplete = true; // Boss is immediately in formation
+            
+            // Clear the entrance flag
+            game.bossEntranceInProgress = false;
         }
         
         function getFormationPattern(level) {
@@ -1172,8 +1855,43 @@
         }
         
         function getEnemyTypeForLevel(level, index, totalEnemies) {
-            const enemyTypes = ['zombie', 'creeper', 'skeleton'];
+            let enemyTypes;
+            if (game.selectedDimension === 'nether') {
+                enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+            } else {
+                enemyTypes = ['zombie', 'creeper', 'skeleton'];
+            }
             return enemyTypes[index % enemyTypes.length];
+        }
+
+        function getBossTypeForLevel(level) {
+            const bossIndex = Math.floor((level / 5) - 1) % 3;
+            
+            if (game.selectedDimension === 'nether') {
+                // Nether bosses: Blaze, Ghast, Wither
+                const netherBossTypes = ['blaze', 'ghast', 'wither'];
+                return netherBossTypes[bossIndex];
+            } else {
+                // Overworld bosses: Witch, Evoker, Ravager, Warden (cycling through 4)
+                const overworldBossIndex = Math.floor((level / 5) - 1) % 4;
+                const overworldBossTypes = ['witch', 'evoker', 'ravager', 'warden'];
+                return overworldBossTypes[overworldBossIndex];
+            }
+        }
+
+        function getBossHealth(bossType) {
+            const healthMap = {
+                // Overworld bosses
+                'witch': 20,
+                'evoker': 30,
+                'ravager': 40,
+                'warden': 50,
+                // Nether bosses
+                'blaze': 20,
+                'ghast': 30,
+                'wither': 50
+            };
+            return healthMap[bossType] || 1;
         }
 
         // Move player
@@ -1666,14 +2384,72 @@
             const shootCooldown = Math.max(1000, 2000 - (game.level * 100)); // Faster shooting at higher levels
             
             game.enemies.forEach(enemy => {
-                if (now - enemy.lastShot > shootCooldown && Math.random() < baseChance) {
-                    // Higher level enemies have enhanced shooting patterns
-                    if (game.level >= 3 && enemy.type === 'creeper' && Math.random() < 0.4) {
-                        // Creepers shoot faster projectiles at medium levels
-                        createFastProjectile(enemy, now);
+                let shouldShoot = false;
+                let customCooldown = shootCooldown;
+                
+                if (enemy.isBoss) {
+                    // Boss-specific shooting patterns (4x frequency)
+                    if (enemy.type === 'witch') {
+                        customCooldown = 625; // Witch shoots more frequently and causes 2 damage
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 6;
+                    } else if (enemy.type === 'evoker') {
+                        customCooldown = 200; // Evoker rapid fire even faster
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 8;
+                    } else if (enemy.type === 'ravager') {
+                        customCooldown = 450; // Ravager shoots big snowballs more often
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4.8;
+                    } else if (enemy.type === 'warden') {
+                        customCooldown = 750; // Warden shoots 5 snowballs more frequently
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3.2;
+                    } else if (enemy.type === 'blaze') {
+                        customCooldown = 800; // Blaze spreading fire attack
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3.5;
+                    } else if (enemy.type === 'ghast') {
+                        customCooldown = 1000; // Ghast large fireballs and ender pearls
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.8;
+                    } else if (enemy.type === 'wither') {
+                        customCooldown = 50; // Very fast cooldown for Wither's burst pattern
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 15;
+                    }
+                } else {
+                    shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
+                }
+                
+                if (shouldShoot) {
+                    if (enemy.isBoss) {
+                        // Boss-specific attacks
+                        if (enemy.type === 'witch') {
+                            createWitchSnowball(enemy, now);
+                        } else if (enemy.type === 'evoker') {
+                            createEvokerRapidFire(enemy, now);
+                        } else if (enemy.type === 'ravager') {
+                            createRavagerBigSnowball(enemy, now);
+                        } else if (enemy.type === 'warden') {
+                            createWardenMultiShot(enemy, now);
+                        } else if (enemy.type === 'blaze') {
+                            createBlazeSpreadingFire(enemy, now);
+                        } else if (enemy.type === 'ghast') {
+                            // Ghast alternates between large fireballs and ender pearls
+                            if (Math.random() < 0.7) {
+                                createGhastLargeFireball(enemy, now);
+                            } else {
+                                createGhastEnderPearl(enemy, now);
+                            }
+                        } else if (enemy.type === 'wither') {
+                            createWitherExplosiveFireball(enemy, now);
+                        }
                     } else {
-                        // Standard projectile
-                        createStandardProjectile(enemy, now);
+                        // Regular enemy attacks
+                        if (game.selectedDimension === 'nether' && (enemy.type === 'piglin' || enemy.type === 'zombie_piglin' || enemy.type === 'wither_skeleton')) {
+                            // Nether enemies shoot fireballs
+                            createFireballProjectile(enemy, now);
+                        } else if (game.level >= 3 && enemy.type === 'creeper' && Math.random() < 0.4) {
+                            // Creepers shoot faster projectiles at medium levels
+                            createFastProjectile(enemy, now);
+                        } else {
+                            // Standard projectile
+                            createStandardProjectile(enemy, now);
+                        }
                     }
                     enemy.lastShot = now;
                 }
@@ -1688,6 +2464,18 @@
                 speed: 4 + (game.level * 0.2)
             };
             projectile.element.innerHTML = sprites.enderPearl;
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createFireballProjectile(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 60),
+                x: enemy.x + 20,
+                y: enemy.y + 60,
+                speed: 3.5 + (game.level * 0.15)
+            };
+            projectile.element.innerHTML = sprites.fireball;
             game.enemyProjectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
         }
@@ -1720,10 +2508,174 @@
             }
         }
 
+        function createWitchSnowball(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 30, enemy.y + 80),
+                x: enemy.x + 30,
+                y: enemy.y + 80,
+                speed: 3 + (game.level * 0.2),
+                damage: 2 // Witch snowballs cause 2 damage
+            };
+            projectile.element.innerHTML = sprites.enderPearl;
+            projectile.element.style.filter = 'hue-rotate(120deg) brightness(1.2)'; // Green tint for witch
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createEvokerRapidFire(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 30, enemy.y + 80),
+                x: enemy.x + 30,
+                y: enemy.y + 80,
+                speed: 6 + (game.level * 0.3)
+            };
+            projectile.element.innerHTML = sprites.enderPearl;
+            projectile.element.style.filter = 'hue-rotate(270deg) brightness(1.3)'; // Purple tint for evoker
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createRavagerBigSnowball(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 40, enemy.y + 85),
+                x: enemy.x + 40,
+                y: enemy.y + 85,
+                speed: 2.5 + (game.level * 0.15)
+            };
+            projectile.element.innerHTML = sprites.enderPearl;
+            projectile.element.style.transform = 'scale(1.8)'; // Extra big snowball
+            projectile.element.style.filter = 'brightness(0.8)'; // Darker for ravager
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createWardenMultiShot(enemy, now) {
+            // Create 5 projectiles in a spread pattern
+            for (let i = -2; i <= 2; i++) {
+                const projectile = {
+                    element: createSprite('enemy-projectile', enemy.x + 30 + (i * 10), enemy.y + 85),
+                    x: enemy.x + 30 + (i * 10),
+                    y: enemy.y + 85,
+                    speed: 4 + (game.level * 0.2),
+                    vx: i * 1.2 // Horizontal spread
+                };
+                projectile.element.innerHTML = sprites.enderPearl;
+                projectile.element.style.filter = 'hue-rotate(180deg) brightness(1.5)'; // Cyan tint for warden
+                game.enemyProjectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+            }
+        }
+
+        // Nether boss attacks
+        function createBlazeSpreadingFire(enemy, now) {
+            // Create 5 fireballs in a spreading pattern
+            for (let i = -2; i <= 2; i++) {
+                const projectile = {
+                    element: createSprite('enemy-projectile', enemy.x + 40 + (i * 20), enemy.y + 80),
+                    x: enemy.x + 40 + (i * 20),
+                    y: enemy.y + 80,
+                    speed: 2.5 + (game.level * 0.1),
+                    damage: 2
+                };
+                projectile.element.innerHTML = sprites.fireball;
+                projectile.element.style.transform = `scale(${0.8 + Math.abs(i) * 0.1})`;
+                game.enemyProjectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+            }
+        }
+
+        function createGhastLargeFireball(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 50, enemy.y + 100),
+                x: enemy.x + 50,
+                y: enemy.y + 100,
+                speed: 2 + (game.level * 0.1),
+                damage: 3
+            };
+            projectile.element.innerHTML = sprites.fireball;
+            projectile.element.style.transform = 'scale(2.0)'; // Extra large fireball
+            projectile.element.style.filter = 'brightness(1.3)';
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createGhastEnderPearl(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 50, enemy.y + 100),
+                x: enemy.x + 50,
+                y: enemy.y + 100,
+                speed: 4 + (game.level * 0.2),
+                damage: 1
+            };
+            projectile.element.innerHTML = sprites.enderPearl; 
+            projectile.element.style.transform = 'scale(1.2)'; 
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
+        function createWitherExplosiveFireball(enemy, now) {
+            // Initialize Wither's attack pattern state if it doesn't exist
+            if (!enemy.witherAttackState) {
+                enemy.witherAttackState = {
+                    burstCount: 0,
+                    burstPhase: 'shooting', // 'shooting' or 'waiting'
+                    lastBurstShot: 0,
+                    waitStartTime: 0
+                };
+            }
+
+            const state = enemy.witherAttackState;
+            
+            // If in waiting phase, check if wait time is over
+            if (state.burstPhase === 'waiting') {
+                if (now - state.waitStartTime >= 1000) { // 1 second wait
+                    state.burstPhase = 'shooting';
+                    state.burstCount = 0;
+                }
+                return; // Don't shoot during wait phase
+            }
+            
+            // If in shooting phase, fire rapid shots
+            if (state.burstPhase === 'shooting') {
+                // Super fast shooting - allow shots every 100ms during burst
+                if (now - state.lastBurstShot < 100) {
+                    return;
+                }
+                
+                // Create big explosive fireball
+                const projectile = {
+                    element: createSprite('enemy-projectile', enemy.x + 50, enemy.y + 80),
+                    x: enemy.x + 50,
+                    y: enemy.y + 80,
+                    speed: 4 + (game.level * 0.2),
+                    damage: 4,
+                    explosive: true
+                };
+                projectile.element.innerHTML = sprites.fireball;
+                projectile.element.style.transform = 'scale(2.0)'; // Bigger fireballs
+                projectile.element.style.filter = 'hue-rotate(240deg) brightness(1.4)'; // Darker purple tint
+                game.enemyProjectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+                
+                state.lastBurstShot = now;
+                state.burstCount++;
+                
+                // After 3 shots, switch to waiting phase
+                if (state.burstCount >= 3) {
+                    state.burstPhase = 'waiting';
+                    state.waitStartTime = now;
+                }
+            }
+        }
+
         // Spawn enemies flying in from sides
         function spawnEnemies() {
             const now = Date.now();
             const spawnRate = Math.max(200, 500 - (game.level * 30)); // Faster spawning at higher levels
+            
+            // Don't spawn enemies during boss entrance
+            if (game.bossEntranceInProgress) return;
+            
             if (game.enemySpawnQueue.length === 0 || now - game.lastEnemySpawn < spawnRate) return;
             
             const canvasSize = getCanvasDimensions();
@@ -1747,10 +2699,19 @@
                 state: 'entering',
                 progress: 0,
                 capturedPlayer: null,
-                canCapture: false
+                canCapture: false,
+                isBoss: spawnData.isBoss || false,
+                maxHealth: spawnData.isBoss ? getBossHealth(spawnData.type) : 1,
+                health: spawnData.isBoss ? getBossHealth(spawnData.type) : 1
             };
             
             enemy.element.innerHTML = sprites[spawnData.type];
+            
+            // Show boss health bar for bosses
+            if (enemy.isBoss) {
+                showBossHealth(enemy.type, enemy.health, enemy.maxHealth);
+            }
+            
             game.enemies.push(enemy);
             game.canvas.appendChild(enemy.element);
             game.lastEnemySpawn = now;
@@ -1784,10 +2745,15 @@
                 if (enemy.state === 'entering') {
                     moveToFormation(enemy, speedMultiplier);
                 } else if (enemy.state === 'formation') {
-                    // Enemies in formation stay put until diving
-                    const diveChance = Math.min(0.001 + (game.level * 0.0003), 0.005); // Higher dive frequency at higher levels
-                    if (game.formationComplete && Math.random() < diveChance) {
-                        startDiveAttack(enemy);
+                    // Enemies in formation stay put until diving (bosses never dive)
+                    if (!enemy.isBoss) {
+                        const diveChance = Math.min(0.001 + (game.level * 0.0003), 0.005); // Higher dive frequency at higher levels
+                        if (game.formationComplete && Math.random() < diveChance) {
+                            startDiveAttack(enemy);
+                        }
+                    } else {
+                        // Bosses move randomly across the screen
+                        moveBossRandomly(enemy, speedMultiplier, now);
                     }
                 } else if (enemy.state === 'diving') {
                     performDiveAttack(enemy, speedMultiplier);
@@ -1944,6 +2910,49 @@
             } else {
                 // Return to formation with captured player
                 returnToFormation(enemy, speedMultiplier);
+            }
+        }
+        
+        function moveBossRandomly(enemy, speedMultiplier, now) {
+            const canvasSize = getCanvasDimensions();
+            
+            // Initialize boss movement properties if not set
+            if (!enemy.bossMovement) {
+                enemy.bossMovement = {
+                    targetX: enemy.x,
+                    targetY: enemy.y,
+                    lastDirectionChange: now,
+                    changeInterval: 2000 + Math.random() * 3000, // Change direction every 2-5 seconds
+                    speed: 1.5 + (game.level * 0.1) // Slower, methodical movement
+                };
+            }
+            
+            // Check if it's time to change direction
+            if (now - enemy.bossMovement.lastDirectionChange > enemy.bossMovement.changeInterval) {
+                // Choose new random target within screen bounds
+                const margin = 100; // Keep boss away from edges
+                enemy.bossMovement.targetX = margin + Math.random() * (canvasSize.width - margin * 2);
+                enemy.bossMovement.targetY = canvasSize.height * 0.1 + Math.random() * (canvasSize.height * 0.3); // Stay in upper area
+                enemy.bossMovement.lastDirectionChange = now;
+                enemy.bossMovement.changeInterval = 2000 + Math.random() * 3000; // Random interval
+            }
+            
+            // Move towards target
+            const dx = enemy.bossMovement.targetX - enemy.x;
+            const dy = enemy.bossMovement.targetY - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 10) {
+                const moveSpeed = enemy.bossMovement.speed * speedMultiplier;
+                enemy.x += (dx / distance) * moveSpeed;
+                enemy.y += (dy / distance) * moveSpeed;
+                
+                // Keep boss within screen bounds
+                enemy.x = Math.max(50, Math.min(canvasSize.width - 150, enemy.x));
+                enemy.y = Math.max(canvasSize.height * 0.05, Math.min(canvasSize.height * 0.45, enemy.y));
+                
+                enemy.element.style.left = enemy.x + 'px';
+                enemy.element.style.top = enemy.y + 'px';
             }
         }
         
@@ -2108,17 +3117,61 @@
                                 );
                                 
                                 if (distance < 120) { // Explosion radius
-                                    if (targetEnemy.element && targetEnemy.element.parentNode) {
-                                        game.canvas.removeChild(targetEnemy.element);
+                                    if (targetEnemy.isBoss) {
+                                        targetEnemy.health--;
+                                        
+                                        // Update boss health display
+                                        updateBossHealth(targetEnemy.health, targetEnemy.maxHealth);
+                                        
+                                        // Visual indication of boss taking damage
+                                        targetEnemy.element.style.filter = 'brightness(1.5)';
+                                        setTimeout(() => {
+                                            if (targetEnemy.element) {
+                                                targetEnemy.element.style.filter = '';
+                                            }
+                                        }, 100);
+                                        
+                                        if (targetEnemy.health <= 0) {
+                                            // Boss defeated by explosion
+                                            if (targetEnemy.element && targetEnemy.element.parentNode) {
+                                                game.canvas.removeChild(targetEnemy.element);
+                                            }
+                                            
+                                            let points = 500 + (game.level - 1) * 50; // Boss explosion points
+                                            if (targetEnemy.type === 'witch') points = 1000;
+                                            else if (targetEnemy.type === 'evoker') points = 1500;
+                                            else if (targetEnemy.type === 'ravager') points = 2000;
+                                            else if (targetEnemy.type === 'warden') points = 2500;
+                                            else if (targetEnemy.type === 'blaze') points = 1000;
+                                            else if (targetEnemy.type === 'ghast') points = 1500;
+                                            else if (targetEnemy.type === 'wither') points = 2500;
+                                            
+                                            game.score += points;
+                                            game.enemiesDefeated++;
+                                            game.enemies.splice(i, 1);
+                                            
+                                            // Hide boss health bar when boss is defeated
+                                            hideBossHealth();
+                                        } else {
+                                            // Boss damaged by explosion
+                                            let points = 50;
+                                            game.score += points;
+                                            document.getElementById('score').textContent = game.score;
+                                            updateHighScore();
+                                        }
+                                    } else {
+                                        // Normal enemy - dies in explosion
+                                        if (targetEnemy.element && targetEnemy.element.parentNode) {
+                                            game.canvas.removeChild(targetEnemy.element);
+                                        }
+                                        
+                                        let points = 100 + (game.level - 1) * 10;
+                                        if (targetEnemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+                                        
+                                        game.score += points;
+                                        game.enemiesDefeated++;
+                                        game.enemies.splice(i, 1);
                                     }
-                                    
-                                    let points = 100 + (game.level - 1) * 10;
-                                    if (targetEnemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
-                                    
-                                    
-                                    game.score += points;
-                                    game.enemiesDefeated++;
-                                    game.enemies.splice(i, 1);
                                 }
                             }
                         } else {
@@ -2127,17 +3180,62 @@
                                 rescuePlayer(enemy);
                             }
                             
-                            // Normal single enemy hit
-                            if (enemy.element && enemy.element.parentNode) {
-                                game.canvas.removeChild(enemy.element);
+                            // Handle enemy hit (bosses take multiple hits)
+                            if (enemy.isBoss) {
+                                enemy.health--;
+                                
+                                // Update boss health display
+                                updateBossHealth(enemy.health, enemy.maxHealth);
+                                
+                                // Visual indication of boss taking damage
+                                enemy.element.style.filter = 'brightness(1.5)';
+                                setTimeout(() => {
+                                    if (enemy.element) {
+                                        enemy.element.style.filter = '';
+                                    }
+                                }, 100);
+                                
+                                if (enemy.health <= 0) {
+                                    // Boss defeated
+                                    if (enemy.element && enemy.element.parentNode) {
+                                        game.canvas.removeChild(enemy.element);
+                                    }
+                                    
+                                    let points = 500 + (game.level - 1) * 50; // Boss points
+                                    if (enemy.type === 'witch') points = 1000;
+                                    else if (enemy.type === 'evoker') points = 1500;
+                                    else if (enemy.type === 'ravager') points = 2000;
+                                    else if (enemy.type === 'warden') points = 2500;
+                                    else if (enemy.type === 'blaze') points = 1000;
+                                    else if (enemy.type === 'ghast') points = 1500;
+                                    else if (enemy.type === 'wither') points = 2500;
+                                    
+                                    game.score += points;
+                                    game.enemiesDefeated++;
+                                    game.enemies.splice(eIndex, 1);
+                                    
+                                    // Hide boss health bar when boss is defeated
+                                    hideBossHealth();
+                                } else {
+                                    // Boss still alive, just damaged
+                                    let points = 50; // Small points for hitting boss
+                                    game.score += points;
+                                    document.getElementById('score').textContent = game.score;
+                                    updateHighScore();
+                                }
+                            } else {
+                                // Normal enemy - dies in one hit
+                                if (enemy.element && enemy.element.parentNode) {
+                                    game.canvas.removeChild(enemy.element);
+                                }
+                                
+                                let points = 100 + (game.level - 1) * 10;
+                                if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+                                
+                                game.score += points;
+                                game.enemiesDefeated++;
+                                game.enemies.splice(eIndex, 1);
                             }
-                            
-                            let points = 100 + (game.level - 1) * 10;
-                            if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
-                            
-                            game.score += points;
-                            game.enemiesDefeated++;
-                            game.enemies.splice(eIndex, 1);
                             
                             // Spreading fire effect
                             if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > Date.now()) {
@@ -2190,7 +3288,9 @@
                     
                     sounds.hit();
                     
-                    game.lives--;
+                    // Handle projectile damage (witch snowballs cause 2 damage)
+                    const damage = projectile.damage || 1;
+                    game.lives -= damage;
                     document.getElementById('lives').textContent = game.lives;
                     
                     if (game.lives <= 0) {
@@ -2295,6 +3395,13 @@
 
         // Level complete
         function levelComplete() {
+            // Hide boss health bar when level is complete
+            hideBossHealth();
+            
+            // Reset boss creation flag for next level
+            game.bossCreated = false;
+            game.levelCompleting = false;
+            
             game.level++;
             document.getElementById('level').textContent = game.level;
             game.enemySpeed += 0.3;
@@ -2314,6 +3421,10 @@
         
         // Player wins (defeat all enemies in level)
         function playerWins() {
+            // Prevent multiple calls
+            if (game.levelCompleting) return;
+            game.levelCompleting = true;
+            
             gameStats.wins++;
             document.getElementById('wins').textContent = gameStats.wins;
             saveStats();
@@ -2348,6 +3459,9 @@
             // Clear only game entities, not UI
             clearGameEntities();
             
+            // Hide boss health bar when restarting game
+            hideBossHealth();
+            
             // Reset game state
             game.player = null;
             game.capturedPlayer = null;
@@ -2359,6 +3473,9 @@
             game.gameRunning = true;
             game.gameStarted = true;
             game.level = 1;
+            game.bossEntranceInProgress = false;
+            game.bossCreated = false;
+            game.levelCompleting = false;
             game.enemiesDefeated = 0;
             game.formationPositions = [];
             game.enemySpawnQueue = [];
@@ -2376,10 +3493,33 @@
             createEnemies();
         }
 
+        // Switch dimension function  
+        function switchDimension(dimension) {
+            const body = document.body;
+            
+            // Remove existing dimension classes
+            body.classList.remove('nether-dimension');
+            
+            // Apply dimension-specific styling
+            if (dimension === 'nether') {
+                body.classList.add('nether-dimension');
+            }
+            
+            game.selectedDimension = dimension;
+        }
+
         // Start the game
         function startGame() {
+            // Apply selected dimension
+            switchDimension(game.selectedDimension);
             game.gameStarted = true;
             game.gameRunning = true;
+            game.bossEntranceInProgress = false;
+            game.bossCreated = false;
+            game.levelCompleting = false;
+            
+            // Hide boss health bar when starting game
+            hideBossHealth();
             
             // Hide start screen
             document.getElementById('startScreen').classList.add('hidden');
@@ -2424,6 +3564,23 @@
             game.keys[e.code] = false;
         });
 
+        // Dimension selection event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const dimensionOptions = document.querySelectorAll('.dimension-option');
+            
+            dimensionOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove selected class from all options
+                    dimensionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    option.classList.add('selected');
+                    
+                    // Update game state
+                    game.selectedDimension = option.dataset.dimension;
+                });
+            });
+        });
 
         // Game loop
         function gameLoop() {
@@ -2440,9 +3597,13 @@
                 spawnPowerUp();
                 updatePowerUpDisplay();
                 
-                // Check win condition
-                if (game.enemies.length === 0) {
-                    playerWins();
+                // Check win condition - prevent multiple level completions
+                if (game.enemies.length === 0 && !game.bossEntranceInProgress && !game.levelCompleting) {
+                    // For boss levels, only win if boss was created and defeated
+                    const isBossLevel = game.level % 5 === 0;
+                    if (!isBossLevel || (game.bossCreated && game.totalEnemiesInLevel > 0)) {
+                        playerWins();
+                    }
                 }
             }
             
