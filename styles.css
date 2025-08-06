@@ -1,0 +1,443 @@
+        body {
+            margin: 0;
+            padding: 10px;
+            background: 
+                radial-gradient(circle at 25% 25%, #654321 2px, transparent 3px),
+                radial-gradient(circle at 75% 75%, #5D4037 1px, transparent 2px),
+                radial-gradient(circle at 50% 10%, #8B4513 1px, transparent 2px),
+                radial-gradient(circle at 10% 90%, #654321 1px, transparent 2px),
+                linear-gradient(to bottom, #8B4513 0%, #654321 25%, #8B4513 50%, #5D4037 75%, #8B4513 100%);
+            background-size: 
+                20px 20px,
+                15px 15px,
+                12px 12px,
+                18px 18px,
+                100% 100%;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            max-width: 100vw;
+            max-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background: #000;
+            border: 4px solid #444;
+            position: relative;
+            width: min(1250px, 70vw);
+            height: min(875px, 80vh);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 4px solid #444;
+            border-radius: 10px;
+            padding: 15px;
+            width: min(220px, 25vw);
+            max-height: min(875px, 80vh);
+            color: #fff;
+            font-size: 13px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid #666;
+        }
+
+        .control-section h3 {
+            margin: 0 0 10px 0;
+            color: #ffff00;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .control-title {
+            color: #00ff00;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: 
+                radial-gradient(circle at 20% 30%, #2C1810 1px, transparent 2px),
+                radial-gradient(circle at 80% 70%, #1A0F08 1px, transparent 1.5px),
+                radial-gradient(circle at 60% 20%, #3D2914 1px, transparent 2px),
+                linear-gradient(to bottom, #3D2914 0%, #2C1810 25%, #3D2914 50%, #2C1810 75%, #3D2914 100%);
+            background-size: 
+                16px 16px,
+                12px 12px,
+                14px 14px,
+                100% 100%;
+        }
+
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+            z-index: 100;
+        }
+
+        .lives {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 20px;
+            z-index: 100;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 36px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .sprite {
+            position: absolute;
+            image-rendering: pixelated;
+        }
+
+        .player {
+            width: 100px;
+            height: 80px;
+        }
+
+        .enemy {
+            width: 60px;
+            height: 60px;
+        }
+
+        .projectile {
+            width: 16px;
+            height: 24px;
+        }
+
+        .enemy-projectile {
+            width: 20px;
+            height: 20px;
+        }
+
+        .fire-spread {
+            width: 24px;
+            height: 24px;
+        }
+
+        .vertical-blast {
+            width: 40px;
+            position: absolute;
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .slider {
+            width: 120px;
+            height: 25px;
+            background: #333;
+            border: 2px solid #666;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider-value {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 3px 8px;
+            border-radius: 3px;
+            border: 1px solid #888;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .level-display {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .boss-health {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 18px;
+            z-index: 100;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .boss-name {
+            margin-bottom: 5px;
+            font-size: 20px;
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .health-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .health-bar-bg {
+            width: 200px;
+            height: 12px;
+            background: #333;
+            border: 2px solid #666;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff4444, #ff8844, #44ff44);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .powerup {
+            width: 40px;
+            height: 40px;
+        }
+
+        .powerup-indicator {
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 2px solid #444;
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: #fff;
+            text-align: center;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            color: #00ff00;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-bottom: 2rem;
+            font-weight: bold;
+        }
+
+        .start-subtitle {
+            font-size: 1.5rem;
+            color: #ffff00;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .start-instruction {
+            font-size: 1.8rem;
+            color: #fff;
+            padding: 15px 30px;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .dimension-selection {
+            margin: 2rem 0;
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dimension-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 3px solid #666;
+            border-radius: 15px;
+            padding: 2rem;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dimension-option:hover {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .dimension-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .dimension-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .overworld .dimension-title {
+            color: #00ff00;
+        }
+
+        .nether .dimension-title {
+            color: #ff4444;
+        }
+
+        .end .dimension-title {
+            color: #8b00ff;
+        }
+
+        .dimension-description {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+        }
+
+        .dimension-enemies {
+            font-size: 0.9rem;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .dimension-bosses {
+            font-size: 0.85rem;
+            color: #ff6666;
+            margin-top: 0.5rem;
+        }
+
+        /* Nether dimension background */
+        body.nether-dimension {
+            background: 
+                radial-gradient(circle at 20% 30%, #8B0000 2px, transparent 3px),
+                radial-gradient(circle at 80% 20%, #DC143C 1px, transparent 2px),
+                radial-gradient(circle at 40% 80%, #B22222 1px, transparent 2px),
+                radial-gradient(circle at 60% 60%, #8B0000 1px, transparent 2px),
+                linear-gradient(to bottom, #B22222 0%, #8B0000 25%, #DC143C 50%, #8B0000 75%, #B22222 100%);
+            background-size: 
+                25px 25px,
+                18px 18px,
+                15px 15px,
+                20px 20px,
+                100% 100%;
+        }
+
+        /* The End dimension background */
+        body.end-dimension {
+            background: 
+                radial-gradient(circle at 15% 25%, #4B0082 1px, transparent 2px),
+                radial-gradient(circle at 85% 75%, #8B00FF 0.5px, transparent 1.5px),
+                radial-gradient(circle at 45% 15%, #9400D3 1px, transparent 2px),
+                radial-gradient(circle at 70% 40%, #4B0082 0.5px, transparent 1.5px),
+                linear-gradient(to bottom, #191970 0%, #000000 30%, #191970 70%, #000000 100%);
+            background-size: 
+                30px 30px,
+                20px 20px,
+                25px 25px,
+                15px 15px,
+                100% 100%;
+        }
