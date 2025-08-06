@@ -394,6 +394,10 @@
             color: #ff4444;
         }
 
+        .end .dimension-title {
+            color: #8b00ff;
+        }
+
         .dimension-description {
             font-size: 1rem;
             line-height: 1.4;
@@ -428,6 +432,22 @@
                 20px 20px,
                 100% 100%;
         }
+
+        /* The End dimension background */
+        body.end-dimension {
+            background: 
+                radial-gradient(circle at 15% 25%, #4B0082 1px, transparent 2px),
+                radial-gradient(circle at 85% 75%, #8B00FF 0.5px, transparent 1.5px),
+                radial-gradient(circle at 45% 15%, #9400D3 1px, transparent 2px),
+                radial-gradient(circle at 70% 40%, #4B0082 0.5px, transparent 1.5px),
+                linear-gradient(to bottom, #191970 0%, #000000 30%, #191970 70%, #000000 100%);
+            background-size: 
+                30px 30px,
+                20px 20px,
+                25px 25px,
+                15px 15px,
+                100% 100%;
+        }
     </style>
 </head>
 <body>
@@ -448,6 +468,13 @@
                 <div class="dimension-description">A hellish dimension with crimson landscapes and fiery foes</div>
                 <div class="dimension-enemies">Enemies: Piglins, Zombie Piglins, Wither Skeletons</div>
                 <div class="dimension-bosses">Bosses: Blaze, Ghast, Wither</div>
+            </div>
+            
+            <div class="dimension-option end" data-dimension="end">
+                <div class="dimension-title">THE END</div>
+                <div class="dimension-description">A void dimension inhabited by mysterious teleporting beings</div>
+                <div class="dimension-enemies">Enemies: Endermen (3 health each)</div>
+                <div class="dimension-bosses">Bosses: Shulker, Ender Dragon</div>
             </div>
         </div>
         
@@ -1552,6 +1579,161 @@
                     <!-- Dark aura effect -->
                     <circle cx="50" cy="40" r="45" fill="#000000" opacity="0.1"/>
                 </svg>
+            `,
+            enderman: `
+                <svg width="60" height="80" viewBox="0 0 60 80">
+                    <!-- Head -->
+                    <rect x="20" y="5" width="20" height="20" fill="#000000"/>
+                    <rect x="18" y="7" width="24" height="16" fill="#0a0a0a"/>
+                    <!-- Glowing eyes -->
+                    <rect x="22" y="12" width="4" height="8" fill="#ff00ff"/>
+                    <rect x="34" y="12" width="4" height="8" fill="#ff00ff"/>
+                    <rect x="23" y="13" width="2" height="6" fill="#ffffff"/>
+                    <rect x="35" y="13" width="2" height="6" fill="#ffffff"/>
+                    <!-- Long neck/body -->
+                    <rect x="25" y="25" width="10" height="40" fill="#000000"/>
+                    <rect x="23" y="27" width="14" height="36" fill="#0a0a0a"/>
+                    <!-- Long arms -->
+                    <rect x="10" y="30" width="8" height="35" fill="#000000"/>
+                    <rect x="42" y="30" width="8" height="35" fill="#000000"/>
+                    <rect x="11" y="32" width="6" height="31" fill="#0a0a0a"/>
+                    <rect x="43" y="32" width="6" height="31" fill="#0a0a0a"/>
+                    <!-- Long legs -->
+                    <rect x="20" y="65" width="8" height="15" fill="#000000"/>
+                    <rect x="32" y="65" width="8" height="15" fill="#000000"/>
+                    <rect x="21" y="67" width="6" height="11" fill="#0a0a0a"/>
+                    <rect x="33" y="67" width="6" height="11" fill="#0a0a0a"/>
+                    <!-- Teleport particles -->
+                    <rect x="5" y="15" width="2" height="2" fill="#8b00ff" opacity="0.8"/>
+                    <rect x="53" y="25" width="2" height="2" fill="#8b00ff" opacity="0.8"/>
+                    <rect x="8" y="45" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
+                    <rect x="50" y="55" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
+                    <rect x="12" y="70" width="2" height="2" fill="#8b00ff" opacity="0.8"/>
+                    <rect x="46" y="75" width="2" height="2" fill="#8b00ff" opacity="0.8"/>
+                </svg>
+            `,
+            shulker: `
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <!-- Main shell body -->
+                    <rect x="10" y="15" width="60" height="50" fill="#8B4A8B"/>
+                    <rect x="8" y="17" width="64" height="46" fill="#A569BD"/>
+                    <!-- Shell ridges -->
+                    <rect x="12" y="20" width="56" height="4" fill="#6A3D6A"/>
+                    <rect x="12" y="30" width="56" height="4" fill="#6A3D6A"/>
+                    <rect x="12" y="40" width="56" height="4" fill="#6A3D6A"/>
+                    <rect x="12" y="50" width="56" height="4" fill="#6A3D6A"/>
+                    <rect x="12" y="60" width="56" height="4" fill="#6A3D6A"/>
+                    <!-- Head when shell is open -->
+                    <rect x="32" y="5" width="16" height="16" fill="#D7BDE2"/>
+                    <rect x="30" y="7" width="20" height="12" fill="#E8DAEF"/>
+                    <!-- Eyes -->
+                    <rect x="34" y="10" width="3" height="3" fill="#000000"/>
+                    <rect x="43" y="10" width="3" height="3" fill="#000000"/>
+                    <!-- Shell opening effect -->
+                    <rect x="15" y="25" width="50" height="2" fill="#BB8FCE" opacity="0.8"/>
+                    <rect x="15" y="35" width="50" height="2" fill="#BB8FCE" opacity="0.8"/>
+                    <rect x="15" y="45" width="50" height="2" fill="#BB8FCE" opacity="0.8"/>
+                    <rect x="15" y="55" width="50" height="2" fill="#BB8FCE" opacity="0.8"/>
+                    <!-- Levitation particles -->
+                    <circle cx="15" cy="12" r="1" fill="#8b00ff" opacity="0.9"/>
+                    <circle cx="65" cy="18" r="1" fill="#8b00ff" opacity="0.7"/>
+                    <circle cx="20" cy="70" r="1" fill="#8b00ff" opacity="0.8"/>
+                    <circle cx="60" cy="72" r="1" fill="#8b00ff" opacity="0.9"/>
+                </svg>
+            `,
+            ender_dragon: `
+                <svg width="160" height="120" viewBox="0 0 160 120">
+                    <!-- Ender energy aura (background) -->
+                    <circle cx="80" cy="65" r="75" fill="#8b00ff" opacity="0.06"/>
+                    
+                    <!-- Right wing (player's right) - BEHIND head -->
+                    <path d="M150 30 L110 45 L105 65 L110 85 L145 80 L155 55 Z" fill="#0F0F0F"/>
+                    <path d="M148 33 L112 47 L108 67 L113 82 L142 77 L150 57 Z" fill="#1A1A1A"/>
+                    <!-- Wing bones -->
+                    <rect x="140" y="40" width="1" height="35" fill="#404040"/>
+                    <rect x="130" y="42" width="1" height="38" fill="#404040"/>
+                    <rect x="120" y="45" width="1" height="35" fill="#404040"/>
+                    
+                    <!-- Tail extending from center back position -->
+                    <rect x="62" y="85" width="26" height="8" fill="#2B2B2B"/>
+                    <rect x="60" y="87" width="30" height="4" fill="#1A1A1A"/>
+                    <!-- Tail spikes -->
+                    <rect x="65" y="82" width="2" height="6" fill="#404040"/>
+                    <rect x="72" y="80" width="2" height="8" fill="#404040"/>
+                    <rect x="79" y="82" width="2" height="6" fill="#404040"/>
+                    <rect x="85" y="84" width="2" height="4" fill="#404040"/>
+                    
+                    <!-- Main dragon body (head-on perspective) -->
+                    <rect x="50" y="62" width="40" height="25" fill="#2B2B2B"/>
+                    <rect x="48" y="64" width="44" height="21" fill="#1A1A1A"/>
+                    <rect x="52" y="66" width="36" height="17" fill="#404040"/>
+                    
+                    <!-- Body spikes along spine (center line) -->
+                    <rect x="67" y="58" width="2" height="8" fill="#606060"/>
+                    <rect x="71" y="56" width="2" height="10" fill="#606060"/>
+                    <rect x="75" y="56" width="2" height="10" fill="#606060"/>
+                    <rect x="79" y="58" width="2" height="8" fill="#606060"/>
+                    
+                    <!-- Neck connecting body to head -->
+                    <rect x="85" y="64" width="15" height="18" fill="#2B2B2B"/>
+                    <rect x="83" y="66" width="19" height="14" fill="#1A1A1A"/>
+                    
+                    <!-- Dragon head (front-facing, larger) -->
+                    <rect x="95" y="48" width="35" height="30" fill="#2B2B2B"/>
+                    <rect x="93" y="50" width="39" height="26" fill="#1A1A1A"/>
+                    <rect x="97" y="52" width="31" height="22" fill="#404040"/>
+                    
+                    <!-- Snout projecting forward -->
+                    <rect x="128" y="60" width="18" height="12" fill="#2B2B2B"/>
+                    <rect x="130" y="62" width="14" height="8" fill="#1A1A1A"/>
+                    
+                    <!-- Dragon eyes (glowing purple, front-facing) -->
+                    <rect x="119" y="58" width="8" height="8" fill="#8b00ff"/>
+                    <rect x="121" y="60" width="4" height="4" fill="#ffffff"/>
+                    
+                    <!-- Dragon horns/spikes on head -->
+                    <rect x="104" y="42" width="3" height="10" fill="#606060"/>
+                    <rect x="125" y="42" width="3" height="10" fill="#606060"/>
+                    <rect x="114" y="38" width="4" height="14" fill="#606060"/>
+                    
+                    <!-- Left wing (player's left) - IN FRONT of head -->
+                    <path d="M10 30 L50 45 L55 65 L50 85 L15 80 L5 55 Z" fill="#0F0F0F"/>
+                    <path d="M12 33 L48 47 L52 67 L47 82 L18 77 L10 57 Z" fill="#1A1A1A"/>
+                    <!-- Wing bones -->
+                    <rect x="20" y="40" width="1" height="35" fill="#404040"/>
+                    <rect x="30" y="42" width="1" height="38" fill="#404040"/>
+                    <rect x="40" y="45" width="1" height="35" fill="#404040"/>
+                    
+                    <!-- Four legs in proper front perspective -->
+                    <!-- Front legs (visible, closer to viewer) -->
+                    <rect x="60" y="82" width="8" height="15" fill="#2B2B2B"/>
+                    <rect x="100" y="82" width="8" height="15" fill="#2B2B2B"/>
+                    <!-- Back legs (partially hidden behind front legs) -->
+                    <rect x="68" y="84" width="6" height="13" fill="#1A1A1A"/>
+                    <rect x="92" y="84" width="6" height="13" fill="#1A1A1A"/>
+                    
+                    <!-- Claws for front legs -->
+                    <rect x="58" y="95" width="4" height="5" fill="#606060"/>
+                    <rect x="64" y="95" width="4" height="5" fill="#606060"/>
+                    <rect x="70" y="95" width="4" height="5" fill="#606060"/>
+                    
+                    <rect x="98" y="95" width="4" height="5" fill="#606060"/>
+                    <rect x="104" y="95" width="4" height="5" fill="#606060"/>
+                    <rect x="110" y="95" width="4" height="5" fill="#606060"/>
+                    
+                    <!-- Claws for back legs (smaller, partially hidden) -->
+                    <rect x="70" y="95" width="3" height="4" fill="#404040"/>
+                    <rect x="94" y="95" width="3" height="4" fill="#404040"/>
+                    
+                    <!-- Ender particles (foreground) -->
+                    <circle cx="25" cy="20" r="1.5" fill="#8b00ff" opacity="0.9"/>
+                    <circle cx="135" cy="18" r="1.5" fill="#8b00ff" opacity="0.8"/>
+                    <circle cx="15" cy="90" r="1.5" fill="#8b00ff" opacity="0.7"/>
+                    <circle cx="145" cy="92" r="1.5" fill="#8b00ff" opacity="0.9"/>
+                    <circle cx="80" cy="10" r="1.5" fill="#8b00ff" opacity="0.8"/>
+                    <circle cx="40" cy="105" r="1" fill="#8b00ff" opacity="0.6"/>
+                    <circle cx="120" cy="107" r="1" fill="#8b00ff" opacity="0.7"/>
+                </svg>
             `
         };
 
@@ -1594,6 +1776,8 @@
             let enemyTypes;
             if (game.selectedDimension === 'nether') {
                 enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+            } else if (game.selectedDimension === 'end') {
+                enemyTypes = ['enderman'];
             } else {
                 enemyTypes = ['zombie', 'creeper', 'skeleton'];
             }
@@ -1708,7 +1892,7 @@
         function createFormationPositions(pattern, canvasSize) {
             const centerX = canvasSize.width / 2;
             const centerY = canvasSize.height * 0.25;
-            const spacing = 70;
+            const spacing = Math.max(120, canvasSize.width * 0.12); // Much larger spacing - increased from 90 to 120, and from 8% to 12%
             
             switch(pattern) {
                 case 'grid':
@@ -1736,8 +1920,8 @@
         }
         
         function createGridFormation(centerX, centerY, spacing) {
-            const rows = Math.min(4 + Math.floor(game.level / 2), 6);
-            const cols = Math.min(6 + Math.floor(game.level / 2), 8);
+            const rows = Math.min(2 + Math.floor(game.level / 4), 4);
+            const cols = Math.min(3 + Math.floor(game.level / 4), 5);
             const startX = centerX - (cols * spacing) / 2;
             
             for (let row = 0; row < rows; row++) {
@@ -1752,7 +1936,7 @@
         }
         
         function createDiamondFormation(centerX, centerY, spacing) {
-            const size = Math.min(3 + Math.floor(game.level / 3), 5);
+            const size = Math.min(2 + Math.floor(game.level / 4), 4);
             
             for (let row = 0; row < size * 2 - 1; row++) {
                 const width = row < size ? row + 1 : (size * 2 - 1) - row;
@@ -1769,8 +1953,8 @@
         }
         
         function createCircleFormation(centerX, centerY, spacing) {
-            const radius = spacing * 2;
-            const enemyCount = Math.min(12 + game.level * 2, 24);
+            const radius = Math.max(spacing * 3, centerX * 0.7); // Even larger radius
+            const enemyCount = Math.min(8 + game.level * 1, 16);
             
             for (let i = 0; i < enemyCount; i++) {
                 const angle = (i / enemyCount) * Math.PI * 2;
@@ -1783,7 +1967,7 @@
         }
         
         function createTriangleFormation(centerX, centerY, spacing) {
-            const rows = Math.min(4 + Math.floor(game.level / 2), 7);
+            const rows = Math.min(2 + Math.floor(game.level / 4), 4);
             
             for (let row = 0; row < rows; row++) {
                 const width = row + 1;
@@ -1798,8 +1982,8 @@
         }
         
         function createZigzagFormation(centerX, centerY, spacing) {
-            const rows = Math.min(3 + Math.floor(game.level / 2), 5);
-            const cols = Math.min(6 + game.level, 10);
+            const rows = Math.min(2 + Math.floor(game.level / 4), 3);
+            const cols = Math.min(3 + Math.floor(game.level / 3), 5);
             
             for (let row = 0; row < rows; row++) {
                 const offset = (row % 2) * spacing * 0.5;
@@ -1858,6 +2042,8 @@
             let enemyTypes;
             if (game.selectedDimension === 'nether') {
                 enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+            } else if (game.selectedDimension === 'end') {
+                enemyTypes = ['enderman'];
             } else {
                 enemyTypes = ['zombie', 'creeper', 'skeleton'];
             }
@@ -1865,12 +2051,16 @@
         }
 
         function getBossTypeForLevel(level) {
-            const bossIndex = Math.floor((level / 5) - 1) % 3;
-            
             if (game.selectedDimension === 'nether') {
                 // Nether bosses: Blaze, Ghast, Wither
+                const bossIndex = Math.floor((level / 5) - 1) % 3;
                 const netherBossTypes = ['blaze', 'ghast', 'wither'];
                 return netherBossTypes[bossIndex];
+            } else if (game.selectedDimension === 'end') {
+                // End bosses: Shulker, Ender Dragon (alternating)
+                const bossIndex = Math.floor((level / 5) - 1) % 2;
+                const endBossTypes = ['shulker', 'ender_dragon'];
+                return endBossTypes[bossIndex];
             } else {
                 // Overworld bosses: Witch, Evoker, Ravager, Warden (cycling through 4)
                 const overworldBossIndex = Math.floor((level / 5) - 1) % 4;
@@ -1889,7 +2079,10 @@
                 // Nether bosses
                 'blaze': 20,
                 'ghast': 30,
-                'wither': 50
+                'wither': 50,
+                // End bosses
+                'shulker': 100,
+                'ender_dragon': 200
             };
             return healthMap[bossType] || 1;
         }
@@ -2053,7 +2246,8 @@
                 const enemy = game.enemies[eIndex];
                 if (!enemy || !enemy.element) continue;
                 
-                const enemyCenterX = enemy.x + 30; // Enemy width is 60
+                const enemyDimensions = getEnemyDimensions(enemy);
+                const enemyCenterX = enemy.x + enemyDimensions.width / 2;
                 
                 // Check if enemy is within the vertical blast line
                 if (enemyCenterX >= blastX - 20 && enemyCenterX <= blastX + 20) {
@@ -2062,18 +2256,45 @@
                         rescuePlayer(enemy);
                     }
                     
-                    // Remove enemy
-                    if (enemy.element && enemy.element.parentNode) {
-                        game.canvas.removeChild(enemy.element);
+                    // Apply 3 damage to the enemy
+                    enemy.health -= 3;
+                    
+                    if (enemy.health <= 0) {
+                        // Enemy is defeated
+                        if (enemy.element && enemy.element.parentNode) {
+                            game.canvas.removeChild(enemy.element);
+                        }
+                        
+                        // Award points
+                        let points = 150 + (game.level - 1) * 15; // Bonus points for vertical blast
+                        if (enemy.type === 'creeper') points = 200 + (game.level - 1) * 20;
+                        if (enemy.isBoss) {
+                            // Boss points
+                            if (enemy.type === 'witch') points = 1000;
+                            else if (enemy.type === 'evoker') points = 1500;
+                            else if (enemy.type === 'ravager') points = 2000;
+                            else if (enemy.type === 'warden') points = 2500;
+                            else if (enemy.type === 'blaze') points = 1000;
+                            else if (enemy.type === 'ghast') points = 1500;
+                            else if (enemy.type === 'wither') points = 2500;
+                            else if (enemy.type === 'shulker') points = 5000;
+                            else if (enemy.type === 'ender_dragon') points = 10000;
+                            
+                            // Hide boss health bar when boss is defeated
+                            hideBossHealth();
+                        }
+                        
+                        game.score += points;
+                        game.enemiesDefeated++;
+                        game.enemies.splice(eIndex, 1);
+                    } else if (enemy.isBoss) {
+                        // Boss damaged but still alive, update health bar
+                        updateBossHealth(enemy.health, enemy.maxHealth);
+                        
+                        // Award small points for hitting boss
+                        let points = 50;
+                        game.score += points;
                     }
-                    
-                    // Award points
-                    let points = 150 + (game.level - 1) * 15; // Bonus points for vertical blast
-                    if (enemy.type === 'creeper') points = 200 + (game.level - 1) * 20;
-                    
-                    game.score += points;
-                    game.enemiesDefeated++;
-                    game.enemies.splice(eIndex, 1);
                     
                     sounds.enemyHit();
                 }
@@ -2145,25 +2366,52 @@
                     );
                     
                     if (distance < 40) {
-                        // Destroy enemy
-                        if (enemy.element && enemy.element.parentNode) {
-                            game.canvas.removeChild(enemy.element);
+                        // Apply 3 damage to the enemy
+                        enemy.health -= 3;
+                        
+                        if (enemy.health <= 0) {
+                            // Enemy is defeated
+                            if (enemy.element && enemy.element.parentNode) {
+                                game.canvas.removeChild(enemy.element);
+                            }
+                            
+                            let points = 75 + (game.level - 1) * 7; // Spread fire points
+                            if (enemy.type === 'creeper') points = 112 + (game.level - 1) * 11;
+                            if (enemy.isBoss) {
+                                // Boss points
+                                if (enemy.type === 'witch') points = 1000;
+                                else if (enemy.type === 'evoker') points = 1500;
+                                else if (enemy.type === 'ravager') points = 2000;
+                                else if (enemy.type === 'warden') points = 2500;
+                                else if (enemy.type === 'blaze') points = 1000;
+                                else if (enemy.type === 'ghast') points = 1500;
+                                else if (enemy.type === 'wither') points = 2500;
+                            else if (enemy.type === 'shulker') points = 5000;
+                            else if (enemy.type === 'ender_dragon') points = 10000;
+                                
+                                // Hide boss health bar when boss is defeated
+                                hideBossHealth();
+                            }
+                            
+                            game.score += points;
+                            game.enemiesDefeated++;
+                            game.enemies.splice(eIndex, 1);
+                            
+                            // Create secondary fire spread from this enemy
+                            if (Math.random() < 0.3) { // 30% chance to spread further
+                                createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
+                            }
+                        } else if (enemy.isBoss) {
+                            // Boss damaged but still alive, update health bar
+                            updateBossHealth(enemy.health, enemy.maxHealth);
+                            
+                            // Award small points for hitting boss
+                            let points = 50;
+                            game.score += points;
                         }
                         
-                        let points = 75 + (game.level - 1) * 7; // Spread fire points
-                        if (enemy.type === 'creeper') points = 112 + (game.level - 1) * 11;
-                        
-                        game.score += points;
-                        game.enemiesDefeated++;
-                        game.enemies.splice(eIndex, 1);
                         document.getElementById('score').textContent = game.score;
                         updateHighScore();
-                        
-                        // Create secondary fire spread from this enemy
-                        if (Math.random() < 0.3) { // 30% chance to spread further
-                            createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
-                        }
-                        
                         sounds.enemyHit();
                         break;
                     }
@@ -2408,8 +2656,14 @@
                         customCooldown = 1000; // Ghast large fireballs and ender pearls
                         shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.8;
                     } else if (enemy.type === 'wither') {
-                        customCooldown = 50; // Very fast cooldown for Wither's burst pattern
-                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 15;
+                        customCooldown = 10; // Ultra fast cooldown for Wither's burst pattern (5x faster)
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 75;
+                    } else if (enemy.type === 'shulker') {
+                        customCooldown = 2000; // Shulker duplication every 2 seconds
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2;
+                    } else if (enemy.type === 'ender_dragon') {
+                        customCooldown = 1500; // Ender dragon ginormous pearls
+                        shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.2;
                     }
                 } else {
                     shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
@@ -2437,6 +2691,10 @@
                             }
                         } else if (enemy.type === 'wither') {
                             createWitherExplosiveFireball(enemy, now);
+                        } else if (enemy.type === 'shulker') {
+                            createShulkerDuplication(enemy, now);
+                        } else if (enemy.type === 'ender_dragon') {
+                            createEnderDragonGinormousEnderPearl(enemy, now);
                         }
                     } else {
                         // Regular enemy attacks
@@ -2668,6 +2926,64 @@
             }
         }
 
+        // End boss attacks
+        function createShulkerDuplication(enemy, now) {
+            // Create 2 fake shulker duplicates that can't be hurt
+            for (let i = 0; i < 2; i++) {
+                const canvasSize = getCanvasDimensions();
+                const duplicateX = Math.random() * (canvasSize.width - 80);
+                const duplicateY = canvasSize.height * 0.15 + Math.random() * (canvasSize.height * 0.2);
+                
+                const duplicate = {
+                    element: createSprite('enemy', duplicateX, duplicateY),
+                    x: duplicateX,
+                    y: duplicateY,
+                    formationX: duplicateX,
+                    formationY: duplicateY,
+                    type: 'shulker',
+                    lastShot: 0,
+                    state: 'formation',
+                    progress: 1,
+                    capturedPlayer: null,
+                    canCapture: false,
+                    isBoss: false, // Important: not a real boss
+                    isShulkerDuplicate: true, // Mark as fake
+                    maxHealth: 1,
+                    health: 1
+                };
+                
+                duplicate.element.innerHTML = sprites.shulker;
+                duplicate.element.style.opacity = '0.7'; // Make duplicates slightly transparent
+                
+                game.enemies.push(duplicate);
+                game.canvas.appendChild(duplicate.element);
+                
+                // Remove duplicate after 10 seconds
+                setTimeout(() => {
+                    const index = game.enemies.indexOf(duplicate);
+                    if (index > -1 && duplicate.element && duplicate.element.parentNode) {
+                        game.canvas.removeChild(duplicate.element);
+                        game.enemies.splice(index, 1);
+                    }
+                }, 10000);
+            }
+        }
+
+        function createEnderDragonGinormousEnderPearl(enemy, now) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 60, enemy.y + 90),
+                x: enemy.x + 60,
+                y: enemy.y + 90,
+                speed: 4.0 + (game.level * 0.2), // Faster speed
+                damage: 4
+            };
+            projectile.element.innerHTML = sprites.enderPearl;
+            projectile.element.style.transform = 'scale(4.5)'; // Even more ginormous size!
+            projectile.element.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #8b00ff)';
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+
         // Spawn enemies flying in from sides
         function spawnEnemies() {
             const now = Date.now();
@@ -2701,8 +3017,8 @@
                 capturedPlayer: null,
                 canCapture: false,
                 isBoss: spawnData.isBoss || false,
-                maxHealth: spawnData.isBoss ? getBossHealth(spawnData.type) : 1,
-                health: spawnData.isBoss ? getBossHealth(spawnData.type) : 1
+                maxHealth: spawnData.isBoss ? getBossHealth(spawnData.type) : (spawnData.type === 'enderman' ? 3 : 1),
+                health: spawnData.isBoss ? getBossHealth(spawnData.type) : (spawnData.type === 'enderman' ? 3 : 1)
             };
             
             enemy.element.innerHTML = sprites[spawnData.type];
@@ -2725,6 +3041,38 @@
             }
         }
         
+        // Get enemy dimensions based on type and boss status
+        function getEnemyDimensions(enemy) {
+            let width = 60; // Default size
+            let height = 60;
+            
+            if (enemy.isBoss) {
+                // Larger hit boxes for bosses
+                if (enemy.type === 'blaze') {
+                    width = 80;
+                    height = 80;
+                } else if (enemy.type === 'ghast') {
+                    width = 100;
+                    height = 100;
+                } else if (enemy.type === 'wither') {
+                    width = 100;
+                    height = 80;
+                } else if (enemy.type === 'shulker') {
+                    width = 80;
+                    height = 80;
+                } else if (enemy.type === 'ender_dragon') {
+                    width = 160;
+                    height = 120;
+                } else {
+                    // Default boss size for overworld bosses
+                    width = 80;
+                    height = 80;
+                }
+            }
+            
+            return { width, height };
+        }
+        
         // Move enemies with new Galaga-style patterns
         function moveEnemies() {
             const now = Date.now();
@@ -2742,6 +3090,7 @@
             
             // Handle each enemy based on state
             game.enemies.forEach(enemy => {
+                
                 if (enemy.state === 'entering') {
                     moveToFormation(enemy, speedMultiplier);
                 } else if (enemy.state === 'formation') {
@@ -3101,9 +3450,10 @@
                     const enemy = game.enemies[eIndex];
                     if (!enemy || !enemy.element) continue;
                     
-                    if (projectile.x < enemy.x + 60 &&
+                    const enemyDimensions = getEnemyDimensions(enemy);
+                    if (projectile.x < enemy.x + enemyDimensions.width &&
                         projectile.x + 16 > enemy.x &&
-                        projectile.y < enemy.y + 60 &&
+                        projectile.y < enemy.y + enemyDimensions.height &&
                         projectile.y + 24 > enemy.y) {
                         
                         // Handle explosive shots (TNT power-up)
@@ -3175,6 +3525,11 @@
                                 }
                             }
                         } else {
+                            // Skip shulker duplicates - they can't be damaged
+                            if (enemy.isShulkerDuplicate) {
+                                continue; // Skip to next enemy
+                            }
+                            
                             // Check if this enemy has captured player
                             if (enemy.capturedPlayer) {
                                 rescuePlayer(enemy);
@@ -3209,6 +3564,23 @@
                                     else if (enemy.type === 'blaze') points = 1000;
                                     else if (enemy.type === 'ghast') points = 1500;
                                     else if (enemy.type === 'wither') points = 2500;
+                            else if (enemy.type === 'shulker') points = 5000;
+                            else if (enemy.type === 'ender_dragon') points = 10000;
+                                    
+                                    // Special handling for shulker boss defeat
+                                    if (enemy.type === 'shulker' && enemy.isBoss) {
+                                        // Remove all shulker duplicates when original shulker dies
+                                        for (let i = game.enemies.length - 1; i >= 0; i--) {
+                                            const otherEnemy = game.enemies[i];
+                                            if (otherEnemy.type === 'shulker' && !otherEnemy.isBoss) {
+                                                // Remove duplicate shulker
+                                                if (otherEnemy.element && otherEnemy.element.parentNode) {
+                                                    game.canvas.removeChild(otherEnemy.element);
+                                                }
+                                                game.enemies.splice(i, 1);
+                                            }
+                                        }
+                                    }
                                     
                                     game.score += points;
                                     game.enemiesDefeated++;
@@ -3367,10 +3739,11 @@
             
             // Direct enemy-player collision for life loss
             game.enemies.forEach(enemy => {
+                const enemyDimensions = getEnemyDimensions(enemy);
                 if (enemy.x < game.player.x + 100 &&
-                    enemy.x + 60 > game.player.x &&
+                    enemy.x + enemyDimensions.width > game.player.x &&
                     enemy.y < game.player.y + 80 &&
-                    enemy.y + 60 > game.player.y) {
+                    enemy.y + enemyDimensions.height > game.player.y) {
                     
                     // Enemy hit player directly
                     sounds.hit();
@@ -3498,11 +3871,13 @@
             const body = document.body;
             
             // Remove existing dimension classes
-            body.classList.remove('nether-dimension');
+            body.classList.remove('nether-dimension', 'end-dimension');
             
             // Apply dimension-specific styling
             if (dimension === 'nether') {
                 body.classList.add('nether-dimension');
+            } else if (dimension === 'end') {
+                body.classList.add('end-dimension');
             }
             
             game.selectedDimension = dimension;
