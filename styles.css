@@ -391,6 +391,10 @@
             color: #8b00ff;
         }
 
+        .galaxy .dimension-title {
+            color: #ff00ff;
+        }
+
         .dimension-description {
             font-size: 1rem;
             line-height: 1.4;
@@ -440,4 +444,37 @@
                 25px 25px,
                 15px 15px,
                 100% 100%;
+        }
+
+        /* Galaxy dimension background - cosmic theme mixing all dimensions */
+        body.galaxy-dimension {
+            background: 
+                radial-gradient(circle at 10% 20%, #654321 1px, transparent 2px),
+                radial-gradient(circle at 30% 70%, #8B0000 1px, transparent 2px),
+                radial-gradient(circle at 70% 30%, #4B0082 0.5px, transparent 1.5px),
+                radial-gradient(circle at 90% 80%, #00ffff 0.5px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #ff00ff 0.5px, transparent 1px),
+                radial-gradient(circle at 20% 60%, #ffff00 0.5px, transparent 1px),
+                linear-gradient(45deg, #191970 0%, #8B0000 20%, #654321 40%, #4B0082 60%, #191970 80%, #000000 100%);
+            background-size: 
+                35px 35px,
+                28px 28px,
+                22px 22px,
+                15px 15px,
+                18px 18px,
+                25px 25px,
+                100% 100%;
+            animation: galaxyShift 30s ease-in-out infinite;
+        }
+
+        @keyframes galaxyShift {
+            0%, 100% { 
+                background-position: 0% 0%, 10% 10%, 20% 20%, 30% 30%, 40% 40%, 50% 50%, 0% 0%;
+            }
+            33% { 
+                background-position: 10% 10%, 20% 20%, 30% 30%, 40% 40%, 50% 50%, 60% 60%, 0% 0%;
+            }
+            66% { 
+                background-position: 20% 20%, 30% 30%, 40% 40%, 50% 50%, 60% 60%, 70% 70%, 0% 0%;
+            }
         }

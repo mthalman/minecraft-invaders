@@ -673,8 +673,8 @@ function checkCollisions() {
                         game.enemies.splice(eIndex, 1);
                     }
                     
-                    // Spreading fire effect
-                    if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > Date.now()) {
+                    // Spreading fire effect (but not for bosses)
+                    if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > Date.now() && !enemy.isBoss) {
                         // Create visual fire spreading effect
                         createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
                     }

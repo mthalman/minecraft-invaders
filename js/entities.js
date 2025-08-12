@@ -54,6 +54,9 @@ function createEnemies() {
         enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
     } else if (game.selectedDimension === 'end') {
         enemyTypes = ['enderman'];
+    } else if (game.selectedDimension === 'galaxy') {
+        // Galaxy dimension combines all enemies from all dimensions
+        enemyTypes = ['zombie', 'creeper', 'skeleton', 'piglin', 'zombie_piglin', 'wither_skeleton', 'enderman'];
     } else {
         enemyTypes = ['zombie', 'creeper', 'skeleton'];
     }
@@ -320,6 +323,9 @@ function getEnemyTypeForLevel(level, index, totalEnemies) {
         enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
     } else if (game.selectedDimension === 'end') {
         enemyTypes = ['enderman'];
+    } else if (game.selectedDimension === 'galaxy') {
+        // Galaxy dimension combines all enemies from all dimensions
+        enemyTypes = ['zombie', 'creeper', 'skeleton', 'piglin', 'zombie_piglin', 'wither_skeleton', 'enderman'];
     } else {
         enemyTypes = ['zombie', 'creeper', 'skeleton'];
     }
@@ -337,6 +343,18 @@ function getBossTypeForLevel(level) {
         const bossIndex = Math.floor((level / 5) - 1) % 2;
         const endBossTypes = ['shulker', 'ender_dragon'];
         return endBossTypes[bossIndex];
+    } else if (game.selectedDimension === 'galaxy') {
+        // Galaxy dimension: Overworld → Nether → End progression
+        const bossIndex = Math.floor((level / 5) - 1);
+        const allBosses = [
+            // Overworld bosses first
+            'witch', 'evoker', 'ravager', 'warden',
+            // Nether bosses next
+            'blaze', 'ghast', 'wither',
+            // End bosses last
+            'shulker', 'ender_dragon'
+        ];
+        return allBosses[bossIndex % allBosses.length];
     } else {
         // Overworld bosses: Witch, Evoker, Ravager, Warden (cycling through 4)
         const overworldBossIndex = Math.floor((level / 5) - 1) % 4;

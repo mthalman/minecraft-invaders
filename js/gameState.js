@@ -113,13 +113,15 @@ function switchDimension(dimension) {
     const body = document.body;
     
     // Remove existing dimension classes
-    body.classList.remove('nether-dimension', 'end-dimension');
+    body.classList.remove('nether-dimension', 'end-dimension', 'galaxy-dimension');
     
     // Add new dimension class
     if (dimension === 'nether') {
         body.classList.add('nether-dimension');
     } else if (dimension === 'end') {
         body.classList.add('end-dimension');
+    } else if (dimension === 'galaxy') {
+        body.classList.add('galaxy-dimension');
     }
     // overworld is default (no class needed)
 }
