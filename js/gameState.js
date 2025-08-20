@@ -33,7 +33,8 @@ const game = {
     enemySpawnQueue: [],
     lastEnemySpawn: 0,
     formationComplete: false,
-    selectedDimension: 'overworld'
+    selectedDimension: 'overworld',
+    selectedSubDimension: 'normal'
 };
 
 // Initialize UI
@@ -78,6 +79,9 @@ function showBossHealth(bossType, currentHealth, maxHealth) {
         'evoker': 'Evoker', 
         'ravager': 'Ravager',
         'warden': 'Warden',
+        'breeze': 'Breeze',
+        'guardian': 'Guardian',
+        'elder_guardian': 'Elder Guardian',
         'blaze': 'Blaze',
         'ghast': 'Ghast',
         'wither': 'Wither',

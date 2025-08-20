@@ -73,12 +73,22 @@ function enemyShoot() {
         
         if (enemy.isBoss) {
             // Boss-specific shooting patterns (4x frequency)
-            if (enemy.type === 'witch') {
+            if (enemy.type === 'creepernado') {
+                customCooldown = 900; // Creepernado tornado projectiles
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3.5;
+            } else if (enemy.type === 'witch') {
                 customCooldown = 625; // Witch shoots more frequently and causes 2 damage
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 6;
             } else if (enemy.type === 'evoker') {
-                customCooldown = 200; // Evoker rapid fire even faster
-                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 8;
+                // Progressive difficulty for Woodland Mansion Evokers
+                if (game.selectedDimension === 'overworld' && game.selectedSubDimension === 'woodland-mansion') {
+                    const evokerNumber = Math.floor((game.level / 5) - 1) + 1; // 1st, 2nd, 3rd, etc.
+                    customCooldown = Math.max(50, 200 - (evokerNumber - 1) * 30); // Gets faster each time: 200, 170, 140, 110, etc.
+                    shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * (8 + evokerNumber * 2);
+                } else {
+                    customCooldown = 200; // Evoker rapid fire even faster
+                    shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 8;
+                }
             } else if (enemy.type === 'ravager') {
                 customCooldown = 450; // Ravager shoots big snowballs more often
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4.8;
@@ -100,6 +110,21 @@ function enemyShoot() {
             } else if (enemy.type === 'ender_dragon') {
                 customCooldown = 1500; // Ender dragon ginormous pearls
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.2;
+            } else if (enemy.type === 'endwither') {
+                customCooldown = 800; // Endwither shoots 3 enderman heads at 75% speed
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3;
+            } else if (enemy.type === 'the_endermite') {
+                customCooldown = 600; // THE Endermite shoots ender pearls and spawns small endermites
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4;
+            } else if (enemy.type === 'breeze') {
+                customCooldown = 800; // Breeze wind charges and tornado
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3;
+            } else if (enemy.type === 'guardian') {
+                customCooldown = 1000; // Guardian bubble shots and spawning
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.5;
+            } else if (enemy.type === 'elder_guardian') {
+                customCooldown = 600; // Elder Guardian fast projectiles
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4;
             }
         } else {
             shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
@@ -108,7 +133,9 @@ function enemyShoot() {
         if (shouldShoot) {
             if (enemy.isBoss) {
                 // Boss-specific attacks
-                if (enemy.type === 'witch') {
+                if (enemy.type === 'creepernado') {
+                    createCreepernadoTornado(enemy, now);
+                } else if (enemy.type === 'witch') {
                     createWitchSnowball(enemy, now);
                 } else if (enemy.type === 'evoker') {
                     createEvokerRapidFire(enemy, now);
@@ -131,12 +158,34 @@ function enemyShoot() {
                     createShulkerDuplication(enemy, now);
                 } else if (enemy.type === 'ender_dragon') {
                     createEnderDragonGinormousEnderPearl(enemy, now);
+                } else if (enemy.type === 'endwither') {
+                    createEndwitherTripleEndermanHeads(enemy, now);
+                } else if (enemy.type === 'the_endermite') {
+                    createTheEndermiteAttack(enemy, now);
+                } else if (enemy.type === 'breeze') {
+                    createBreezeAttack(enemy, now);
+                } else if (enemy.type === 'guardian') {
+                    createGuardianAttack(enemy, now);
+                } else if (enemy.type === 'elder_guardian') {
+                    createElderGuardianAttack(enemy, now);
                 }
             } else {
                 // Regular enemy attacks
                 if (game.selectedDimension === 'nether' && (enemy.type === 'piglin' || enemy.type === 'zombie_piglin' || enemy.type === 'wither_skeleton')) {
                     // Nether enemies shoot fireballs
                     createFireballProjectile(enemy, now);
+                } else if (enemy.type === 'vex') {
+                    // Vexes shoot small magic projectiles
+                    createVexMagicProjectile(enemy, now);
+                } else if (enemy.type === 'vindicator') {
+                    // Vindicators shoot snowballs (standard attack)
+                    createStandardProjectile(enemy, now);
+                } else if (enemy.type === 'drowned') {
+                    // Drowneds shoot bubbles
+                    createBubbleProjectile(enemy, now);
+                } else if (enemy.type === 'small_endermite') {
+                    // Small endermites shoot ender pearls
+                    createSmallEndermiteEnderPearl(enemy, now);
                 } else if (game.level >= 3 && enemy.type === 'creeper' && Math.random() < 0.4) {
                     // Creepers shoot faster projectiles at medium levels
                     createFastProjectile(enemy, now);
@@ -203,6 +252,19 @@ function createMultipleProjectiles(enemy, now) {
     }
 }
 
+function createVexMagicProjectile(enemy, now) {
+    // Vex shoots small purple magic projectiles
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 10, enemy.y + 12),
+        x: enemy.x + 10,
+        y: enemy.y + 12,
+        speed: 3 + (game.level * 0.15)
+    };
+    projectile.element.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="#8b00ff"/><circle cx="6" cy="6" r="2" fill="#ffffff" opacity="0.8"/></svg>';
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
 // Boss-specific projectile functions
 function createWitchSnowball(enemy, now) {
     const projectile = {
@@ -260,6 +322,110 @@ function createWardenMultiShot(enemy, now) {
         game.enemyProjectiles.push(projectile);
         game.canvas.appendChild(projectile.element);
     }
+}
+
+// Bubble projectile function
+function createBubbleProjectile(enemy, now) {
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 60),
+        x: enemy.x + 20,
+        y: enemy.y + 60,
+        speed: 3 + (game.level * 0.15)
+    };
+    projectile.element.innerHTML = sprites.bubble;
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
+// Ocean Monument boss attacks
+function createGuardianAttack(enemy, now) {
+    // Guardian shoots bubbles and can also spawn drowneds independently
+    
+    // Always shoot a bubble projectile
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 30, enemy.y + 80),
+        x: enemy.x + 30,
+        y: enemy.y + 80,
+        speed: 4 + (game.level * 0.2)
+    };
+    projectile.element.innerHTML = sprites.bubble;
+    projectile.element.style.transform = 'scale(1.5)'; // Larger bubbles for Guardian
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+    
+    // 70% chance to also spawn a drowned to help protect it
+    if (Math.random() < 0.7) {
+        spawnGuardianDrowned(enemy, now);
+    }
+}
+
+function createElderGuardianAttack(enemy, now) {
+    // Elder Guardian shoots fast bubble projectiles
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 40, enemy.y + 90),
+        x: enemy.x + 40,
+        y: enemy.y + 90,
+        speed: 6 + (game.level * 0.3), // Much faster than regular bubbles
+        damage: 2 // Elder Guardian bubbles deal more damage
+    };
+    projectile.element.innerHTML = sprites.bubble;
+    projectile.element.style.transform = 'scale(2.0)'; // Extra large bubbles
+    projectile.element.style.filter = 'hue-rotate(45deg) brightness(1.2)'; // Slightly different color
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
+function spawnGuardianDrowned(guardian, now) {
+    // Check if there are already too many guardian-spawned drowneds
+    const existingGuardianDrowneds = game.enemies.filter(e => e.isGuardianSpawned).length;
+    if (existingGuardianDrowneds >= 3) {
+        console.log("Guardian spawn limit reached (3 drowneds)");
+        return; // Don't spawn more than 3 at once
+    }
+    
+    // Spawn a drowned near the Guardian to help protect it
+    const canvasSize = getCanvasDimensions();
+    const spawnX = guardian.x + (Math.random() - 0.5) * 300; // Spawn within 300px of guardian
+    const spawnY = guardian.y + 80 + Math.random() * 150; // Below the guardian
+    
+    // Make sure spawn position is within bounds
+    const clampedX = Math.max(0, Math.min(canvasSize.width - 60, spawnX));
+    const clampedY = Math.max(canvasSize.height * 0.4, Math.min(canvasSize.height - 60, spawnY));
+    
+    const drowned = {
+        element: createSprite('enemy', clampedX, clampedY),
+        x: clampedX,
+        y: clampedY,
+        formationX: clampedX,
+        formationY: clampedY,
+        type: 'drowned',
+        lastShot: 0,
+        state: 'formation',
+        progress: 1,
+        capturedPlayer: null,
+        canCapture: false,
+        isBoss: false,
+        isGuardianSpawned: true, // Mark as guardian-spawned
+        maxHealth: 2,
+        health: 2
+    };
+    
+    drowned.element.innerHTML = sprites.drowned;
+    
+    game.enemies.push(drowned);
+    game.canvas.appendChild(drowned.element);
+    
+    console.log("Guardian spawned a drowned at", clampedX, clampedY);
+    
+    // Remove spawned drowned after 20 seconds
+    setTimeout(() => {
+        const index = game.enemies.indexOf(drowned);
+        if (index > -1 && drowned.element && drowned.element.parentNode) {
+            game.canvas.removeChild(drowned.element);
+            game.enemies.splice(index, 1);
+            console.log("Guardian-spawned drowned removed after timeout");
+        }
+    }, 20000);
 }
 
 // Nether boss attacks
@@ -422,6 +588,186 @@ function createEnderDragonGinormousEnderPearl(enemy, now) {
     game.canvas.appendChild(projectile.element);
 }
 
+function createEndwitherTripleEndermanHeads(enemy, now) {
+    // Endwither shoots 3 enderman heads simultaneously at 75% of normal speed
+    const baseSpeed = 3.0 + (game.level * 0.15); // Base speed for projectiles
+    const endwitherSpeed = baseSpeed * 0.75; // 75% speed as specified
+    
+    // Three shooting positions: left head, center head, right head
+    const positions = [
+        { x: enemy.x + 30, y: enemy.y + 60 },   // Left head position
+        { x: enemy.x + 60, y: enemy.y + 50 },   // Center head position (slightly higher)
+        { x: enemy.x + 90, y: enemy.y + 60 }    // Right head position
+    ];
+    
+    positions.forEach((pos, index) => {
+        const projectile = {
+            element: createSprite('enemy-projectile', pos.x, pos.y),
+            x: pos.x,
+            y: pos.y,
+            speed: endwitherSpeed,
+            damage: 2
+        };
+        projectile.element.innerHTML = sprites.endermanHead;
+        projectile.element.style.filter = 'drop-shadow(0 0 8px #8b00ff)';
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+    });
+}
+
+function createTheEndermiteAttack(enemy, now) {
+    // THE Endermite alternates between shooting ender pearls and spawning small endermites
+    if (Math.random() < 0.6) {
+        // 60% chance to shoot ender pearls
+        const projectile = {
+            element: createSprite('enemy-projectile', enemy.x + 60, enemy.y + 90),
+            x: enemy.x + 60,
+            y: enemy.y + 90,
+            speed: 3.5 + (game.level * 0.2),
+            damage: 2
+        };
+        projectile.element.innerHTML = sprites.enderPearl;
+        projectile.element.style.filter = 'brightness(1.2) drop-shadow(0 0 8px #8b00ff)';
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+    } else {
+        // 40% chance to spawn small endermites
+        createSmallEndermite(enemy, now);
+    }
+}
+
+function createSmallEndermite(enemy, now) {
+    // Spawn a small endermite near THE Endermite
+    const canvasSize = getCanvasDimensions();
+    const spawnX = enemy.x + (Math.random() - 0.5) * 200; // Random position near boss
+    const spawnY = enemy.y + 100 + Math.random() * 100;
+    
+    const smallEndermite = {
+        element: createSprite('enemy', Math.max(0, Math.min(spawnX, canvasSize.width - 30)), Math.max(0, spawnY)),
+        x: Math.max(0, Math.min(spawnX, canvasSize.width - 30)),
+        y: Math.max(0, spawnY),
+        formationX: Math.max(0, Math.min(spawnX, canvasSize.width - 30)),
+        formationY: Math.max(0, spawnY),
+        formationIndex: -1, // No formation position
+        type: 'small_endermite',
+        lastShot: 0,
+        state: 'formation', // Start in formation immediately
+        progress: 0,
+        capturedPlayer: null,
+        canCapture: false,
+        isBoss: false,
+        maxHealth: 3,
+        health: 3,
+        isSpawned: true // Mark as spawned enemy
+    };
+    
+    smallEndermite.element.innerHTML = sprites.small_endermite;
+    
+    game.enemies.push(smallEndermite);
+    game.canvas.appendChild(smallEndermite.element);
+}
+
+function createSmallEndermiteEnderPearl(enemy, now) {
+    // Small endermites shoot small ender pearls
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 15, enemy.y + 20),
+        x: enemy.x + 15,
+        y: enemy.y + 20,
+        speed: 2.5 + (game.level * 0.1),
+        damage: 1
+    };
+    projectile.element.innerHTML = sprites.enderPearl;
+    projectile.element.style.transform = 'scale(0.7)'; // Smaller ender pearl
+    projectile.element.style.filter = 'brightness(1.1) drop-shadow(0 0 6px #8b00ff)';
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
+function createBreezeAttack(enemy, now) {
+    // Breeze alternates between wind charges and tornado special
+    if (Math.random() < 0.7) {
+        // 70% chance for wind charge
+        createBreezeWindCharge(enemy, now);
+    } else {
+        // 30% chance for tornado special
+        createBreezeTornado(enemy, now);
+    }
+}
+
+function createBreezeWindCharge(enemy, now) {
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 40, enemy.y + 70),
+        x: enemy.x + 40,
+        y: enemy.y + 70,
+        speed: 3.5 + (game.level * 0.15),
+        damage: 1
+    };
+    projectile.element.innerHTML = sprites.windCharge;
+    projectile.element.style.filter = 'drop-shadow(0 0 8px #87CEEB)';
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
+function createBreezeTornado(enemy, now) {
+    const canvasSize = getCanvasDimensions();
+    
+    // Create tornado at bottom of screen
+    const tornado = {
+        element: createSprite('tornado', Math.random() * (canvasSize.width - 40), canvasSize.height - 80),
+        x: Math.random() * (canvasSize.width - 40),
+        y: canvasSize.height - 80,
+        speed: 2,
+        direction: Math.random() < 0.5 ? 1 : -1, // Random direction
+        damage: 2,
+        isTornado: true,
+        createdAt: now,
+        lifetime: 4000 // 4 seconds
+    };
+    tornado.element.innerHTML = sprites.tornado;
+    tornado.element.style.filter = 'drop-shadow(0 0 10px #778899)';
+    game.enemyProjectiles.push(tornado);
+    game.canvas.appendChild(tornado.element);
+}
+
+function createCreepernadoTornado(enemy, now) {
+    // Creepernado shoots swirling debris in multiple directions
+    const numProjectiles = 3; // Multiple tornado debris
+    const angleSpread = Math.PI / 3; // 60 degree spread
+    const baseAngle = Math.PI / 2; // Start pointing down
+    
+    for (let i = 0; i < numProjectiles; i++) {
+        const angle = baseAngle + (angleSpread * (i - 1)); // -60°, 0°, +60° from straight down
+        const projectile = {
+            element: createSprite('enemy-projectile', enemy.x + 50, enemy.y + 80),
+            x: enemy.x + 50,
+            y: enemy.y + 80,
+            speed: 2.5 + (game.level * 0.15),
+            angle: angle,
+            rotationSpeed: 10, // Spinning debris
+            rotation: 0,
+            damage: 1,
+            isTornadoDebris: true
+        };
+        
+        // Use a smaller creeper block as debris
+        projectile.element.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 20 20" shape-rendering="crispEdges">
+                <rect x="0" y="0" width="20" height="20" fill="#4CAF50"/>
+                <rect x="2" y="2" width="16" height="16" fill="#2E7D32"/>
+                <rect x="6" y="6" width="3" height="4" fill="#000"/>
+                <rect x="11" y="6" width="3" height="4" fill="#000"/>
+                <rect x="7" y="11" width="6" height="4" fill="#000"/>
+            </svg>
+        `;
+        projectile.element.style.filter = 'drop-shadow(0 0 5px #4CAF50)';
+        
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+    }
+    
+    enemy.lastShot = now;
+}
+
 // Projectile movement
 function moveProjectiles() {
     // Player projectiles - iterate backwards
@@ -445,12 +791,39 @@ function moveProjectiles() {
         const projectile = game.enemyProjectiles[index];
         if (!projectile || !projectile.element) continue;
         
-        projectile.y += projectile.speed;
-        if (projectile.vx) {
-            projectile.x += projectile.vx; // Handle spread projectiles
+        if (projectile.isTornado) {
+            // Tornado moves horizontally across the bottom
+            projectile.x += projectile.speed * projectile.direction;
+            projectile.element.style.left = projectile.x + 'px';
+            
+            // Check tornado lifetime
+            const now = Date.now();
+            if (now - projectile.createdAt > projectile.lifetime) {
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
+                continue;
+            }
+        } else if (projectile.isTornadoDebris) {
+            // Tornado debris moves in angled direction with spinning
+            projectile.x += Math.sin(projectile.angle) * projectile.speed;
+            projectile.y += Math.cos(projectile.angle) * projectile.speed;
+            
+            // Spin the debris
+            projectile.rotation += projectile.rotationSpeed;
+            projectile.element.style.transform = `rotate(${projectile.rotation}deg)`;
+            projectile.element.style.left = projectile.x + 'px';
+            projectile.element.style.top = projectile.y + 'px';
+        } else {
+            // Normal projectile movement
+            projectile.y += projectile.speed;
+            if (projectile.vx) {
+                projectile.x += projectile.vx; // Handle spread projectiles
+            }
+            projectile.element.style.top = projectile.y + 'px';
+            projectile.element.style.left = projectile.x + 'px';
         }
-        projectile.element.style.top = projectile.y + 'px';
-        projectile.element.style.left = projectile.x + 'px';
         
         // Check for shield reflection
         const now = Date.now();
@@ -489,11 +862,22 @@ function moveProjectiles() {
         }
         
         const canvasSize = getCanvasDimensions();
-        if (projectile.y > canvasSize.height || projectile.x < 0 || projectile.x > canvasSize.width) {
-            if (projectile.element && projectile.element.parentNode) {
-                game.canvas.removeChild(projectile.element);
+        if (projectile.isTornado) {
+            // Tornados only get removed when they go off the sides or lifetime expires
+            if (projectile.x < -40 || projectile.x > canvasSize.width) {
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
             }
-            game.enemyProjectiles.splice(index, 1);
+        } else {
+            // Normal projectile boundary check
+            if (projectile.y > canvasSize.height || projectile.x < 0 || projectile.x > canvasSize.width) {
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
+            }
         }
     }
 }
@@ -556,6 +940,8 @@ function checkCollisions() {
                                     else if (targetEnemy.type === 'evoker') points = 1500;
                                     else if (targetEnemy.type === 'ravager') points = 2000;
                                     else if (targetEnemy.type === 'warden') points = 2500;
+                                    else if (targetEnemy.type === 'guardian') points = 1200;
+                                    else if (targetEnemy.type === 'elder_guardian') points = 3000;
                                     else if (targetEnemy.type === 'blaze') points = 1000;
                                     else if (targetEnemy.type === 'ghast') points = 1500;
                                     else if (targetEnemy.type === 'wither') points = 2500;
@@ -581,6 +967,7 @@ function checkCollisions() {
                                 
                                 let points = 100 + (game.level - 1) * 10;
                                 if (targetEnemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+                                else if (targetEnemy.type === 'small_endermite') points = 200 + (game.level - 1) * 20;
                                 
                                 game.score += points;
                                 game.enemiesDefeated++;
@@ -625,11 +1012,15 @@ function checkCollisions() {
                             else if (enemy.type === 'evoker') points = 1500;
                             else if (enemy.type === 'ravager') points = 2000;
                             else if (enemy.type === 'warden') points = 2500;
+                            else if (enemy.type === 'guardian') points = 1200;
+                            else if (enemy.type === 'elder_guardian') points = 3000;
                             else if (enemy.type === 'blaze') points = 1000;
                             else if (enemy.type === 'ghast') points = 1500;
                             else if (enemy.type === 'wither') points = 2500;
                             else if (enemy.type === 'shulker') points = 5000;
                             else if (enemy.type === 'ender_dragon') points = 10000;
+                            else if (enemy.type === 'endwither') points = 7500;
+                            else if (enemy.type === 'the_endermite') points = 8500;
                             
                             // Special handling for shulker boss defeat
                             if (enemy.type === 'shulker' && enemy.isBoss) {
@@ -638,6 +1029,21 @@ function checkCollisions() {
                                     const otherEnemy = game.enemies[i];
                                     if (otherEnemy.type === 'shulker' && !otherEnemy.isBoss) {
                                         // Remove duplicate shulker
+                                        if (otherEnemy.element && otherEnemy.element.parentNode) {
+                                            game.canvas.removeChild(otherEnemy.element);
+                                        }
+                                        game.enemies.splice(i, 1);
+                                    }
+                                }
+                            }
+                            
+                            // Special handling for THE Endermite boss defeat
+                            if (enemy.type === 'the_endermite' && enemy.isBoss) {
+                                // Remove all small endermites when THE Endermite dies
+                                for (let i = game.enemies.length - 1; i >= 0; i--) {
+                                    const otherEnemy = game.enemies[i];
+                                    if (otherEnemy.type === 'small_endermite') {
+                                        // Remove small endermite
                                         if (otherEnemy.element && otherEnemy.element.parentNode) {
                                             game.canvas.removeChild(otherEnemy.element);
                                         }
@@ -667,6 +1073,7 @@ function checkCollisions() {
                         
                         let points = 100 + (game.level - 1) * 10;
                         if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+                        else if (enemy.type === 'small_endermite') points = 200 + (game.level - 1) * 20;
                         
                         game.score += points;
                         game.enemiesDefeated++;

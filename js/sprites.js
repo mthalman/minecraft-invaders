@@ -481,6 +481,58 @@ const sprites = {
             <rect x="26" y="12" width="2" height="4" fill="#FFFFFF" opacity="0.6"/>
         </svg>
     `,
+    windCharge: `
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <!-- Wind charge core -->
+            <circle cx="12" cy="12" r="8" fill="#87CEEB" opacity="0.7"/>
+            <circle cx="12" cy="12" r="6" fill="#B0E0E6" opacity="0.8"/>
+            <circle cx="12" cy="12" r="4" fill="#E0F6FF" opacity="0.9"/>
+            
+            <!-- Wind swirls -->
+            <path d="M6 8 Q12 4, 18 8 Q12 12, 6 8" stroke="#4682B4" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M6 16 Q12 20, 18 16 Q12 12, 6 16" stroke="#4682B4" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M8 6 Q4 12, 8 18 Q12 12, 8 6" stroke="#4682B4" stroke-width="1.5" fill="none" opacity="0.7"/>
+            <path d="M16 6 Q20 12, 16 18 Q12 12, 16 6" stroke="#4682B4" stroke-width="1.5" fill="none" opacity="0.7"/>
+            
+            <!-- Center vortex -->
+            <circle cx="12" cy="12" r="2" fill="#FFFFFF" opacity="0.8"/>
+            <circle cx="12" cy="12" r="1" fill="#4682B4" opacity="0.9"/>
+            
+            <!-- Wind particles -->
+            <circle cx="6" cy="6" r="1" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="18" cy="6" r="1" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="6" cy="18" r="1" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="18" cy="18" r="1" fill="#87CEEB" opacity="0.6"/>
+        </svg>
+    `,
+    tornado: `
+        <svg width="40" height="80" viewBox="0 0 40 80">
+            <!-- Tornado base (wide) -->
+            <ellipse cx="20" cy="75" rx="18" ry="4" fill="#D3D3D3" opacity="0.6"/>
+            
+            <!-- Tornado funnel -->
+            <path d="M2 75 Q10 65, 8 55 Q15 45, 12 35 Q18 25, 15 15 Q22 5, 20 0 Q18 5, 25 15 Q22 25, 28 35 Q25 45, 32 55 Q30 65, 38 75" fill="#B0C4DE" opacity="0.7"/>
+            
+            <!-- Inner tornado swirl -->
+            <path d="M8 70 Q15 60, 12 50 Q18 40, 15 30 Q20 20, 18 10 Q22 15, 25 25 Q22 35, 28 45 Q25 55, 32 65" fill="#778899" opacity="0.6"/>
+            
+            <!-- Debris particles -->
+            <rect x="5" y="60" width="2" height="2" fill="#8B4513" opacity="0.8"/>
+            <rect x="30" y="55" width="2" height="2" fill="#654321" opacity="0.8"/>
+            <rect x="12" y="45" width="1" height="1" fill="#696969" opacity="0.7"/>
+            <rect x="25" y="40" width="1" height="1" fill="#696969" opacity="0.7"/>
+            <rect x="8" y="35" width="1" height="1" fill="#8B4513" opacity="0.6"/>
+            <rect x="28" y="30" width="1" height="1" fill="#654321" opacity="0.6"/>
+            <rect x="15" y="25" width="1" height="1" fill="#696969" opacity="0.5"/>
+            <rect x="22" y="20" width="1" height="1" fill="#696969" opacity="0.5"/>
+            
+            <!-- Wind lines for motion -->
+            <path d="M0 70 Q5 68, 10 70" stroke="#C0C0C0" stroke-width="1" fill="none" opacity="0.4"/>
+            <path d="M30 65 Q35 63, 40 65" stroke="#C0C0C0" stroke-width="1" fill="none" opacity="0.4"/>
+            <path d="M2 50 Q7 48, 12 50" stroke="#C0C0C0" stroke-width="1" fill="none" opacity="0.3"/>
+            <path d="M28 45 Q33 43, 38 45" stroke="#C0C0C0" stroke-width="1" fill="none" opacity="0.3"/>
+        </svg>
+    `,
     piglin: `
         <svg width="60" height="60" viewBox="0 0 60 60">
             <!-- Head -->
@@ -799,6 +851,881 @@ const sprites = {
             <circle cx="40" cy="105" r="1" fill="#8b00ff" opacity="0.6"/>
             <circle cx="120" cy="107" r="1" fill="#8b00ff" opacity="0.7"/>
         </svg>
+    `,
+    vex: `
+        <svg width="20" height="24" viewBox="0 0 20 24">
+            <!-- Small ghost-like floating body -->
+            <rect x="5" y="8" width="10" height="12" fill="#7b68ee"/>
+            <rect x="3" y="10" width="14" height="8" fill="#9370db"/>
+            <!-- Glowing eyes -->
+            <rect x="7" y="12" width="2" height="2" fill="#ff0000"/>
+            <rect x="11" y="12" width="2" height="2" fill="#ff0000"/>
+            <rect x="7.5" y="12.5" width="1" height="1" fill="#ffffff"/>
+            <rect x="11.5" y="12.5" width="1" height="1" fill="#ffffff"/>
+            <!-- Small wings -->
+            <rect x="1" y="10" width="4" height="6" fill="#4b0082"/>
+            <rect x="15" y="10" width="4" height="6" fill="#4b0082"/>
+            <!-- Tail wisp -->
+            <rect x="8" y="20" width="4" height="3" fill="#6a5acd" opacity="0.7"/>
+            <!-- Magic particles -->
+            <rect x="2" y="6" width="1" height="1" fill="#ff69b4" opacity="0.8"/>
+            <rect x="17" y="8" width="1" height="1" fill="#ff69b4" opacity="0.8"/>
+            <rect x="10" y="4" width="1" height="1" fill="#ff69b4" opacity="0.8"/>
+        </svg>
+    `,
+    vindicator: `
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <!-- Head -->
+            <rect x="18" y="5" width="24" height="20" fill="#D2691E"/>
+            <rect x="15" y="8" width="30" height="14" fill="#DEB887"/>
+            <!-- Unibrow and angry eyes -->
+            <rect x="20" y="11" width="20" height="3" fill="#654321"/>
+            <rect x="22" y="14" width="4" height="4" fill="#8B0000"/>
+            <rect x="34" y="14" width="4" height="4" fill="#8B0000"/>
+            <rect x="23" y="15" width="2" height="2" fill="#FF0000"/>
+            <rect x="35" y="15" width="2" height="2" fill="#FF0000"/>
+            <!-- Large nose -->
+            <rect x="28" y="18" width="4" height="6" fill="#CD853F"/>
+            <rect x="29" y="20" width="2" height="2" fill="#000"/>
+            <!-- Angry mouth -->
+            <rect x="26" y="22" width="8" height="2" fill="#654321"/>
+            <!-- Body (dark robe) -->
+            <rect x="18" y="25" width="24" height="25" fill="#2F4F4F"/>
+            <rect x="15" y="28" width="30" height="19" fill="#696969"/>
+            <!-- Arms -->
+            <rect x="6" y="28" width="12" height="20" fill="#D2691E"/>
+            <rect x="42" y="28" width="12" height="20" fill="#D2691E"/>
+            <!-- Iron axe in right hand -->
+            <rect x="48" y="20" width="3" height="25" fill="#8B4513"/>
+            <rect x="45" y="18" width="9" height="8" fill="#C0C0C0"/>
+            <rect x="47" y="16" width="5" height="4" fill="#A9A9A9"/>
+            <!-- Legs -->
+            <rect x="20" y="50" width="8" height="10" fill="#654321"/>
+            <rect x="32" y="50" width="8" height="10" fill="#654321"/>
+            <!-- Belt -->
+            <rect x="18" y="35" width="24" height="3" fill="#654321"/>
+        </svg>
+    `,
+    breeze: `
+        <svg width="90" height="90" viewBox="0 0 90 90">
+            <!-- Main floating body (translucent wind) -->
+            <ellipse cx="45" cy="45" rx="35" ry="30" fill="#87CEEB" opacity="0.6"/>
+            <ellipse cx="45" cy="45" rx="30" ry="25" fill="#B0E0E6" opacity="0.7"/>
+            <ellipse cx="45" cy="45" rx="25" ry="20" fill="#E0F6FF" opacity="0.8"/>
+            
+            <!-- Wind swirls (body pattern) -->
+            <path d="M25 35 Q35 25, 45 35 Q55 45, 65 35" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.8"/>
+            <path d="M20 45 Q30 35, 40 45 Q50 55, 60 45" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.7"/>
+            <path d="M25 55 Q35 45, 45 55 Q55 65, 65 55" stroke="#4682B4" stroke-width="2" fill="none" opacity="0.6"/>
+            
+            <!-- Core/eyes (glowing blue) -->
+            <circle cx="37" cy="38" r="4" fill="#00BFFF"/>
+            <circle cx="53" cy="38" r="4" fill="#00BFFF"/>
+            <circle cx="37" cy="38" r="2" fill="#FFFFFF" opacity="0.9"/>
+            <circle cx="53" cy="38" r="2" fill="#FFFFFF" opacity="0.9"/>
+            
+            <!-- Wind tendrils extending from body -->
+            <path d="M15 40 Q10 35, 5 40 Q10 45, 15 40" stroke="#87CEEB" stroke-width="3" fill="none" opacity="0.5"/>
+            <path d="M75 50 Q80 45, 85 50 Q80 55, 75 50" stroke="#87CEEB" stroke-width="3" fill="none" opacity="0.5"/>
+            <path d="M20 65 Q15 70, 10 65 Q15 60, 20 65" stroke="#87CEEB" stroke-width="3" fill="none" opacity="0.4"/>
+            <path d="M70 25 Q75 20, 80 25 Q75 30, 70 25" stroke="#87CEEB" stroke-width="3" fill="none" opacity="0.4"/>
+            
+            <!-- Wind particles floating around -->
+            <circle cx="20" cy="20" r="1.5" fill="#87CEEB" opacity="0.8"/>
+            <circle cx="70" cy="15" r="1.5" fill="#87CEEB" opacity="0.7"/>
+            <circle cx="15" cy="70" r="1.5" fill="#87CEEB" opacity="0.8"/>
+            <circle cx="75" cy="75" r="1.5" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="45" cy="10" r="1" fill="#B0E0E6" opacity="0.9"/>
+            <circle cx="10" cy="45" r="1" fill="#B0E0E6" opacity="0.7"/>
+            <circle cx="80" cy="45" r="1" fill="#B0E0E6" opacity="0.8"/>
+            
+            <!-- Central wind vortex -->
+            <circle cx="45" cy="45" r="8" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.6"/>
+            <circle cx="45" cy="45" r="12" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.4"/>
+            <circle cx="45" cy="45" r="16" fill="none" stroke="#B0E0E6" stroke-width="1" opacity="0.3"/>
+        </svg>
+    `,
+    drowned: `
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <!-- Head -->
+            <rect x="15" y="5" width="30" height="25" fill="#2E8B57"/>
+            <rect x="12" y="8" width="36" height="19" fill="#3CB371"/>
+            <!-- Barnacles and sea growth -->
+            <rect x="18" y="6" width="4" height="2" fill="#228B22"/>
+            <rect x="38" y="8" width="3" height="2" fill="#006400"/>
+            <rect x="25" y="4" width="2" height="3" fill="#228B22"/>
+            <!-- Eyes (glowing blue from water) -->
+            <rect x="20" y="12" width="6" height="6" fill="#00CED1"/>
+            <rect x="34" y="12" width="6" height="6" fill="#00CED1"/>
+            <rect x="22" y="14" width="2" height="2" fill="#FFFFFF"/>
+            <rect x="36" y="14" width="2" height="2" fill="#FFFFFF"/>
+            <!-- Mouth -->
+            <rect x="24" y="20" width="12" height="4" fill="#1C1C1C"/>
+            <rect x="26" y="22" width="2" height="2" fill="#FFFFFF"/>
+            <rect x="30" y="22" width="2" height="2" fill="#FFFFFF"/>
+            <rect x="34" y="22" width="2" height="2" fill="#FFFFFF"/>
+            <!-- Body (waterlogged and decayed) -->
+            <rect x="18" y="30" width="24" height="20" fill="#4682B4"/>
+            <rect x="15" y="33" width="30" height="14" fill="#5F9EA0"/>
+            <!-- Seaweed patches -->
+            <rect x="20" y="35" width="6" height="2" fill="#228B22"/>
+            <rect x="34" y="38" width="4" height="2" fill="#006400"/>
+            <!-- Arms -->
+            <rect x="6" y="32" width="12" height="18" fill="#2E8B57"/>
+            <rect x="42" y="32" width="12" height="18" fill="#2E8B57"/>
+            <!-- Trident in one arm -->
+            <rect x="48" y="25" width="2" height="20" fill="#8B4513"/>
+            <rect x="46" y="22" width="6" height="6" fill="#C0C0C0"/>
+            <rect x="47" y="20" width="4" height="4" fill="#A9A9A9"/>
+            <!-- Legs -->
+            <rect x="20" y="50" width="8" height="10" fill="#4682B4"/>
+            <rect x="32" y="50" width="8" height="10" fill="#4682B4"/>
+            <!-- Water droplets -->
+            <circle cx="12" cy="15" r="1" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="48" cy="18" r="1" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="25" cy="55" r="1" fill="#00BFFF" opacity="0.8"/>
+        </svg>
+    `,
+    guardian: `
+        <svg width="80" height="80" viewBox="0 0 80 80">
+            <!-- Main body (orange/brownish guardian) -->
+            <ellipse cx="40" cy="40" rx="30" ry="25" fill="#DEB887"/>
+            <ellipse cx="40" cy="40" rx="25" ry="20" fill="#F4A460"/>
+            <ellipse cx="40" cy="40" rx="20" ry="15" fill="#D2691E"/>
+            
+            <!-- Spikes around body -->
+            <polygon points="15,25 10,20 15,15" fill="#8B4513"/>
+            <polygon points="65,25 70,20 65,15" fill="#8B4513"/>
+            <polygon points="25,10 20,5 30,5" fill="#8B4513"/>
+            <polygon points="55,10 60,5 50,5" fill="#8B4513"/>
+            <polygon points="15,55 10,60 15,65" fill="#8B4513"/>
+            <polygon points="65,55 70,60 65,65" fill="#8B4513"/>
+            <polygon points="25,70 20,75 30,75" fill="#8B4513"/>
+            <polygon points="55,70 60,75 50,75" fill="#8B4513"/>
+            
+            <!-- Central eye -->
+            <circle cx="40" cy="40" r="12" fill="#FF4500"/>
+            <circle cx="40" cy="40" r="8" fill="#FFD700"/>
+            <circle cx="40" cy="40" r="4" fill="#000000"/>
+            <circle cx="40" cy="40" r="2" fill="#FFFFFF"/>
+            
+            <!-- Tail -->
+            <rect x="70" y="35" width="8" height="10" fill="#D2691E"/>
+            <rect x="76" y="37" width="6" height="6" fill="#8B4513"/>
+            
+            <!-- Swimming fins -->
+            <ellipse cx="20" cy="30" rx="8" ry="4" fill="#CD853F" opacity="0.8"/>
+            <ellipse cx="60" cy="30" rx="8" ry="4" fill="#CD853F" opacity="0.8"/>
+            <ellipse cx="20" cy="50" rx="8" ry="4" fill="#CD853F" opacity="0.8"/>
+            <ellipse cx="60" cy="50" rx="8" ry="4" fill="#CD853F" opacity="0.8"/>
+            
+            <!-- Body patterns -->
+            <circle cx="30" cy="30" r="2" fill="#8B4513" opacity="0.7"/>
+            <circle cx="50" cy="30" r="2" fill="#8B4513" opacity="0.7"/>
+            <circle cx="30" cy="50" r="2" fill="#8B4513" opacity="0.7"/>
+            <circle cx="50" cy="50" r="2" fill="#8B4513" opacity="0.7"/>
+            
+            <!-- Water bubble effects -->
+            <circle cx="15" cy="20" r="1.5" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="65" cy="25" r="1.5" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="20" cy="60" r="1.5" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="60" cy="65" r="1.5" fill="#87CEEB" opacity="0.6"/>
+        </svg>
+    `,
+    elder_guardian: `
+        <svg width="100" height="100" viewBox="0 0 100 100">
+            <!-- Main body (larger, darker guardian) -->
+            <ellipse cx="50" cy="50" rx="40" ry="35" fill="#696969"/>
+            <ellipse cx="50" cy="50" rx="35" ry="30" fill="#778899"/>
+            <ellipse cx="50" cy="50" rx="30" ry="25" fill="#2F4F4F"/>
+            
+            <!-- Large spikes around body -->
+            <polygon points="15,30 8,25 15,20" fill="#1C1C1C"/>
+            <polygon points="85,30 92,25 85,20" fill="#1C1C1C"/>
+            <polygon points="30,10 25,3 35,3" fill="#1C1C1C"/>
+            <polygon points="70,10 75,3 65,3" fill="#1C1C1C"/>
+            <polygon points="15,70 8,75 15,80" fill="#1C1C1C"/>
+            <polygon points="85,70 92,75 85,80" fill="#1C1C1C"/>
+            <polygon points="30,90 25,97 35,97" fill="#1C1C1C"/>
+            <polygon points="70,90 75,97 65,97" fill="#1C1C1C"/>
+            
+            <!-- Additional smaller spikes -->
+            <polygon points="20,40 15,38 20,36" fill="#1C1C1C"/>
+            <polygon points="80,40 85,38 80,36" fill="#1C1C1C"/>
+            <polygon points="20,60 15,62 20,64" fill="#1C1C1C"/>
+            <polygon points="80,60 85,62 80,64" fill="#1C1C1C"/>
+            
+            <!-- Central eye (larger and more menacing) -->
+            <circle cx="50" cy="50" r="16" fill="#8B0000"/>
+            <circle cx="50" cy="50" r="12" fill="#FF4500"/>
+            <circle cx="50" cy="50" r="8" fill="#FFD700"/>
+            <circle cx="50" cy="50" r="4" fill="#000000"/>
+            <circle cx="50" cy="50" r="2" fill="#FFFFFF"/>
+            
+            <!-- Laser beam effect (when active) -->
+            <rect x="66" y="48" width="30" height="4" fill="#FF0000" opacity="0.8"/>
+            <rect x="68" y="49" width="28" height="2" fill="#FFFFFF" opacity="0.9"/>
+            
+            <!-- Tail -->
+            <rect x="90" y="45" width="10" height="10" fill="#2F4F4F"/>
+            <rect x="98" y="47" width="6" height="6" fill="#1C1C1C"/>
+            
+            <!-- Swimming fins (larger) -->
+            <ellipse cx="20" cy="35" rx="12" ry="6" fill="#483D8B" opacity="0.8"/>
+            <ellipse cx="80" cy="35" rx="12" ry="6" fill="#483D8B" opacity="0.8"/>
+            <ellipse cx="20" cy="65" rx="12" ry="6" fill="#483D8B" opacity="0.8"/>
+            <ellipse cx="80" cy="65" rx="12" ry="6" fill="#483D8B" opacity="0.8"/>
+            
+            <!-- Body patterns (elder markings) -->
+            <circle cx="35" cy="35" r="3" fill="#1C1C1C" opacity="0.7"/>
+            <circle cx="65" cy="35" r="3" fill="#1C1C1C" opacity="0.7"/>
+            <circle cx="35" cy="65" r="3" fill="#1C1C1C" opacity="0.7"/>
+            <circle cx="65" cy="65" r="3" fill="#1C1C1C" opacity="0.7"/>
+            
+            <!-- Ancient runes/markings -->
+            <rect x="25" y="25" width="8" height="2" fill="#4B0082" opacity="0.8"/>
+            <rect x="67" y="25" width="8" height="2" fill="#4B0082" opacity="0.8"/>
+            <rect x="25" y="73" width="8" height="2" fill="#4B0082" opacity="0.8"/>
+            <rect x="67" y="73" width="8" height="2" fill="#4B0082" opacity="0.8"/>
+            
+            <!-- Water effects (more powerful) -->
+            <circle cx="10" cy="20" r="2" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="90" cy="25" r="2" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="15" cy="80" r="2" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="85" cy="85" r="2" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="50" cy="10" r="1.5" fill="#00BFFF" opacity="0.7"/>
+            <circle cx="50" cy="90" r="1.5" fill="#00BFFF" opacity="0.7"/>
+        </svg>
+    `,
+    bubble: `
+        <svg width="20" height="20" viewBox="0 0 20 20">
+            <!-- Bubble main body -->
+            <circle cx="10" cy="10" r="8" fill="#87CEEB" opacity="0.6"/>
+            <circle cx="10" cy="10" r="6" fill="#B0E0E6" opacity="0.7"/>
+            <circle cx="10" cy="10" r="4" fill="#E0F6FF" opacity="0.8"/>
+            
+            <!-- Bubble shine effect -->
+            <circle cx="7" cy="7" r="2" fill="#FFFFFF" opacity="0.9"/>
+            <circle cx="6" cy="6" r="1" fill="#FFFFFF" opacity="1"/>
+            
+            <!-- Small highlight -->
+            <circle cx="12" cy="8" r="1" fill="#FFFFFF" opacity="0.7"/>
+            
+            <!-- Bubble outline -->
+            <circle cx="10" cy="10" r="8" fill="none" stroke="#4682B4" stroke-width="0.5" opacity="0.8"/>
+            
+            <!-- Water droplets around bubble -->
+            <circle cx="3" cy="5" r="0.5" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="17" cy="7" r="0.5" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="5" cy="16" r="0.5" fill="#00BFFF" opacity="0.8"/>
+            <circle cx="15" cy="15" r="0.5" fill="#00BFFF" opacity="0.8"/>
+        </svg>
+    `,
+    creepernado: `
+        <svg width="120" height="180" viewBox="0 0 120 180" shape-rendering="crispEdges">
+            <!-- Main creeper body in tornado formation -->
+            <g transform="translate(30,40)">
+                <!-- Core creeper pattern -->
+                <rect x="0" y="0" width="60" height="80" fill="#0da70b"/>
+                <rect x="5" y="5" width="50" height="70" fill="#0b8f09"/>
+                
+                <!-- Creeper face pattern -->
+                <rect x="15" y="15" width="8" height="12" fill="#000"/>
+                <rect x="37" y="15" width="8" height="12" fill="#000"/>
+                <rect x="17" y="17" width="4" height="8" fill="#333"/>
+                <rect x="39" y="17" width="4" height="8" fill="#333"/>
+                
+                <!-- Mouth pattern -->
+                <rect x="20" y="30" width="8" height="8" fill="#000"/>
+                <rect x="32" y="30" width="8" height="8" fill="#000"/>
+                <rect x="24" y="38" width="12" height="15" fill="#000"/>
+                
+                <!-- Body texture -->
+                <rect x="10" y="50" width="8" height="3" fill="#085c07"/>
+                <rect x="42" y="50" width="8" height="3" fill="#085c07"/>
+                <rect x="20" y="60" width="20" height="3" fill="#085c07"/>
+            </g>
+            
+            <!-- Tornado swirl effect with creeper blocks -->
+            <g transform="translate(10,10)">
+                <!-- Swirling creeper debris -->
+                <rect x="5" y="20" width="12" height="12" fill="#4CAF50" opacity="0.8"/>
+                <rect x="7" y="22" width="8" height="8" fill="#2E7D32" opacity="0.9"/>
+                <rect x="9" y="24" width="4" height="4" fill="#111"/>
+                
+                <rect x="80" y="30" width="15" height="15" fill="#4CAF50" opacity="0.7"/>
+                <rect x="82" y="32" width="11" height="11" fill="#2E7D32" opacity="0.8"/>
+                <rect x="85" y="35" width="5" height="5" fill="#111"/>
+                
+                <rect x="15" y="60" width="10" height="10" fill="#388E3C" opacity="0.9"/>
+                <rect x="17" y="62" width="6" height="6" fill="#2E7D32"/>
+                <rect x="19" y="64" width="2" height="2" fill="#111"/>
+                
+                <rect x="85" y="70" width="13" height="13" fill="#4CAF50" opacity="0.6"/>
+                <rect x="87" y="72" width="9" height="9" fill="#2E7D32" opacity="0.8"/>
+                <rect x="89" y="74" width="5" height="5" fill="#111"/>
+                
+                <rect x="20" y="100" width="8" height="8" fill="#388E3C" opacity="0.8"/>
+                <rect x="22" y="102" width="4" height="4" fill="#111"/>
+                
+                <rect x="75" y="110" width="11" height="11" fill="#4CAF50" opacity="0.7"/>
+                <rect x="77" y="112" width="7" height="7" fill="#2E7D32"/>
+                <rect x="79" y="114" width="3" height="3" fill="#111"/>
+            </g>
+            
+            <!-- Tornado wind effects -->
+            <g opacity="0.6">
+                <!-- Wind swirls -->
+                <path d="M10 40 Q60 20, 110 40 Q60 60, 10 40" stroke="#87CEEB" stroke-width="2" fill="none" opacity="0.4"/>
+                <path d="M15 80 Q60 60, 105 80 Q60 100, 15 80" stroke="#87CEEB" stroke-width="2" fill="none" opacity="0.4"/>
+                <path d="M20 120 Q60 100, 100 120 Q60 140, 20 120" stroke="#87CEEB" stroke-width="2" fill="none" opacity="0.4"/>
+                
+                <!-- Wind particles -->
+                <circle cx="25" cy="35" r="1.5" fill="#B0E0E6" opacity="0.7"/>
+                <circle cx="95" cy="45" r="1" fill="#B0E0E6" opacity="0.8"/>
+                <circle cx="30" cy="75" r="1.5" fill="#87CEEB" opacity="0.6"/>
+                <circle cx="90" cy="85" r="1" fill="#87CEEB" opacity="0.7"/>
+                <circle cx="35" cy="115" r="1.5" fill="#B0E0E6" opacity="0.8"/>
+                <circle cx="85" cy="125" r="1" fill="#B0E0E6" opacity="0.6"/>
+            </g>
+            
+            <!-- Ground debris -->
+            <g transform="translate(10,150)">
+                <rect x="10" y="10" width="6" height="6" fill="#654321" opacity="0.8"/>
+                <rect x="25" y="15" width="4" height="4" fill="#8B4513" opacity="0.7"/>
+                <rect x="40" y="8" width="8" height="8" fill="#4CAF50" opacity="0.6"/>
+                <rect x="55" y="12" width="5" height="5" fill="#2E7D32" opacity="0.8"/>
+                <rect x="70" y="5" width="7" height="7" fill="#654321" opacity="0.7"/>
+                <rect x="85" y="18" width="6" height="6" fill="#8B4513" opacity="0.8"/>
+            </g>
+            
+            <!-- Explosive energy at center -->
+            <g transform="translate(50,90)" opacity="0.8">
+                <circle cx="10" cy="10" r="8" fill="#FF4500" opacity="0.6"/>
+                <circle cx="10" cy="10" r="5" fill="#FF6600" opacity="0.8"/>
+                <circle cx="10" cy="10" r="3" fill="#FFAA00" opacity="0.9"/>
+                <circle cx="10" cy="10" r="1" fill="#FFFFFF" opacity="1"/>
+            </g>
+        </svg>
+    `,
+    endermanHead: `
+        <svg width="40" height="40" viewBox="0 0 40 40" shape-rendering="crispEdges">
+            <!-- Head -->
+            <rect x="10" y="5" width="20" height="20" fill="#000000"/>
+            <rect x="8" y="7" width="24" height="16" fill="#0a0a0a"/>
+            <!-- Glowing eyes -->
+            <rect x="12" y="12" width="4" height="8" fill="#ff00ff"/>
+            <rect x="24" y="12" width="4" height="8" fill="#ff00ff"/>
+            <rect x="13" y="13" width="2" height="6" fill="#ffffff"/>
+            <rect x="25" y="13" width="2" height="6" fill="#ffffff"/>
+            <!-- Teleport particles around head -->
+            <rect x="5" y="10" width="2" height="2" fill="#8b00ff" opacity="0.8"/>
+            <rect x="33" y="15" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
+            <rect x="8" y="25" width="2" height="2" fill="#8b00ff" opacity="0.9"/>
+            <rect x="30" y="28" width="2" height="2" fill="#8b00ff" opacity="0.6"/>
+        </svg>
+    `,
+    endwither: `
+        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="180" viewBox="0 0 800 1200" shape-rendering="crispEdges">
+<rect x="380" y="500" width="80" height="450" fill="#424242"/>
+<rect x="220" y="520" width="400" height="40" fill="#424242"/>
+<rect x="220" y="620" width="400" height="40" fill="#424242"/>
+<rect x="220" y="720" width="400" height="40" fill="#424242"/>
+<rect x="220" y="820" width="400" height="40" fill="#424242"/>
+<rect x="220" y="920" width="400" height="40" fill="#424242"/>
+<g transform="translate(320,300)">
+<rect x="0" y="0" width="160" height="160" fill="#111111"/>
+<rect x="24.0" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+<rect x="100.8" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+</g>
+<g transform="translate(120,320)">
+<rect x="0" y="0" width="160" height="160" fill="#111111"/>
+<rect x="24.0" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+<rect x="100.8" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+</g>
+<g transform="translate(520,320)">
+<rect x="0" y="0" width="160" height="160" fill="#111111"/>
+<rect x="24.0" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+<rect x="100.8" y="56.0" width="35.2" height="28.8" fill="#E91E63"/>
+</g>
+</svg>
+    `,
+    small_endermite: `
+        <svg width="30" height="45" viewBox="0 0 800 1200" shape-rendering="crispEdges">
+<rect x="220" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="412" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="460" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="400" width="24" height="24" fill="#8E24AA"/>
+<rect x="268" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="400" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="400" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="400" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="400" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="400" width="24" height="24" fill="#6A1B9A"/>
+<rect x="310" y="350" width="180" height="120" fill="#D32F2F"/>
+<rect x="300" y="550" width="200" height="120" fill="#111111"/>
+</svg>
+    `,
+    the_endermite: `
+        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="180" viewBox="0 0 800 1200" shape-rendering="crispEdges">
+<rect x="220" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="412" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="460" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="200" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="200" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="200" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="224" width="24" height="24" fill="#8E24AA"/>
+<rect x="268" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="224" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="224" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="224" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="224" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="224" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="248" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="248" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="248" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="248" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="248" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="244" y="272" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="412" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="272" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="272" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="296" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="296" width="24" height="24" fill="#4A148C"/>
+<rect x="412" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="296" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="296" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="296" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="320" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="320" width="24" height="24" fill="#8E24AA"/>
+<rect x="340" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="320" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="320" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="320" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="320" width="24" height="24" fill="#4A148C"/>
+<rect x="556" y="320" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="344" width="24" height="24" fill="#4A148C"/>
+<rect x="244" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="344" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="344" width="24" height="24" fill="#4A148C"/>
+<rect x="484" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="344" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="344" width="24" height="24" fill="#8E24AA"/>
+<rect x="220" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="368" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="368" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="368" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="368" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="368" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="368" width="24" height="24" fill="#8E24AA"/>
+<rect x="220" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="392" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="392" width="24" height="24" fill="#4A148C"/>
+<rect x="388" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="392" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="392" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="392" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="416" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="416" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="416" width="24" height="24" fill="#8E24AA"/>
+<rect x="412" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="416" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="416" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="416" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="440" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="440" width="24" height="24" fill="#8E24AA"/>
+<rect x="364" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="440" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="440" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="440" width="24" height="24" fill="#4A148C"/>
+<rect x="484" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="440" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="440" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="464" width="24" height="24" fill="#4A148C"/>
+<rect x="244" y="464" width="24" height="24" fill="#8E24AA"/>
+<rect x="268" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="464" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="464" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="464" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="464" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="464" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="488" width="24" height="24" fill="#4A148C"/>
+<rect x="316" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="488" width="24" height="24" fill="#8E24AA"/>
+<rect x="412" y="488" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="488" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="488" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="488" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="512" width="24" height="24" fill="#4A148C"/>
+<rect x="292" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="512" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="512" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="512" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="512" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="536" width="24" height="24" fill="#8E24AA"/>
+<rect x="244" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="536" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="536" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="536" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="536" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="560" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="560" width="24" height="24" fill="#4A148C"/>
+<rect x="364" y="560" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="560" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="560" width="24" height="24" fill="#4A148C"/>
+<rect x="484" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="560" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="560" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="584" width="24" height="24" fill="#8E24AA"/>
+<rect x="340" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="584" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="584" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="584" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="584" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="608" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="608" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="608" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="608" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="608" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="608" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="632" width="24" height="24" fill="#8E24AA"/>
+<rect x="268" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="632" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="632" width="24" height="24" fill="#4A148C"/>
+<rect x="364" y="632" width="24" height="24" fill="#4A148C"/>
+<rect x="388" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="632" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="632" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="632" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="632" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="656" width="24" height="24" fill="#4A148C"/>
+<rect x="292" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="656" width="24" height="24" fill="#8E24AA"/>
+<rect x="340" y="656" width="24" height="24" fill="#4A148C"/>
+<rect x="364" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="656" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="656" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="656" width="24" height="24" fill="#4A148C"/>
+<rect x="556" y="656" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="680" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="680" width="24" height="24" fill="#4A148C"/>
+<rect x="364" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="680" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="680" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="680" width="24" height="24" fill="#4A148C"/>
+<rect x="556" y="680" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="704" width="24" height="24" fill="#8E24AA"/>
+<rect x="316" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="704" width="24" height="24" fill="#4A148C"/>
+<rect x="460" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="704" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="728" width="24" height="24" fill="#8E24AA"/>
+<rect x="268" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="728" width="24" height="24" fill="#4A148C"/>
+<rect x="316" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="728" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="728" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="728" width="24" height="24" fill="#4A148C"/>
+<rect x="532" y="728" width="24" height="24" fill="#8E24AA"/>
+<rect x="556" y="728" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="752" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="752" width="24" height="24" fill="#4A148C"/>
+<rect x="436" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="752" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="752" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="752" width="24" height="24" fill="#4A148C"/>
+<rect x="556" y="752" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="776" width="24" height="24" fill="#8E24AA"/>
+<rect x="388" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="776" width="24" height="24" fill="#4A148C"/>
+<rect x="436" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="776" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="800" width="24" height="24" fill="#4A148C"/>
+<rect x="244" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="800" width="24" height="24" fill="#8E24AA"/>
+<rect x="484" y="800" width="24" height="24" fill="#4A148C"/>
+<rect x="508" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="800" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="824" width="24" height="24" fill="#4A148C"/>
+<rect x="340" y="824" width="24" height="24" fill="#8E24AA"/>
+<rect x="364" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="484" y="824" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="824" width="24" height="24" fill="#6A1B9A"/>
+<rect x="220" y="848" width="24" height="24" fill="#8E24AA"/>
+<rect x="244" y="848" width="24" height="24" fill="#4A148C"/>
+<rect x="268" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="292" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="364" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="412" y="848" width="24" height="24" fill="#8E24AA"/>
+<rect x="436" y="848" width="24" height="24" fill="#8E24AA"/>
+<rect x="460" y="848" width="24" height="24" fill="#4A148C"/>
+<rect x="484" y="848" width="24" height="24" fill="#8E24AA"/>
+<rect x="508" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="532" y="848" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="848" width="24" height="24" fill="#4A148C"/>
+<rect x="220" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="244" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="268" y="872" width="24" height="24" fill="#8E24AA"/>
+<rect x="292" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="316" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="340" y="872" width="24" height="24" fill="#8E24AA"/>
+<rect x="364" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="388" y="872" width="24" height="24" fill="#4A148C"/>
+<rect x="412" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="436" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="460" y="872" width="24" height="24" fill="#4A148C"/>
+<rect x="484" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="508" y="872" width="24" height="24" fill="#8E24AA"/>
+<rect x="532" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="556" y="872" width="24" height="24" fill="#6A1B9A"/>
+<rect x="310" y="560" width="180" height="120" fill="#D32F2F"/>
+<rect x="300" y="760" width="200" height="120" fill="#111111"/>
+</svg>
     `
     };
 

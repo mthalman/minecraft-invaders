@@ -170,6 +170,8 @@ function triggerVerticalBlast() {
                     else if (enemy.type === 'evoker') points = 1500;
                     else if (enemy.type === 'ravager') points = 2000;
                     else if (enemy.type === 'warden') points = 2500;
+                    else if (enemy.type === 'guardian') points = 1200;
+                    else if (enemy.type === 'elder_guardian') points = 3000;
                     else if (enemy.type === 'blaze') points = 1000;
                     else if (enemy.type === 'ghast') points = 1500;
                     else if (enemy.type === 'wither') points = 2500;
@@ -279,6 +281,8 @@ function moveFireSpreadEffects() {
                         else if (enemy.type === 'evoker') points = 1500;
                         else if (enemy.type === 'ravager') points = 2000;
                         else if (enemy.type === 'warden') points = 2500;
+                        else if (enemy.type === 'guardian') points = 1200;
+                        else if (enemy.type === 'elder_guardian') points = 3000;
                         else if (enemy.type === 'blaze') points = 1000;
                         else if (enemy.type === 'ghast') points = 1500;
                         else if (enemy.type === 'wither') points = 2500;

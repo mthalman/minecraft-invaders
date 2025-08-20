@@ -48,7 +48,7 @@ function movePlayer() {
 function createEnemies() {
     const canvasSize = getCanvasDimensions();
     
-    // Set enemy types based on selected dimension
+    // Set enemy types based on selected dimension and sub-dimension
     let enemyTypes;
     if (game.selectedDimension === 'nether') {
         enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
@@ -57,6 +57,19 @@ function createEnemies() {
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension combines all enemies from all dimensions
         enemyTypes = ['zombie', 'creeper', 'skeleton', 'piglin', 'zombie_piglin', 'wither_skeleton', 'enderman'];
+    } else if (game.selectedDimension === 'overworld') {
+        if (game.selectedSubDimension === 'woodland-mansion') {
+            enemyTypes = ['vex', 'vindicator'];
+        } else if (game.selectedSubDimension === 'trial-chamber') {
+            // Trial Chamber: All Overworld bosses as regular enemies
+            enemyTypes = ['witch', 'evoker', 'ravager', 'warden'];
+        } else if (game.selectedSubDimension === 'ocean-monument') {
+            // Ocean Monument: Drowned enemies
+            enemyTypes = ['drowned'];
+        } else {
+            // Normal overworld or fallback
+            enemyTypes = ['zombie', 'creeper', 'skeleton'];
+        }
     } else {
         enemyTypes = ['zombie', 'creeper', 'skeleton'];
     }
@@ -326,6 +339,19 @@ function getEnemyTypeForLevel(level, index, totalEnemies) {
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension combines all enemies from all dimensions
         enemyTypes = ['zombie', 'creeper', 'skeleton', 'piglin', 'zombie_piglin', 'wither_skeleton', 'enderman'];
+    } else if (game.selectedDimension === 'overworld') {
+        if (game.selectedSubDimension === 'woodland-mansion') {
+            enemyTypes = ['vex', 'vindicator'];
+        } else if (game.selectedSubDimension === 'trial-chamber') {
+            // Trial Chamber: All Overworld bosses as regular enemies
+            enemyTypes = ['witch', 'evoker', 'ravager', 'warden'];
+        } else if (game.selectedSubDimension === 'ocean-monument') {
+            // Ocean Monument: Drowned enemies
+            enemyTypes = ['drowned'];
+        } else {
+            // Normal overworld or fallback
+            enemyTypes = ['zombie', 'creeper', 'skeleton'];
+        }
     } else {
         enemyTypes = ['zombie', 'creeper', 'skeleton'];
     }
@@ -339,9 +365,9 @@ function getBossTypeForLevel(level) {
         const netherBossTypes = ['blaze', 'ghast', 'wither'];
         return netherBossTypes[bossIndex];
     } else if (game.selectedDimension === 'end') {
-        // End bosses: Shulker, Ender Dragon (alternating)
-        const bossIndex = Math.floor((level / 5) - 1) % 2;
-        const endBossTypes = ['shulker', 'ender_dragon'];
+        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite (cycling through 4)
+        const bossIndex = Math.floor((level / 5) - 1) % 4;
+        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite'];
         return endBossTypes[bossIndex];
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension: Overworld → Nether → End progression
@@ -352,13 +378,33 @@ function getBossTypeForLevel(level) {
             // Nether bosses next
             'blaze', 'ghast', 'wither',
             // End bosses last
-            'shulker', 'ender_dragon'
+            'shulker', 'ender_dragon', 'endwither', 'the_endermite'
         ];
         return allBosses[bossIndex % allBosses.length];
+    } else if (game.selectedDimension === 'overworld') {
+        if (game.selectedSubDimension === 'woodland-mansion') {
+            // Woodland Mansion bosses: Only progressive Evokers
+            return 'evoker';
+        } else if (game.selectedSubDimension === 'trial-chamber') {
+            // Trial Chamber bosses: Witch, Evoker, Ravager, Warden, Breeze (cycling through 5)
+            const trialBossIndex = Math.floor((level / 5) - 1) % 5;
+            const trialBossTypes = ['witch', 'evoker', 'ravager', 'warden', 'breeze'];
+            return trialBossTypes[trialBossIndex];
+        } else if (game.selectedSubDimension === 'ocean-monument') {
+            // Ocean Monument bosses: Guardian, Elder Guardian (alternating)
+            const oceanBossIndex = Math.floor((level / 5) - 1) % 2;
+            const oceanBossTypes = ['guardian', 'elder_guardian'];
+            return oceanBossTypes[oceanBossIndex];
+        } else {
+            // Normal Overworld bosses: Creepernado, Witch, Evoker, Ravager, Warden (cycling through 5)
+            const overworldBossIndex = Math.floor((level / 5) - 1) % 5;
+            const overworldBossTypes = ['creepernado', 'witch', 'evoker', 'ravager', 'warden'];
+            return overworldBossTypes[overworldBossIndex];
+        }
     } else {
-        // Overworld bosses: Witch, Evoker, Ravager, Warden (cycling through 4)
-        const overworldBossIndex = Math.floor((level / 5) - 1) % 4;
-        const overworldBossTypes = ['witch', 'evoker', 'ravager', 'warden'];
+        // Fallback to overworld bosses
+        const overworldBossIndex = Math.floor((level / 5) - 1) % 5;
+        const overworldBossTypes = ['creepernado', 'witch', 'evoker', 'ravager', 'warden'];
         return overworldBossTypes[overworldBossIndex];
     }
 }
@@ -366,19 +412,60 @@ function getBossTypeForLevel(level) {
 function getBossHealth(bossType) {
     const healthMap = {
         // Overworld bosses
+        'creepernado': 25,   // New tornado boss - moderate difficulty for first boss
         'witch': 20,
         'evoker': 30,
         'ravager': 40,
         'warden': 50,
+        'breeze': 35,
+        // Ocean Monument bosses
+        'guardian': 30,
+        'elder_guardian': 80,
         // Nether bosses
         'blaze': 20,
         'ghast': 30,
         'wither': 50,
         // End bosses
         'shulker': 100,
-        'ender_dragon': 200
+        'ender_dragon': 200,
+        'endwither': 150,
+        'the_endermite': 170
     };
-    return healthMap[bossType] || 1;
+    
+    let baseHealth = healthMap[bossType] || 1;
+    
+    // Progressive difficulty for Woodland Mansion Evokers
+    if (game.selectedDimension === 'overworld' && 
+        game.selectedSubDimension === 'woodland-mansion' && 
+        bossType === 'evoker') {
+        // Each Evoker gets progressively stronger; health goes up by 20
+        const evokerNumber = Math.floor((game.level / 5) - 1) + 1; // 1st, 2nd, 3rd, etc.
+        baseHealth = 30 + (evokerNumber - 1) * 20; // 30, 50, 70, 90, etc.
+    }
+    
+    return baseHealth;
+}
+
+function getRegularEnemyHealth(enemyType) {
+    // Special health for Trial Chamber (bosses as regular enemies)
+    if (game.selectedDimension === 'overworld' && game.selectedSubDimension === 'trial-chamber') {
+        const trialEnemyHealth = {
+            'witch': 8,      // Reduced from boss health of 20
+            'evoker': 10,    // Reduced from boss health of 30
+            'ravager': 12,   // Reduced from boss health of 40
+            'warden': 15     // Reduced from boss health of 50
+        };
+        return trialEnemyHealth[enemyType] || 1;
+    }
+    
+    // Normal enemy health
+    if (enemyType === 'enderman') {
+        return 3;
+    } else if (enemyType === 'drowned') {
+        return 2; // Drowneds are slightly tougher than regular zombies
+    } else {
+        return 1;
+    }
 }
 
 function spawnEnemies() {
@@ -413,8 +500,8 @@ function spawnEnemies() {
         capturedPlayer: null,
         canCapture: false,
         isBoss: spawnData.isBoss || false,
-        maxHealth: spawnData.isBoss ? getBossHealth(spawnData.type) : (spawnData.type === 'enderman' ? 3 : 1),
-        health: spawnData.isBoss ? getBossHealth(spawnData.type) : (spawnData.type === 'enderman' ? 3 : 1)
+        maxHealth: spawnData.isBoss ? getBossHealth(spawnData.type) : getRegularEnemyHealth(spawnData.type),
+        health: spawnData.isBoss ? getBossHealth(spawnData.type) : getRegularEnemyHealth(spawnData.type)
     };
     
     enemy.element.innerHTML = sprites[spawnData.type];
@@ -458,10 +545,27 @@ function getEnemyDimensions(enemy) {
         } else if (enemy.type === 'ender_dragon') {
             width = 160;
             height = 120;
+        } else if (enemy.type === 'endwither') {
+            width = 120;
+            height = 180;
+        } else if (enemy.type === 'the_endermite') {
+            width = 120;
+            height = 180;
         } else {
             // Default boss size for overworld bosses
             width = 80;
             height = 80;
+        }
+    } else {
+        // Special sizes for specific enemy types
+        if (enemy.type === 'vex') {
+            // Vexes are quite small, about as small as eggs
+            width = 20;
+            height = 24;
+        } else if (enemy.type === 'vindicator') {
+            // Vindicators are normal size
+            width = 60;
+            height = 60;
         }
     }
     
@@ -606,7 +710,7 @@ function flyBackUp(enemy, speedMultiplier) {
         }
         
         // Free up formation position
-        if (enemy.formationIndex !== undefined) {
+        if (enemy.formationIndex !== undefined && enemy.formationIndex >= 0 && game.formationPositions[enemy.formationIndex]) {
             game.formationPositions[enemy.formationIndex].occupied = false;
         }
     }
