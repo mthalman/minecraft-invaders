@@ -116,6 +116,9 @@ function enemyShoot() {
             } else if (enemy.type === 'the_endermite') {
                 customCooldown = 600; // THE Endermite shoots ender pearls and spawns small endermites
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4;
+            } else if (enemy.type === 'end_golem') {
+                customCooldown = 400; // End Golem shoots ender pearls much more frequently
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 6;
             } else if (enemy.type === 'breeze') {
                 customCooldown = 800; // Breeze wind charges and tornado
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 3;
@@ -162,6 +165,8 @@ function enemyShoot() {
                     createEndwitherTripleEndermanHeads(enemy, now);
                 } else if (enemy.type === 'the_endermite') {
                     createTheEndermiteAttack(enemy, now);
+                } else if (enemy.type === 'end_golem') {
+                    createEndGolemAttack(enemy, now);
                 } else if (enemy.type === 'breeze') {
                     createBreezeAttack(enemy, now);
                 } else if (enemy.type === 'guardian') {
@@ -683,6 +688,82 @@ function createSmallEndermiteEnderPearl(enemy, now) {
     game.canvas.appendChild(projectile.element);
 }
 
+function createEndGolemAttack(enemy, now) {
+    // End Golem alternates between ender pearls and giant beam attack every 10 seconds
+    
+    // Initialize beam timer if not exists
+    if (!enemy.lastBeamTime) {
+        enemy.lastBeamTime = 0;
+    }
+    
+    // Check if it's time for a beam attack (every 10 seconds)
+    if (now - enemy.lastBeamTime > 10000) {
+        // Giant beam attack
+        createEndGolemBeam(enemy, now);
+        enemy.lastBeamTime = now;
+    } else {
+        // Regular ender pearl attack
+        const projectile = {
+            element: createSprite('enemy-projectile', enemy.x + 60, enemy.y + 90),
+            x: enemy.x + 60,
+            y: enemy.y + 90,
+            speed: 4 + (game.level * 0.3),
+            damage: 3
+        };
+        projectile.element.innerHTML = sprites.enderPearl;
+        projectile.element.style.filter = 'brightness(1.3) drop-shadow(0 0 10px #ec407a)';
+        projectile.element.style.transform = 'scale(1.2)'; // Larger ender pearl
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+    }
+}
+
+function createEndGolemBeam(enemy, now) {
+    // Create a giant vertical beam that travels down the screen
+    const canvasSize = getCanvasDimensions();
+    
+    // Beam starts from the golem and extends downward to the bottom of screen
+    const beam = {
+        element: createSprite('enemy-projectile', enemy.x + 50, enemy.y + 160),
+        x: enemy.x + 50,
+        y: enemy.y + 160,
+        width: 60, // Beam width
+        height: canvasSize.height - (enemy.y + 160), // Extends to bottom of screen
+        speed: 8, // Beam moves downward
+        damage: 5,
+        isBeam: true,
+        lifetime: 3000, // Beam lasts for 3 seconds
+        startTime: now
+    };
+    
+    // Create beam visual - a wide vertical purple rectangle
+    beam.element.innerHTML = `
+        <div style="
+            width: ${beam.width}px; 
+            height: ${beam.height}px; 
+            background: linear-gradient(180deg, #ec407a 0%, #ad1457 50%, #8e24aa 100%); 
+            box-shadow: 0 0 30px #ec407a, inset 0 0 15px rgba(255,255,255,0.3); 
+            border-radius: 8px;
+            animation: beamPulse 0.2s infinite alternate;
+        "></div>
+        <style>
+            @keyframes beamPulse {
+                from { 
+                    opacity: 0.9; 
+                    box-shadow: 0 0 30px #ec407a, inset 0 0 15px rgba(255,255,255,0.3);
+                }
+                to { 
+                    opacity: 1; 
+                    box-shadow: 0 0 50px #ec407a, inset 0 0 25px rgba(255,255,255,0.5);
+                }
+            }
+        </style>
+    `;
+    
+    game.enemyProjectiles.push(beam);
+    game.canvas.appendChild(beam.element);
+}
+
 function createBreezeAttack(enemy, now) {
     // Breeze alternates between wind charges and tornado special
     if (Math.random() < 0.7) {
@@ -815,6 +896,22 @@ function moveProjectiles() {
             projectile.element.style.transform = `rotate(${projectile.rotation}deg)`;
             projectile.element.style.left = projectile.x + 'px';
             projectile.element.style.top = projectile.y + 'px';
+        } else if (projectile.isBeam) {
+            // Beam moves downward and check lifetime
+            projectile.y += projectile.speed;
+            projectile.element.style.top = projectile.y + 'px';
+            
+            const now = Date.now();
+            const canvasSize = getCanvasDimensions();
+            
+            // Remove beam if it goes off screen or exceeds lifetime
+            if (now - projectile.startTime > projectile.lifetime || projectile.y > canvasSize.height) {
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
+                continue;
+            }
         } else {
             // Normal projectile movement
             projectile.y += projectile.speed;
@@ -1107,10 +1204,23 @@ function checkCollisions() {
         const projectile = game.enemyProjectiles[index];
         if (!projectile || !projectile.element) continue;
         
-        if (projectile.x < game.player.x + 100 &&
-            projectile.x + 20 > game.player.x &&
-            projectile.y < game.player.y + 80 &&
-            projectile.y + 20 > game.player.y) {
+        // Handle beam collision differently due to its size
+        let collision = false;
+        if (projectile.isBeam) {
+            // Beam collision - check if player intersects with the beam area
+            collision = (game.player.x < projectile.x + projectile.width &&
+                        game.player.x + 100 > projectile.x &&
+                        game.player.y < projectile.y + projectile.height &&
+                        game.player.y + 80 > projectile.y);
+        } else {
+            // Normal projectile collision
+            collision = (projectile.x < game.player.x + 100 &&
+                        projectile.x + 20 > game.player.x &&
+                        projectile.y < game.player.y + 80 &&
+                        projectile.y + 20 > game.player.y);
+        }
+        
+        if (collision) {
             
             // Check for invincibility (Golden Apple)
             const now = Date.now();
@@ -1123,11 +1233,14 @@ function checkCollisions() {
                 continue;
             }
             
-            // Safe removal with existence check
-            if (projectile.element && projectile.element.parentNode) {
-                game.canvas.removeChild(projectile.element);
+            // Beams don't get removed on collision (they last their full duration)
+            if (!projectile.isBeam) {
+                // Safe removal with existence check
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
             }
-            game.enemyProjectiles.splice(index, 1);
             
             sounds.hit();
             

@@ -365,9 +365,9 @@ function getBossTypeForLevel(level) {
         const netherBossTypes = ['blaze', 'ghast', 'wither'];
         return netherBossTypes[bossIndex];
     } else if (game.selectedDimension === 'end') {
-        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite (cycling through 4)
-        const bossIndex = Math.floor((level / 5) - 1) % 4;
-        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite'];
+        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite, End Golem (cycling through 5)
+        const bossIndex = Math.floor((level / 5) - 1) % 5;
+        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem'];
         return endBossTypes[bossIndex];
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension: Overworld → Nether → End progression
@@ -426,6 +426,7 @@ function getBossHealth(bossType) {
         'ghast': 30,
         'wither': 50,
         // End bosses
+        'end_golem': 250,
         'shulker': 100,
         'ender_dragon': 200,
         'endwither': 150,
@@ -549,6 +550,9 @@ function getEnemyDimensions(enemy) {
             width = 120;
             height = 180;
         } else if (enemy.type === 'the_endermite') {
+            width = 120;
+            height = 180;
+        } else if (enemy.type === 'end_golem') {
             width = 120;
             height = 180;
         } else {
