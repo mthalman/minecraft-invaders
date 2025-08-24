@@ -34,7 +34,10 @@ const game = {
     lastEnemySpawn: 0,
     formationComplete: false,
     selectedDimension: 'overworld',
-    selectedSubDimension: 'normal'
+    selectedSubDimension: 'normal',
+    selectedPet: 'wolf',
+    pet: null,
+    petProjectiles: []
 };
 
 // Initialize UI

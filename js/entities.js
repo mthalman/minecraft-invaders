@@ -856,3 +856,199 @@ function startCaptureAttack() {
     const enemy = capableEnemies[Math.floor(Math.random() * capableEnemies.length)];
     enemy.state = 'capturing';
 }
+
+// Pet functions
+function createPet() {
+    if (!game.selectedPet) return;
+    
+    const canvasSize = getCanvasDimensions();
+    const petStats = getPetStats(game.selectedPet);
+    
+    game.pet = {
+        element: createSprite('pet', game.player.x - 80, game.player.y + 20),
+        x: game.player.x - 80,
+        y: game.player.y + 20,
+        type: game.selectedPet,
+        speed: petStats.speed,
+        health: 50 + (game.level - 1), // 50 base health + 1 per level completed
+        maxHealth: 50 + (game.level - 1),
+        damage: petStats.damage,
+        shootCooldown: petStats.shootCooldown,
+        lastShot: 0,
+        targetX: game.player.x - 80,
+        targetY: game.player.y + 20,
+        randomMovement: {
+            lastDirectionChange: Date.now(),
+            directionX: Math.random() * 2 - 1,
+            directionY: Math.random() * 2 - 1
+        }
+    };
+    
+    game.pet.element.innerHTML = sprites[game.selectedPet];
+    game.canvas.appendChild(game.pet.element);
+}
+
+function getPetStats(petType) {
+    const stats = {
+        wolf: { speed: 4, damage: 2, shootCooldown: 1000 },
+        snow_fox: { speed: 6, damage: 1, shootCooldown: 600 },
+        baby_ghast: { speed: 3, damage: 3, shootCooldown: 1200 },
+        endermite: { speed: 8, damage: 1, shootCooldown: 400 },
+        polar_bear: { speed: 2, damage: 4, shootCooldown: 1500 }
+    };
+    
+    return stats[petType] || stats.wolf;
+}
+
+function movePet() {
+    if (!game.pet || !game.player) return;
+    
+    const now = Date.now();
+    const canvasSize = getCanvasDimensions();
+    
+    // Check for freeze effect
+    let speedMultiplier = 1;
+    if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
+        speedMultiplier = 0.8; // Pets slow down slightly but not as much as enemies
+    } else if (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) {
+        speedMultiplier = 0.9; // Pets barely affected
+    }
+    
+    // Random movement behavior with some player following
+    const timeSinceDirectionChange = now - game.pet.randomMovement.lastDirectionChange;
+    
+    if (timeSinceDirectionChange > 2000 + Math.random() * 3000) {
+        // Change direction every 2-5 seconds
+        game.pet.randomMovement.directionX = Math.random() * 2 - 1;
+        game.pet.randomMovement.directionY = Math.random() * 2 - 1;
+        game.pet.randomMovement.lastDirectionChange = now;
+    }
+    
+    // Move randomly but stay near player
+    const playerCenterX = game.player.x + 50;
+    const playerCenterY = game.player.y + 40;
+    const petCenterX = game.pet.x + 25;
+    const petCenterY = game.pet.y + 20;
+    
+    // Calculate distance to player
+    const distanceToPlayer = Math.sqrt(
+        Math.pow(playerCenterX - petCenterX, 2) + 
+        Math.pow(playerCenterY - petCenterY, 2)
+    );
+    
+    let moveX = 0, moveY = 0;
+    
+    if (distanceToPlayer > 200) {
+        // Too far from player, move towards player
+        const dx = playerCenterX - petCenterX;
+        const dy = playerCenterY - petCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        moveX = (dx / distance) * game.pet.speed * speedMultiplier;
+        moveY = (dy / distance) * game.pet.speed * speedMultiplier;
+    } else if (distanceToPlayer < 50) {
+        // Too close to player, move away slightly
+        const dx = petCenterX - playerCenterX;
+        const dy = petCenterY - playerCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance > 0) {
+            moveX = (dx / distance) * game.pet.speed * 0.5 * speedMultiplier;
+            moveY = (dy / distance) * game.pet.speed * 0.5 * speedMultiplier;
+        }
+    } else {
+        // Move randomly around the player
+        moveX = game.pet.randomMovement.directionX * game.pet.speed * 0.7 * speedMultiplier;
+        moveY = game.pet.randomMovement.directionY * game.pet.speed * 0.7 * speedMultiplier;
+    }
+    
+    // Apply movement with bounds checking
+    game.pet.x += moveX;
+    game.pet.y += moveY;
+    
+    // Keep pet on screen and away from top enemies
+    const minY = canvasSize.height * 0.5; // Pet stays in bottom half
+    game.pet.x = Math.max(10, Math.min(canvasSize.width - 60, game.pet.x));
+    game.pet.y = Math.max(minY, Math.min(canvasSize.height - 60, game.pet.y));
+    
+    // Update pet element position
+    game.pet.element.style.left = game.pet.x + 'px';
+    game.pet.element.style.top = game.pet.y + 'px';
+    
+    // Pet shooting
+    petShoot();
+}
+
+function petShoot() {
+    if (!game.pet || !game.gameRunning) return;
+    
+    const now = Date.now();
+    
+    if (now - game.pet.lastShot < game.pet.shootCooldown) return;
+    
+    // Find nearest enemy to shoot at
+    let nearestEnemy = null;
+    let nearestDistance = Infinity;
+    
+    game.enemies.forEach(enemy => {
+        const dx = enemy.x - game.pet.x;
+        const dy = enemy.y - game.pet.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Only shoot at enemies that are in reasonable range and not too close to player
+        if (distance < 400 && distance > 100 && distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestEnemy = enemy;
+        }
+    });
+    
+    if (nearestEnemy) {
+        // Calculate direction to enemy
+        const dx = nearestEnemy.x - game.pet.x;
+        const dy = nearestEnemy.y - game.pet.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        const projectile = {
+            element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
+            x: game.pet.x + 25,
+            y: game.pet.y + 10,
+            velocityX: (dx / distance) * 8,
+            velocityY: (dy / distance) * 8,
+            damage: game.pet.damage,
+            fromPet: true
+        };
+        
+        // Set projectile sprite based on pet type
+        if (game.pet.type === 'baby_ghast' && sprites.fireball) {
+            projectile.element.innerHTML = sprites.fireball;
+        } else if (game.pet.type === 'endermite' && sprites.snowball) {
+            projectile.element.innerHTML = sprites.snowball; // Use snowball for endermite
+        } else {
+            projectile.element.innerHTML = sprites.egg; // Default egg projectile
+        }
+        
+        game.petProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+        game.pet.lastShot = now;
+    }
+}
+
+function movePetProjectiles() {
+    const canvasSize = getCanvasDimensions();
+    
+    game.petProjectiles.forEach((projectile, index) => {
+        projectile.x += projectile.velocityX;
+        projectile.y += projectile.velocityY;
+        
+        projectile.element.style.left = projectile.x + 'px';
+        projectile.element.style.top = projectile.y + 'px';
+        
+        // Remove projectiles that go off screen
+        if (projectile.x < -20 || projectile.x > canvasSize.width + 20 || 
+            projectile.y < -20 || projectile.y > canvasSize.height + 20) {
+            
+            if (projectile.element && projectile.element.parentNode) {
+                game.canvas.removeChild(projectile.element);
+            }
+            game.petProjectiles.splice(index, 1);
+        }
+    });
+}

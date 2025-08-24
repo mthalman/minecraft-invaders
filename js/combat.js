@@ -1176,6 +1176,30 @@ function checkCollisions() {
         }
     }
     
+    // Pet vs power-ups - check collision
+    if (game.pet) {
+        for (let index = powerUps.items.length - 1; index >= 0; index--) {
+            const powerUp = powerUps.items[index];
+            if (!powerUp || !powerUp.element || !game.pet) continue;
+            
+            if (game.pet.x < powerUp.x + 40 &&
+                game.pet.x + 50 > powerUp.x &&
+                game.pet.y < powerUp.y + 40 &&
+                game.pet.y + 40 > powerUp.y) {
+                
+                // Collect power-up
+                if (powerUp.element && powerUp.element.parentNode) {
+                    game.canvas.removeChild(powerUp.element);
+                }
+                powerUps.items.splice(index, 1);
+                
+                activatePowerUp(powerUp.type);
+                sounds.shoot(); // Collection sound
+                break; // Exit loop after collecting one power-up
+            }
+        }
+    }
+    
     // Player projectiles vs power-ups (alternative collection method)
     for (let pIndex = game.projectiles.length - 1; pIndex >= 0; pIndex--) {
         const projectile = game.projectiles[pIndex];
@@ -1204,6 +1228,224 @@ function checkCollisions() {
                 activatePowerUp(powerUp.type);
                 sounds.shoot(); // Collection sound
                 break;
+            }
+        }
+    }
+    
+    // Pet projectiles vs enemies
+    for (let pIndex = game.petProjectiles.length - 1; pIndex >= 0; pIndex--) {
+        const projectile = game.petProjectiles[pIndex];
+        if (!projectile || !projectile.element) continue;
+        
+        for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+            const enemy = game.enemies[eIndex];
+            if (!enemy || !enemy.element) continue;
+            
+            const enemyDimensions = getEnemyDimensions(enemy);
+            if (projectile.x < enemy.x + enemyDimensions.width &&
+                projectile.x + 16 > enemy.x &&
+                projectile.y < enemy.y + enemyDimensions.height &&
+                projectile.y + 24 > enemy.y) {
+                
+                // Remove projectile
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.petProjectiles.splice(pIndex, 1);
+                
+                // Damage enemy
+                if (enemy.isBoss) {
+                    enemy.health -= projectile.damage;
+                    
+                    // Update boss health display
+                    updateBossHealth(enemy.health, enemy.maxHealth);
+                    
+                    // Visual indication of boss taking damage
+                    enemy.element.style.filter = 'brightness(1.5)';
+                    setTimeout(() => {
+                        if (enemy.element) {
+                            enemy.element.style.filter = '';
+                        }
+                    }, 100);
+                    
+                    if (enemy.health <= 0) {
+                        // Boss defeated by pet
+                        if (enemy.element && enemy.element.parentNode) {
+                            game.canvas.removeChild(enemy.element);
+                        }
+                        
+                        let points = 500 + (game.level - 1) * 50;
+                        if (enemy.type === 'witch') points = 1000;
+                        else if (enemy.type === 'evoker') points = 1500;
+                        else if (enemy.type === 'ravager') points = 2000;
+                        else if (enemy.type === 'warden') points = 2500;
+                        else if (enemy.type === 'guardian') points = 1200;
+                        else if (enemy.type === 'elder_guardian') points = 3000;
+                        else if (enemy.type === 'blaze') points = 1000;
+                        else if (enemy.type === 'ghast') points = 1500;
+                        else if (enemy.type === 'wither') points = 2500;
+                        
+                        game.score += Math.floor(points * 0.5); // Pet kills worth half points
+                        game.enemiesDefeated++;
+                        game.enemies.splice(eIndex, 1);
+                        
+                        // Hide boss health bar when boss is defeated
+                        hideBossHealth();
+                    } else {
+                        // Boss damaged by pet
+                        let points = 25;
+                        game.score += points;
+                        document.getElementById('score').textContent = game.score;
+                        updateHighScore();
+                    }
+                } else {
+                    // Regular enemy - check if it has multiple health
+                    enemy.health -= projectile.damage;
+                    
+                    if (enemy.health <= 0) {
+                        // Enemy defeated by pet
+                        if (enemy.element && enemy.element.parentNode) {
+                            game.canvas.removeChild(enemy.element);
+                        }
+                        
+                        let points = 100 + (game.level - 1) * 10;
+                        if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+                        else if (enemy.type === 'enderman') points = 200 + (game.level - 1) * 20;
+                        
+                        game.score += Math.floor(points * 0.5); // Pet kills worth half points
+                        game.enemiesDefeated++;
+                        game.enemies.splice(eIndex, 1);
+                        
+                        // Free up formation position
+                        if (enemy.formationIndex !== undefined && enemy.formationIndex >= 0 && game.formationPositions[enemy.formationIndex]) {
+                            game.formationPositions[enemy.formationIndex].occupied = false;
+                        }
+                    } else {
+                        // Enemy damaged by pet
+                        enemy.element.style.filter = 'brightness(1.3)';
+                        setTimeout(() => {
+                            if (enemy.element) {
+                                enemy.element.style.filter = '';
+                            }
+                        }, 100);
+                        
+                        let points = 10;
+                        game.score += points;
+                        document.getElementById('score').textContent = game.score;
+                        updateHighScore();
+                    }
+                }
+                
+                break; // Projectile hit, no need to check more enemies
+            }
+        }
+    }
+    
+    // Enemy projectiles vs pet
+    if (game.pet) {
+        for (let pIndex = game.enemyProjectiles.length - 1; pIndex >= 0; pIndex--) {
+            const projectile = game.enemyProjectiles[pIndex];
+            if (!projectile || !projectile.element || !game.pet) continue;
+            
+            // Check collision with pet
+            if (projectile.x < game.pet.x + 50 &&
+                projectile.x + 16 > game.pet.x &&
+                projectile.y < game.pet.y + 40 &&
+                projectile.y + 24 > game.pet.y) {
+                
+                // Remove projectile
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(pIndex, 1);
+                
+                // Damage pet
+                game.pet.health--;
+                
+                // Visual indication of pet taking damage
+                game.pet.element.style.filter = 'brightness(1.5) hue-rotate(320deg)';
+                setTimeout(() => {
+                    if (game.pet && game.pet.element) {
+                        game.pet.element.style.filter = '';
+                    }
+                }, 200);
+                
+                // Check if pet died
+                if (game.pet.health <= 0) {
+                    // Remove pet from game
+                    if (game.pet.element && game.pet.element.parentNode) {
+                        game.canvas.removeChild(game.pet.element);
+                    }
+                    game.pet = null;
+                    
+                    // Clear any remaining pet projectiles
+                    game.petProjectiles.forEach(petProjectile => {
+                        if (petProjectile.element && petProjectile.element.parentNode) {
+                            game.canvas.removeChild(petProjectile.element);
+                        }
+                    });
+                    game.petProjectiles = [];
+                }
+                
+                break;
+            }
+        }
+        
+        // Direct enemy-pet collision - check if pet still exists
+        if (game.pet) {
+            for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+                const enemy = game.enemies[eIndex];
+                if (!enemy || !enemy.element) continue;
+                
+                const enemyDimensions = getEnemyDimensions(enemy);
+                if (enemy.x < game.pet.x + 50 &&
+                    enemy.x + enemyDimensions.width > game.pet.x &&
+                    enemy.y < game.pet.y + 40 &&
+                    enemy.y + enemyDimensions.height > game.pet.y) {
+                
+                // Pet hit by enemy directly
+                game.pet.health -= 2; // Direct collision does more damage
+                
+                // Visual indication of pet taking damage
+                game.pet.element.style.filter = 'brightness(1.5) hue-rotate(320deg)';
+                setTimeout(() => {
+                    if (game.pet && game.pet.element) {
+                        game.pet.element.style.filter = '';
+                    }
+                }, 200);
+                
+                // Remove the enemy that hit the pet (non-boss enemies)
+                if (!enemy.isBoss) {
+                    if (enemy.element && enemy.element.parentNode) {
+                        game.canvas.removeChild(enemy.element);
+                    }
+                    game.enemies.splice(eIndex, 1);
+                    
+                    // Free up formation position
+                    if (enemy.formationIndex !== undefined && enemy.formationIndex >= 0 && game.formationPositions[enemy.formationIndex]) {
+                        game.formationPositions[enemy.formationIndex].occupied = false;
+                    }
+                }
+                
+                // Check if pet died
+                if (game.pet.health <= 0) {
+                    // Remove pet from game
+                    if (game.pet.element && game.pet.element.parentNode) {
+                        game.canvas.removeChild(game.pet.element);
+                    }
+                    game.pet = null;
+                    
+                    // Clear any remaining pet projectiles
+                    game.petProjectiles.forEach(petProjectile => {
+                        if (petProjectile.element && petProjectile.element.parentNode) {
+                            game.canvas.removeChild(petProjectile.element);
+                        }
+                    });
+                    game.petProjectiles = [];
+                }
+                
+                    break;
+                }
             }
         }
     }

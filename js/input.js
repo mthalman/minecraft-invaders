@@ -4,11 +4,23 @@
 document.addEventListener('keydown', (e) => {
     game.keys[e.code] = true;
     
-    // Start game with Enter key
+    // Handle Enter key for game flow
     if (e.code === 'Enter' && !game.gameStarted) {
         e.preventDefault();
-        startGame();
-        return;
+        
+        // Check if we're on the dimension selection screen
+        const startScreen = document.getElementById('startScreen');
+        const petSelection = document.getElementById('petSelection');
+        
+        if (!startScreen.classList.contains('hidden')) {
+            // Move from dimension selection to pet selection
+            showPetSelection();
+            return;
+        } else if (!petSelection.classList.contains('hidden')) {
+            // Start the game from pet selection
+            startGame();
+            return;
+        }
     }
     
     // Try to play start music on first interaction if not started
@@ -89,4 +101,47 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+    
+    // Pet selection event listeners
+    const petOptions = document.querySelectorAll('.pet-option');
+    
+    petOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove selected class from all pet options
+            petOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            option.classList.add('selected');
+            
+            // Update game state
+            game.selectedPet = option.dataset.pet;
+        });
+    });
 });
+
+// Pet selection screen functions
+function showPetSelection() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('petSelection').style.display = 'flex';
+    
+    // Initialize pet sprites in the selection screen
+    initPetSprites();
+}
+
+function initPetSprites() {
+    // Add sprites to pet selection screen
+    const petSprites = {
+        'wolfSprite': 'wolf',
+        'snowFoxSprite': 'snow_fox', 
+        'babyGhastSprite': 'baby_ghast',
+        'endermiteSprite': 'endermite',
+        'polarBearSprite': 'polar_bear'
+    };
+    
+    Object.entries(petSprites).forEach(([elementId, spriteType]) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = sprites[spriteType];
+        }
+    });
+}

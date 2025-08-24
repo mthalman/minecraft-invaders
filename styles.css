@@ -519,3 +519,89 @@
                 background-position: 20% 20%, 30% 30%, 40% 40%, 50% 50%, 60% 60%, 70% 70%, 0% 0%;
             }
         }
+
+        /* Pet Selection Styles */
+        .pet-selection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+        }
+
+        .pet-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .pet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+        }
+
+        .pet-option {
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid #555;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pet-option:hover {
+            border-color: #00aa00;
+            background: rgba(0, 170, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .pet-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .pet-sprite {
+            width: 80px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pet-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .pet-description {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        .pet-selection.hidden {
+            display: none;
+        }

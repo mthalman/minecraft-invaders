@@ -1726,6 +1726,148 @@ const sprites = {
 <rect x="310" y="560" width="180" height="120" fill="#D32F2F"/>
 <rect x="300" y="760" width="200" height="120" fill="#111111"/>
 </svg>
+    `,
+    
+    // Pet sprites
+    wolf: `
+        <svg width="45" height="35" viewBox="0 0 45 35">
+            <!-- Body -->
+            <rect x="10" y="18" width="25" height="12" fill="#8B8680"/>
+            <rect x="8" y="20" width="29" height="8" fill="#A0A0A0"/>
+            <!-- Head -->
+            <rect x="5" y="8" width="18" height="15" fill="#8B8680"/>
+            <rect x="3" y="10" width="22" height="11" fill="#A0A0A0"/>
+            <!-- Ears -->
+            <rect x="6" y="3" width="6" height="8" fill="#696969"/>
+            <rect x="16" y="3" width="6" height="8" fill="#696969"/>
+            <!-- Eyes -->
+            <rect x="9" y="12" width="3" height="3" fill="#000000"/>
+            <rect x="16" y="12" width="3" height="3" fill="#000000"/>
+            <rect x="10" y="13" width="1" height="1" fill="#FFFFFF"/>
+            <rect x="17" y="13" width="1" height="1" fill="#FFFFFF"/>
+            <!-- Nose -->
+            <rect x="13" y="16" width="2" height="2" fill="#000000"/>
+            <!-- Tail -->
+            <rect x="35" y="15" width="8" height="6" fill="#8B8680"/>
+            <!-- Legs -->
+            <rect x="12" y="30" width="4" height="5" fill="#696969"/>
+            <rect x="20" y="30" width="4" height="5" fill="#696969"/>
+            <rect x="26" y="30" width="4" height="5" fill="#696969"/>
+            <rect x="32" y="30" width="4" height="5" fill="#696969"/>
+        </svg>
+    `,
+    
+    snow_fox: `
+        <svg width="40" height="30" viewBox="0 0 40 30">
+            <!-- Body -->
+            <rect x="8" y="15" width="22" height="10" fill="#FFFFFF"/>
+            <rect x="6" y="17" width="26" height="6" fill="#F5F5F5"/>
+            <!-- Head -->
+            <rect x="3" y="6" width="16" height="12" fill="#FFFFFF"/>
+            <rect x="1" y="8" width="20" height="8" fill="#F5F5F5"/>
+            <!-- Ears -->
+            <rect x="5" y="2" width="4" height="6" fill="#FFFFFF"/>
+            <rect x="13" y="2" width="4" height="6" fill="#FFFFFF"/>
+            <rect x="6" y="3" width="2" height="4" fill="#FFB6C1"/>
+            <rect x="14" y="3" width="2" height="4" fill="#FFB6C1"/>
+            <!-- Eyes -->
+            <rect x="7" y="10" width="2" height="2" fill="#000000"/>
+            <rect x="13" y="10" width="2" height="2" fill="#000000"/>
+            <rect x="7.5" y="10.5" width="1" height="1" fill="#FFFFFF"/>
+            <rect x="13.5" y="10.5" width="1" height="1" fill="#FFFFFF"/>
+            <!-- Nose -->
+            <rect x="10" y="13" width="2" height="1" fill="#000000"/>
+            <!-- Tail -->
+            <rect x="30" y="10" width="8" height="8" fill="#FFFFFF"/>
+            <rect x="32" y="12" width="6" height="4" fill="#F5F5F5"/>
+            <!-- Legs -->
+            <rect x="10" y="25" width="3" height="4" fill="#DCDCDC"/>
+            <rect x="16" y="25" width="3" height="4" fill="#DCDCDC"/>
+            <rect x="22" y="25" width="3" height="4" fill="#DCDCDC"/>
+            <rect x="27" y="25" width="3" height="4" fill="#DCDCDC"/>
+        </svg>
+    `,
+    
+    baby_ghast: `
+        <svg width="35" height="35" viewBox="0 0 35 35">
+            <!-- Main body (floating cube) -->
+            <rect x="5" y="8" width="25" height="20" fill="#F8F8FF"/>
+            <rect x="3" y="10" width="29" height="16" fill="#FFFFFF"/>
+            <!-- Face -->
+            <rect x="10" y="14" width="4" height="4" fill="#000000"/>
+            <rect x="21" y="14" width="4" height="4" fill="#000000"/>
+            <rect x="11" y="15" width="2" height="2" fill="#FF0000"/>
+            <rect x="22" y="15" width="2" height="2" fill="#FF0000"/>
+            <!-- Sad mouth -->
+            <rect x="15" y="20" width="6" height="2" fill="#000000"/>
+            <rect x="16" y="21" width="4" height="1" fill="#8B0000"/>
+            <!-- Baby tentacles (shorter) -->
+            <rect x="8" y="28" width="3" height="6" fill="#F0F8FF"/>
+            <rect x="13" y="28" width="3" height="5" fill="#F0F8FF"/>
+            <rect x="18" y="28" width="3" height="6" fill="#F0F8FF"/>
+            <rect x="23" y="28" width="3" height="5" fill="#F0F8FF"/>
+            <!-- Floating particles -->
+            <rect x="2" y="5" width="1" height="1" fill="#DDA0DD" opacity="0.7"/>
+            <rect x="32" y="6" width="1" height="1" fill="#DDA0DD" opacity="0.7"/>
+            <rect x="1" y="15" width="1" height="1" fill="#DDA0DD" opacity="0.5"/>
+            <rect x="33" y="20" width="1" height="1" fill="#DDA0DD" opacity="0.5"/>
+        </svg>
+    `,
+    
+    endermite: `
+        <svg width="25" height="20" viewBox="0 0 25 20">
+            <!-- Main body segments -->
+            <rect x="3" y="8" width="8" height="6" fill="#1a1a2e"/>
+            <rect x="9" y="7" width="8" height="8" fill="#16213e"/>
+            <rect x="15" y="8" width="8" height="6" fill="#1a1a2e"/>
+            <!-- Eyes -->
+            <rect x="5" y="9" width="2" height="2" fill="#8b00ff"/>
+            <rect x="8" y="9" width="2" height="2" fill="#8b00ff"/>
+            <rect x="5.5" y="9.5" width="1" height="1" fill="#ffffff"/>
+            <rect x="8.5" y="9.5" width="1" height="1" fill="#ffffff"/>
+            <!-- Legs -->
+            <rect x="2" y="14" width="2" height="3" fill="#0f0f23"/>
+            <rect x="6" y="14" width="2" height="3" fill="#0f0f23"/>
+            <rect x="10" y="14" width="2" height="3" fill="#0f0f23"/>
+            <rect x="14" y="14" width="2" height="3" fill="#0f0f23"/>
+            <rect x="18" y="14" width="2" height="3" fill="#0f0f23"/>
+            <rect x="22" y="14" width="2" height="3" fill="#0f0f23"/>
+            <!-- Teleport particles -->
+            <rect x="1" y="4" width="1" height="1" fill="#8b00ff" opacity="0.8"/>
+            <rect x="23" y="3" width="1" height="1" fill="#8b00ff" opacity="0.7"/>
+            <rect x="0" y="12" width="1" height="1" fill="#8b00ff" opacity="0.6"/>
+            <rect x="24" y="15" width="1" height="1" fill="#8b00ff" opacity="0.8"/>
+        </svg>
+    `,
+    
+    polar_bear: `
+        <svg width="50" height="40" viewBox="0 0 50 40">
+            <!-- Body -->
+            <rect x="10" y="20" width="30" height="15" fill="#F5F5F5"/>
+            <rect x="8" y="22" width="34" height="11" fill="#FFFFFF"/>
+            <!-- Head -->
+            <rect x="5" y="8" width="20" height="18" fill="#F5F5F5"/>
+            <rect x="3" y="10" width="24" height="14" fill="#FFFFFF"/>
+            <!-- Ears -->
+            <rect x="8" y="4" width="5" height="6" fill="#F5F5F5"/>
+            <rect x="17" y="4" width="5" height="6" fill="#F5F5F5"/>
+            <rect x="9" y="5" width="3" height="4" fill="#FFB6C1"/>
+            <rect x="18" y="5" width="3" height="4" fill="#FFB6C1"/>
+            <!-- Eyes -->
+            <rect x="10" y="14" width="3" height="3" fill="#000000"/>
+            <rect x="17" y="14" width="3" height="3" fill="#000000"/>
+            <rect x="11" y="15" width="1" height="1" fill="#FFFFFF"/>
+            <rect x="18" y="15" width="1" height="1" fill="#FFFFFF"/>
+            <!-- Nose -->
+            <rect x="14" y="18" width="2" height="2" fill="#000000"/>
+            <!-- Legs -->
+            <rect x="12" y="35" width="5" height="5" fill="#DCDCDC"/>
+            <rect x="20" y="35" width="5" height="5" fill="#DCDCDC"/>
+            <rect x="28" y="35" width="5" height="5" fill="#DCDCDC"/>
+            <rect x="36" y="35" width="5" height="5" fill="#DCDCDC"/>
+            <!-- Tail -->
+            <rect x="40" y="24" width="6" height="4" fill="#F5F5F5"/>
+        </svg>
     `
     };
 

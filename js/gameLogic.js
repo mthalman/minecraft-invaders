@@ -16,6 +16,22 @@ function levelComplete() {
     game.lives++;
     document.getElementById('lives').textContent = game.lives;
     
+    // Pet gains 1 health and has max health increased
+    if (game.pet) {
+        game.pet.maxHealth++;
+        game.pet.health++;
+        
+        // Visual indication of pet health restoration
+        if (game.pet.element) {
+            game.pet.element.style.filter = 'brightness(1.5) hue-rotate(120deg)';
+            setTimeout(() => {
+                if (game.pet && game.pet.element) {
+                    game.pet.element.style.filter = '';
+                }
+            }, 500);
+        }
+    }
+    
     // Bonus points for completing level
     const levelBonus = game.level * 500;
     game.score += levelBonus;
@@ -74,6 +90,8 @@ function restartGame() {
     game.enemies = [];
     game.projectiles = [];
     game.enemyProjectiles = [];
+    game.pet = null;
+    game.petProjectiles = [];
     game.score = 0;
     game.lives = 3;
     game.gameRunning = true;
@@ -96,6 +114,7 @@ function restartGame() {
     
     // Reinitialize
     initPlayer();
+    createPet();
     createEnemies();
 }
 
@@ -112,14 +131,16 @@ function startGame() {
     // Hide boss health bar when starting game
     hideBossHealth();
     
-    // Hide start screen
+    // Hide start screen and pet selection screen
     document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('petSelection').style.display = 'none';
     
     // Stop start music
     const startMusic = document.getElementById('startMusic');
     startMusic.pause();
     
     // Initialize game
+    createPet();
     createEnemies();
 }
 
@@ -127,8 +148,10 @@ function startGame() {
 function gameLoop() {
     if (game.gameRunning) {
         movePlayer();
+        movePet();
         moveEnemies();
         moveProjectiles();
+        movePetProjectiles();
         movePowerUps();
         moveFireSpreadEffects();
         updateShieldEffect();
