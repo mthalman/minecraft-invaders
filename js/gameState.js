@@ -17,6 +17,7 @@ const game = {
     lives: 3,
     gameRunning: false,
     gameStarted: false,
+    gamePaused: false,
     keys: {},
     lastShot: 0,
     level: 1,

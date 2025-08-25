@@ -128,6 +128,9 @@ function enemyShoot() {
             } else if (enemy.type === 'elder_guardian') {
                 customCooldown = 600; // Elder Guardian fast projectiles
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4;
+            } else if (enemy.type === 'end_monstrosity') {
+                customCooldown = 2000; // End Monstrosity powerful attacks
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2;
             }
         } else {
             shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
@@ -173,6 +176,8 @@ function enemyShoot() {
                     createGuardianAttack(enemy, now);
                 } else if (enemy.type === 'elder_guardian') {
                     createElderGuardianAttack(enemy, now);
+                } else if (enemy.type === 'end_monstrosity') {
+                    createEndMonstrosityAttack(enemy, now);
                 }
             } else {
                 // Regular enemy attacks
@@ -849,6 +854,139 @@ function createCreepernadoTornado(enemy, now) {
     enemy.lastShot = now;
 }
 
+// End Monstrosity attack function
+function createEndMonstrosityAttack(enemy, now) {
+    // Initialize End Monstrosity attack state if needed
+    if (!enemy.endMonstrosityState) {
+        enemy.endMonstrosityState = {
+            lastBeamBurst: 0,
+            beamBurstActive: false,
+            beamCount: 0
+        };
+    }
+    
+    const state = enemy.endMonstrosityState;
+    
+    // Check if it's time for powerful beam burst (every 15 seconds)
+    if (now - state.lastBeamBurst > 15000) {
+        // Powerful beam burst - 5 beams in a row
+        createEndMonstrosityBeamBurst(enemy, now);
+        state.lastBeamBurst = now;
+    } else {
+        // Regular ender pearl attack
+        const projectile = {
+            element: createSprite('enemy-projectile', enemy.x + 60, enemy.y + 90),
+            x: enemy.x + 60,
+            y: enemy.y + 90,
+            speed: 4 + (game.level * 0.2),
+            damage: 5
+        };
+        projectile.element.innerHTML = sprites.enderPearl;
+        projectile.element.style.transform = 'scale(1.5)'; // Larger ender pearl
+        projectile.element.style.filter = 'brightness(1.4) drop-shadow(0 0 12px #E91E63)'; // Pink glow
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+        
+        // 30% chance to spawn pink square enemies
+        if (Math.random() < 0.3) {
+            spawnPinkSquareEnemy(enemy, now);
+        }
+    }
+}
+
+function createEndMonstrosityBeamBurst(enemy, now) {
+    // Create 5 powerful beams in different directions
+    const beamAngles = [-30, -15, 0, 15, 30]; // Degrees from straight down
+    
+    beamAngles.forEach((angleDegrees, index) => {
+        setTimeout(() => {
+            const angle = (angleDegrees * Math.PI) / 180; // Convert to radians
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 60, enemy.y + 90),
+                x: enemy.x + 60,
+                y: enemy.y + 90,
+                speed: 6,
+                velocityX: Math.sin(angle) * 6,
+                velocityY: Math.cos(angle) * 6,
+                damage: 10,
+                isPowerfulBeam: true
+            };
+            
+            // Create powerful beam visual
+            projectile.element.innerHTML = `
+                <div style="
+                    width: 24px; 
+                    height: 60px; 
+                    background: linear-gradient(180deg, #E91E63 0%, #AD1457 50%, #880E4F 100%); 
+                    box-shadow: 0 0 20px #E91E63, inset 0 0 10px rgba(255,255,255,0.3); 
+                    border-radius: 12px;
+                    animation: powerfulBeamPulse 0.3s infinite alternate;
+                "></div>
+                <style>
+                    @keyframes powerfulBeamPulse {
+                        from { 
+                            opacity: 0.8; 
+                            box-shadow: 0 0 20px #E91E63, inset 0 0 10px rgba(255,255,255,0.3);
+                        }
+                        to { 
+                            opacity: 1; 
+                            box-shadow: 0 0 40px #E91E63, inset 0 0 20px rgba(255,255,255,0.5);
+                        }
+                    }
+                </style>
+            `;
+            
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }, index * 200); // Delay each beam by 200ms
+    });
+}
+
+function spawnPinkSquareEnemy(boss, now) {
+    // Spawn a pink square enemy that dives at the player
+    const canvasSize = getCanvasDimensions();
+    const spawnX = boss.x + (Math.random() - 0.5) * 300;
+    const spawnY = boss.y + 100;
+    
+    const pinkSquare = {
+        element: createSprite('enemy', Math.max(0, Math.min(spawnX, canvasSize.width - 30)), Math.max(0, spawnY)),
+        x: Math.max(0, Math.min(spawnX, canvasSize.width - 30)),
+        y: Math.max(0, spawnY),
+        formationX: Math.max(0, Math.min(spawnX, canvasSize.width - 30)),
+        formationY: Math.max(0, spawnY),
+        formationIndex: -1, // No formation position
+        type: 'pink_square',
+        lastShot: 0,
+        state: 'diving', // Pink squares immediately dive at player
+        progress: 0,
+        capturedPlayer: null,
+        canCapture: false,
+        isBoss: false,
+        maxHealth: 2,
+        health: 2,
+        isSpawned: true, // Mark as spawned enemy
+        isDiving: true,
+        diveTarget: {
+            x: game.player.x + Math.random() * 100 - 50,
+            y: canvasSize.height - 80
+        }
+    };
+    
+    pinkSquare.element.innerHTML = sprites.pink_square;
+    
+    game.enemies.push(pinkSquare);
+    game.canvas.appendChild(pinkSquare.element);
+    
+    // Remove pink square after 15 seconds if it hasn't been destroyed
+    setTimeout(() => {
+        const index = game.enemies.indexOf(pinkSquare);
+        if (index > -1 && pinkSquare.element && pinkSquare.element.parentNode) {
+            game.canvas.removeChild(pinkSquare.element);
+            game.enemies.splice(index, 1);
+        }
+    }, 15000);
+}
+
 // Projectile movement
 function moveProjectiles() {
     // Player projectiles - iterate backwards
@@ -912,6 +1050,12 @@ function moveProjectiles() {
                 game.enemyProjectiles.splice(index, 1);
                 continue;
             }
+        } else if (projectile.isPowerfulBeam) {
+            // Powerful beam with angle movement
+            projectile.x += projectile.velocityX;
+            projectile.y += projectile.velocityY;
+            projectile.element.style.left = projectile.x + 'px';
+            projectile.element.style.top = projectile.y + 'px';
         } else {
             // Normal projectile movement
             projectile.y += projectile.speed;
@@ -1042,6 +1186,7 @@ function checkCollisions() {
                                     else if (targetEnemy.type === 'blaze') points = 1000;
                                     else if (targetEnemy.type === 'ghast') points = 1500;
                                     else if (targetEnemy.type === 'wither') points = 2500;
+                                    else if (targetEnemy.type === 'end_monstrosity') points = 12000;
                                     
                                     game.score += points;
                                     game.enemiesDefeated++;
@@ -1118,6 +1263,7 @@ function checkCollisions() {
                             else if (enemy.type === 'ender_dragon') points = 10000;
                             else if (enemy.type === 'endwither') points = 7500;
                             else if (enemy.type === 'the_endermite') points = 8500;
+                            else if (enemy.type === 'end_monstrosity') points = 12000;
                             
                             // Special handling for shulker boss defeat
                             if (enemy.type === 'shulker' && enemy.isBoss) {
@@ -1397,6 +1543,7 @@ function checkCollisions() {
                         else if (enemy.type === 'blaze') points = 1000;
                         else if (enemy.type === 'ghast') points = 1500;
                         else if (enemy.type === 'wither') points = 2500;
+                        else if (enemy.type === 'end_monstrosity') points = 12000;
                         
                         game.score += Math.floor(points * 0.5); // Pet kills worth half points
                         game.enemiesDefeated++;

@@ -96,6 +96,7 @@ function restartGame() {
     game.lives = 3;
     game.gameRunning = true;
     game.gameStarted = true;
+    game.gamePaused = false;
     game.level = 1;
     game.bossEntranceInProgress = false;
     game.bossCreated = false;
@@ -111,6 +112,12 @@ function restartGame() {
     document.getElementById('lives').textContent = game.lives;
     document.getElementById('level').textContent = game.level;
     document.getElementById('gameOver').style.display = 'none';
+    
+    // Clean up pause overlay if it exists
+    const pauseOverlay = document.getElementById('pauseOverlay');
+    if (pauseOverlay) {
+        pauseOverlay.remove();
+    }
     
     // Reinitialize
     initPlayer();
@@ -146,7 +153,7 @@ function startGame() {
 
 // Game loop
 function gameLoop() {
-    if (game.gameRunning) {
+    if (game.gameRunning && !game.gamePaused) {
         movePlayer();
         movePet();
         moveEnemies();
@@ -172,4 +179,73 @@ function gameLoop() {
     }
     
     requestAnimationFrame(gameLoop);
+}
+
+// Pause functionality
+function togglePause() {
+    if (!game.gameRunning || !game.gameStarted) {
+        return; // Don't pause if game isn't running
+    }
+    
+    game.gamePaused = !game.gamePaused;
+    
+    const pauseOverlay = document.getElementById('pauseOverlay');
+    if (game.gamePaused) {
+        // Show pause overlay
+        if (!pauseOverlay) {
+            createPauseOverlay();
+        } else {
+            pauseOverlay.style.display = 'flex';
+        }
+        
+        // Pause music if playing
+        const gameMusic = document.getElementById('gameMusic');
+        if (gameMusic && !gameMusic.paused) {
+            gameMusic.pause();
+        }
+    } else {
+        // Hide pause overlay
+        if (pauseOverlay) {
+            pauseOverlay.style.display = 'none';
+        }
+        
+        // Resume music if it was playing
+        const gameMusic = document.getElementById('gameMusic');
+        if (gameMusic && gameMusic.paused && game.gameRunning) {
+            gameMusic.play().catch(() => {});
+        }
+    }
+}
+
+function createPauseOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'pauseOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    `;
+    
+    overlay.innerHTML = `
+        <div style="text-align: center; color: white;">
+            <h1 style="font-size: 4rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">PAUSED</h1>
+            <p style="font-size: 1.5rem; margin-bottom: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Press P to resume</p>
+            <div style="font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                <p>Level: ${game.level}</p>
+                <p>Score: ${game.score}</p>
+                <p>Lives: ${game.lives}</p>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
 }

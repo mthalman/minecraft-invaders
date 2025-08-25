@@ -38,6 +38,11 @@ document.addEventListener('keydown', (e) => {
         restartGame();
     }
     
+    if (e.code === 'KeyP' && game.gameStarted) {
+        e.preventDefault();
+        togglePause();
+    }
+    
 });
 
 document.addEventListener('keyup', (e) => {

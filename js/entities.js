@@ -365,9 +365,9 @@ function getBossTypeForLevel(level) {
         const netherBossTypes = ['blaze', 'ghast', 'wither'];
         return netherBossTypes[bossIndex];
     } else if (game.selectedDimension === 'end') {
-        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite, End Golem (cycling through 5)
-        const bossIndex = Math.floor((level / 5) - 1) % 5;
-        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem'];
+        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity (cycling through 6)
+        const bossIndex = Math.floor((level / 5) - 1) % 6;
+        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'];
         return endBossTypes[bossIndex];
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension: Overworld → Nether → End progression
@@ -430,7 +430,8 @@ function getBossHealth(bossType) {
         'shulker': 100,
         'ender_dragon': 200,
         'endwither': 150,
-        'the_endermite': 170
+        'the_endermite': 170,
+        'end_monstrosity': 310
     };
     
     let baseHealth = healthMap[bossType] || 1;
@@ -555,6 +556,9 @@ function getEnemyDimensions(enemy) {
         } else if (enemy.type === 'end_golem') {
             width = 120;
             height = 180;
+        } else if (enemy.type === 'end_monstrosity') {
+            width = 120;
+            height = 180;
         } else {
             // Default boss size for overworld bosses
             width = 80;
@@ -570,6 +574,10 @@ function getEnemyDimensions(enemy) {
             // Vindicators are normal size
             width = 60;
             height = 60;
+        } else if (enemy.type === 'pink_square') {
+            // Pink squares are small
+            width = 30;
+            height = 30;
         }
     }
     
