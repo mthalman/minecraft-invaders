@@ -277,6 +277,22 @@ const sprites = {
             <rect x="12" y="12" width="2" height="2" fill="#ddd"/>
         </svg>
     `,
+    
+    blue_ender_pearl: `
+        <svg width="18" height="18" viewBox="0 0 18 18">
+            <!-- Core pearl -->
+            <circle cx="9" cy="9" r="7" fill="#0080FF"/>
+            <circle cx="9" cy="9" r="5" fill="#4DA6FF"/>
+            <circle cx="9" cy="9" r="3" fill="#80BFFF"/>
+            <!-- Glowing effect -->
+            <circle cx="9" cy="9" r="8" fill="#00CCFF" opacity="0.3"/>
+            <!-- Sparkle points -->
+            <rect x="6" y="6" width="1" height="1" fill="#E0FFFF"/>
+            <rect x="11" y="7" width="1" height="1" fill="#E0FFFF"/>
+            <rect x="7" y="11" width="1" height="1" fill="#E0FFFF"/>
+            <rect x="12" y="11" width="1" height="1" fill="#E0FFFF"/>
+        </svg>
+    `,
     diamondSword: `
         <svg width="40" height="40" viewBox="0 0 40 40">
             <rect x="18" y="4" width="4" height="24" fill="#8B4513"/>
@@ -2727,6 +2743,68 @@ const sprites = {
             <rect x="36" y="35" width="5" height="5" fill="#DCDCDC"/>
             <!-- Tail -->
             <rect x="40" y="24" width="6" height="4" fill="#F5F5F5"/>
+        </svg>
+    `,
+    
+    iron_golem: `
+        <svg width="55" height="45" viewBox="0 0 55 45">
+            <!-- Body -->
+            <rect x="15" y="20" width="25" height="18" fill="#8C7853"/>
+            <rect x="13" y="22" width="29" height="14" fill="#A0916B"/>
+            <!-- Head -->
+            <rect x="18" y="5" width="19" height="20" fill="#8C7853"/>
+            <rect x="16" y="7" width="23" height="16" fill="#A0916B"/>
+            <!-- Eyes -->
+            <rect x="22" y="12" width="3" height="3" fill="#FFFF00"/>
+            <rect x="30" y="12" width="3" height="3" fill="#FFFF00"/>
+            <rect x="23" y="13" width="1" height="1" fill="#FFF"/>
+            <rect x="31" y="13" width="1" height="1" fill="#FFF"/>
+            <!-- Arms -->
+            <rect x="5" y="18" width="12" height="8" fill="#8C7853"/>
+            <rect x="38" y="18" width="12" height="8" fill="#8C7853"/>
+            <rect x="7" y="20" width="8" height="4" fill="#A0916B"/>
+            <rect x="40" y="20" width="8" height="4" fill="#A0916B"/>
+            <!-- Legs -->
+            <rect x="18" y="38" width="8" height="7" fill="#8C7853"/>
+            <rect x="29" y="38" width="8" height="7" fill="#8C7853"/>
+            <rect x="20" y="40" width="4" height="3" fill="#A0916B"/>
+            <rect x="31" y="40" width="4" height="3" fill="#A0916B"/>
+            <!-- Chest decoration -->
+            <rect x="24" y="28" width="7" height="5" fill="#B8860B"/>
+            <rect x="25" y="29" width="5" height="3" fill="#DAA520"/>
+        </svg>
+    `,
+    
+    baby_warden: `
+        <svg width="40" height="35" viewBox="0 0 40 35">
+            <!-- Body -->
+            <rect x="8" y="18" width="24" height="12" fill="#0F3460"/>
+            <rect x="6" y="20" width="28" height="8" fill="#16537e"/>
+            <!-- Head -->
+            <rect x="12" y="5" width="16" height="18" fill="#0F3460"/>
+            <rect x="10" y="7" width="20" height="14" fill="#16537e"/>
+            <!-- Chest sensors (glowing) -->
+            <rect x="17" y="12" width="2" height="2" fill="#00FFFF"/>
+            <rect x="21" y="12" width="2" height="2" fill="#00FFFF"/>
+            <rect x="19" y="15" width="2" height="2" fill="#00FFFF"/>
+            <!-- Eyes (glowing cyan) -->
+            <rect x="15" y="10" width="2" height="3" fill="#00FFFF"/>
+            <rect x="23" y="10" width="2" height="3" fill="#00FFFF"/>
+            <rect x="15" y="11" width="1" height="1" fill="#87CEEB"/>
+            <rect x="23" y="11" width="1" height="1" fill="#87CEEB"/>
+            <!-- Arms -->
+            <rect x="2" y="16" width="8" height="6" fill="#0F3460"/>
+            <rect x="30" y="16" width="8" height="6" fill="#0F3460"/>
+            <rect x="4" y="18" width="4" height="2" fill="#16537e"/>
+            <rect x="32" y="18" width="4" height="2" fill="#16537e"/>
+            <!-- Legs -->
+            <rect x="12" y="30" width="6" height="5" fill="#0F3460"/>
+            <rect x="22" y="30" width="6" height="5" fill="#0F3460"/>
+            <rect x="14" y="32" width="2" height="1" fill="#16537e"/>
+            <rect x="24" y="32" width="2" height="1" fill="#16537e"/>
+            <!-- Spiky details -->
+            <rect x="18" y="22" width="4" height="3" fill="#001122"/>
+            <rect x="19" y="23" width="2" height="1" fill="#00FFFF"/>
         </svg>
     `,
     end_monstrosity: `

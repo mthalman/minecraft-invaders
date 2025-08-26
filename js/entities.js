@@ -886,6 +886,7 @@ function createPet() {
         maxHealth: 50 + (game.level - 1),
         damage: petStats.damage,
         shootCooldown: petStats.shootCooldown,
+        tripleShot: petStats.tripleShot || false,
         lastShot: 0,
         targetX: game.player.x - 80,
         targetY: game.player.y + 20,
@@ -906,7 +907,9 @@ function getPetStats(petType) {
         snow_fox: { speed: 6, damage: 1, shootCooldown: 600 },
         baby_ghast: { speed: 3, damage: 3, shootCooldown: 1200 },
         endermite: { speed: 8, damage: 1, shootCooldown: 400 },
-        polar_bear: { speed: 2, damage: 4, shootCooldown: 1500 }
+        polar_bear: { speed: 2, damage: 4, shootCooldown: 1500 },
+        iron_golem: { speed: 3, damage: 3, shootCooldown: 1000 },
+        baby_warden: { speed: 2, damage: 2, shootCooldown: 1500, tripleShot: true }
     };
     
     return stats[petType] || stats.wolf;
@@ -1018,27 +1021,58 @@ function petShoot() {
         const dy = nearestEnemy.y - game.pet.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        const projectile = {
-            element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
-            x: game.pet.x + 25,
-            y: game.pet.y + 10,
-            velocityX: (dx / distance) * 8,
-            velocityY: (dy / distance) * 8,
-            damage: game.pet.damage,
-            fromPet: true
-        };
-        
-        // Set projectile sprite based on pet type
-        if (game.pet.type === 'baby_ghast' && sprites.fireball) {
-            projectile.element.innerHTML = sprites.fireball;
-        } else if (game.pet.type === 'endermite' && sprites.snowball) {
-            projectile.element.innerHTML = sprites.snowball; // Use snowball for endermite
+        // Check if this pet has triple shot ability
+        if (game.pet.tripleShot && game.pet.type === 'baby_warden') {
+            // Create three projectiles for Baby Warden
+            const angles = [-0.3, 0, 0.3]; // Spread angles in radians
+            
+            angles.forEach(angleOffset => {
+                // Calculate adjusted direction with spread
+                const adjustedAngle = Math.atan2(dy, dx) + angleOffset;
+                const adjustedVx = Math.cos(adjustedAngle) * 8;
+                const adjustedVy = Math.sin(adjustedAngle) * 8;
+                
+                const projectile = {
+                    element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
+                    x: game.pet.x + 25,
+                    y: game.pet.y + 10,
+                    velocityX: adjustedVx,
+                    velocityY: adjustedVy,
+                    damage: game.pet.damage,
+                    fromPet: true
+                };
+                
+                // Use blue ender pearl for Baby Warden
+                projectile.element.innerHTML = sprites.blue_ender_pearl;
+                
+                game.petProjectiles.push(projectile);
+                game.canvas.appendChild(projectile.element);
+            });
         } else {
-            projectile.element.innerHTML = sprites.egg; // Default egg projectile
+            // Single projectile for other pets
+            const projectile = {
+                element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
+                x: game.pet.x + 25,
+                y: game.pet.y + 10,
+                velocityX: (dx / distance) * 8,
+                velocityY: (dy / distance) * 8,
+                damage: game.pet.damage,
+                fromPet: true
+            };
+            
+            // Set projectile sprite based on pet type
+            if (game.pet.type === 'baby_ghast' && sprites.fireball) {
+                projectile.element.innerHTML = sprites.fireball;
+            } else if (game.pet.type === 'endermite' && sprites.snowball) {
+                projectile.element.innerHTML = sprites.snowball; // Use snowball for endermite
+            } else {
+                projectile.element.innerHTML = sprites.egg; // Default egg projectile
+            }
+            
+            game.petProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
         }
         
-        game.petProjectiles.push(projectile);
-        game.canvas.appendChild(projectile.element);
         game.pet.lastShot = now;
     }
 }

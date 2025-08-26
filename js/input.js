@@ -140,7 +140,9 @@ function initPetSprites() {
         'snowFoxSprite': 'snow_fox', 
         'babyGhastSprite': 'baby_ghast',
         'endermiteSprite': 'endermite',
-        'polarBearSprite': 'polar_bear'
+        'polarBearSprite': 'polar_bear',
+        'ironGolemSprite': 'iron_golem',
+        'babyWardenSprite': 'baby_warden'
     };
     
     Object.entries(petSprites).forEach(([elementId, spriteType]) => {
