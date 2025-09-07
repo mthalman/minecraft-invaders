@@ -164,6 +164,12 @@ function gameLoop() {
         updateShieldEffect();
         updateFreezeEffect();
         enemyShoot();
+        
+        // Continuous shooting when spacebar is held
+        if (game.keys['Space']) {
+            shoot();
+        }
+        
         checkCollisions();
         spawnPowerUp();
         updatePowerUpDisplay();

@@ -31,7 +31,7 @@ document.addEventListener('keydown', (e) => {
     
     if (e.code === 'Space' && game.gameRunning) {
         e.preventDefault();
-        shoot();
+        // Space key handling is now done in the game loop for continuous shooting
     }
     
     if (e.code === 'KeyR' && !game.gameRunning && game.gameStarted) {
