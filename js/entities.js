@@ -365,20 +365,20 @@ function getBossTypeForLevel(level) {
         const netherBossTypes = ['blaze', 'ghast', 'wither'];
         return netherBossTypes[bossIndex];
     } else if (game.selectedDimension === 'end') {
-        // End bosses: Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity (cycling through 6)
-        const bossIndex = Math.floor((level / 5) - 1) % 6;
-        const endBossTypes = ['shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'];
+        // End bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity (cycling through 7)
+        const bossIndex = Math.floor((level / 5) - 1) % 7;
+        const endBossTypes = ['baby_endermite', 'shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'];
         return endBossTypes[bossIndex];
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension: Overworld → Nether → End progression
         const bossIndex = Math.floor((level / 5) - 1);
         const allBosses = [
             // Overworld bosses first
-            'witch', 'evoker', 'ravager', 'warden',
+            'creepernado', 'witch', 'evoker', 'ravager', 'warden',
             // Nether bosses next
             'blaze', 'ghast', 'wither',
             // End bosses last
-            'shulker', 'ender_dragon', 'endwither', 'the_endermite'
+            'baby_endermite', 'shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'
         ];
         return allBosses[bossIndex % allBosses.length];
     } else if (game.selectedDimension === 'overworld') {
@@ -426,11 +426,12 @@ function getBossHealth(bossType) {
         'ghast': 30,
         'wither': 50,
         // End bosses
-        'end_golem': 250,
+        'baby_endermite': 1,  // Very easy first boss for The End
         'shulker': 100,
         'ender_dragon': 200,
         'endwither': 150,
         'the_endermite': 170,
+        'end_golem': 250,
         'end_monstrosity': 310
     };
     
