@@ -122,6 +122,38 @@ document.addEventListener('DOMContentLoaded', () => {
             game.selectedPet = option.dataset.pet;
         });
     });
+    
+    // Start instruction click event listeners
+    const startInstructions = document.querySelectorAll('.start-instruction');
+    
+    startInstructions.forEach(instruction => {
+        instruction.addEventListener('click', () => {
+            if (!game.gameStarted) {
+                // Check if we're on the dimension selection screen
+                const startScreen = document.getElementById('startScreen');
+                const petSelection = document.getElementById('petSelection');
+                
+                if (!startScreen.classList.contains('hidden')) {
+                    // Move from dimension selection to pet selection
+                    showPetSelection();
+                } else if (!petSelection.classList.contains('hidden')) {
+                    // Start the game from pet selection
+                    startGame();
+                }
+            }
+        });
+        
+        // Add cursor pointer and hover effect
+        instruction.style.cursor = 'pointer';
+        
+        instruction.addEventListener('mouseenter', () => {
+            instruction.style.opacity = '0.8';
+        });
+        
+        instruction.addEventListener('mouseleave', () => {
+            instruction.style.opacity = '1';
+        });
+    });
 });
 
 // Pet selection screen functions
