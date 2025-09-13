@@ -577,6 +577,46 @@ const sprites = {
             <rect x="32" y="50" width="8" height="10" fill="#8B4513"/>
         </svg>
     `,
+    piglin_legends: `
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <!-- Head -->
+            <rect x="15" y="5" width="30" height="25" fill="#F4A460"/>
+            <rect x="12" y="8" width="36" height="19" fill="#DEB887"/>
+            <!-- Snout -->
+            <rect x="24" y="18" width="12" height="8" fill="#D2691E"/>
+            <rect x="26" y="20" width="2" height="2" fill="#000"/>
+            <rect x="32" y="20" width="2" height="2" fill="#000"/>
+            <!-- Eyes -->
+            <rect x="20" y="12" width="6" height="6" fill="#FF4500"/>
+            <rect x="34" y="12" width="6" height="6" fill="#FF4500"/>
+            <rect x="22" y="14" width="2" height="2" fill="#000"/>
+            <rect x="36" y="14" width="2" height="2" fill="#000"/>
+            <!-- Large ears -->
+            <rect x="8" y="8" width="10" height="16" fill="#F4A460"/>
+            <rect x="42" y="8" width="10" height="16" fill="#F4A460"/>
+            <!-- Golden armor helmet -->
+            <rect x="13" y="2" width="34" height="8" fill="#FFD700"/>
+            <rect x="10" y="4" width="40" height="4" fill="#FFA500"/>
+            <!-- Body with golden armor -->
+            <rect x="18" y="30" width="24" height="20" fill="#B8860B"/>
+            <rect x="15" y="33" width="30" height="14" fill="#DAA520"/>
+            <!-- Golden chest plate -->
+            <rect x="20" y="32" width="20" height="16" fill="#FFD700"/>
+            <rect x="22" y="34" width="16" height="12" fill="#FFA500"/>
+            <!-- Arms with armor -->
+            <rect x="6" y="32" width="12" height="18" fill="#F4A460"/>
+            <rect x="42" y="32" width="12" height="18" fill="#F4A460"/>
+            <!-- Golden arm guards -->
+            <rect x="8" y="34" width="8" height="4" fill="#FFD700"/>
+            <rect x="44" y="34" width="8" height="4" fill="#FFD700"/>
+            <!-- Legs -->
+            <rect x="20" y="50" width="8" height="10" fill="#8B4513"/>
+            <rect x="32" y="50" width="8" height="10" fill="#8B4513"/>
+            <!-- Golden leg guards -->
+            <rect x="22" y="52" width="4" height="6" fill="#FFD700"/>
+            <rect x="34" y="52" width="4" height="6" fill="#FFD700"/>
+        </svg>
+    `,
     zombie_piglin: `
         <svg width="60" height="60" viewBox="0 0 60 60">
             <!-- Head -->
@@ -1239,6 +1279,154 @@ const sprites = {
             <rect x="33" y="15" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
             <rect x="8" y="25" width="2" height="2" fill="#8b00ff" opacity="0.9"/>
             <rect x="30" y="28" width="2" height="2" fill="#8b00ff" opacity="0.6"/>
+        </svg>
+    `,
+    devourer: `
+        <svg width="120" height="120" viewBox="0 0 120 120">
+            <!-- Base layer - gray stone with pink spots -->
+            <rect x="25" y="80" width="70" height="25" fill="#C8C8C8"/>
+            <rect x="30" y="85" width="8" height="4" fill="#D8A8D8"/>
+            <rect x="45" y="88" width="6" height="6" fill="#E8B8E8"/>
+            <rect x="65" y="86" width="8" height="5" fill="#D8A8D8"/>
+            <rect x="80" y="90" width="5" height="4" fill="#E8B8E8"/>
+            
+            <!-- Middle body section -->
+            <rect x="30" y="55" width="60" height="25" fill="#E0E0E0"/>
+            <rect x="35" y="60" width="7" height="7" fill="#F8C8F8"/>
+            <rect x="50" y="62" width="10" height="8" fill="#E8B8E8"/>
+            <rect x="70" y="65" width="6" height="6" fill="#F8C8F8"/>
+            
+            <!-- Purple cube sections (main body) -->
+            <rect x="20" y="35" width="30" height="20" fill="#8B4B8C"/>
+            <rect x="70" y="35" width="30" height="20" fill="#8B4B8C"/>
+            <rect x="22" y="37" width="26" height="16" fill="#A861A9"/>
+            <rect x="72" y="37" width="26" height="16" fill="#A861A9"/>
+            
+            <!-- Top purple cube (head) -->
+            <rect x="40" y="10" width="40" height="30" fill="#8B4B8C"/>
+            <rect x="42" y="12" width="36" height="26" fill="#A861A9"/>
+            
+            <!-- Dark purple holes/eyes on head -->
+            <rect x="48" y="18" width="8" height="8" fill="#4A2C4B"/>
+            <rect x="64" y="18" width="8" height="8" fill="#4A2C4B"/>
+            
+            <!-- Small purple cube on top right -->
+            <rect x="75" y="5" width="15" height="15" fill="#8B4B8C"/>
+            <rect x="76" y="6" width="13" height="13" fill="#A861A9"/>
+            <rect x="79" y="9" width="4" height="4" fill="#4A2C4B"/>
+            
+            <!-- Green slime drips -->
+            <rect x="25" y="50" width="3" height="15" fill="#32CD32"/>
+            <rect x="24" y="65" width="5" height="8" fill="#90EE90"/>
+            
+            <rect x="45" y="38" width="2" height="20" fill="#32CD32"/>
+            <rect x="44" y="58" width="4" height="6" fill="#90EE90"/>
+            
+            <rect x="92" y="50" width="3" height="15" fill="#32CD32"/>
+            <rect x="91" y="65" width="5" height="8" fill="#90EE90"/>
+            
+            <rect x="60" y="30" width="2" height="12" fill="#32CD32"/>
+            <rect x="59" y="42" width="4" height="5" fill="#90EE90"/>
+            
+            <!-- Additional slime pools at base -->
+            <rect x="15" y="100" width="12" height="5" fill="#90EE90"/>
+            <rect x="50" y="102" width="8" height="3" fill="#32CD32"/>
+            <rect x="85" y="100" width="10" height="5" fill="#90EE90"/>
+            
+            <!-- Face details on purple cubes -->
+            <rect x="28" y="42" width="4" height="4" fill="#4A2C4B"/>
+            <rect x="38" y="42" width="4" height="4" fill="#4A2C4B"/>
+            <rect x="78" y="42" width="4" height="4" fill="#4A2C4B"/>
+            <rect x="88" y="42" width="4" height="4" fill="#4A2C4B"/>
+        </svg>
+    `,
+    slime: `
+        <svg width="40" height="30" viewBox="0 0 40 30">
+            <!-- Main body -->
+            <ellipse cx="20" cy="20" rx="18" ry="12" fill="#32CD32"/>
+            <ellipse cx="20" cy="18" rx="15" ry="10" fill="#90EE90"/>
+            <!-- Inner core -->
+            <ellipse cx="20" cy="18" rx="10" ry="6" fill="#228B22"/>
+            <!-- Eyes -->
+            <rect x="12" y="14" width="4" height="4" fill="#000"/>
+            <rect x="24" y="14" width="4" height="4" fill="#000"/>
+            <rect x="13" y="15" width="2" height="2" fill="#FFFFFF"/>
+            <rect x="25" y="15" width="2" height="2" fill="#FFFFFF"/>
+            <!-- Mouth -->
+            <rect x="18" y="20" width="4" height="2" fill="#000"/>
+            <!-- Bottom bounce effect -->
+            <ellipse cx="20" cy="26" rx="16" ry="3" fill="#228B22" opacity="0.5"/>
+        </svg>
+    `,
+    great_hog: `
+        <svg width="140" height="120" viewBox="0 0 140 120">
+            <!-- Main body - dark/black -->
+            <rect x="35" y="50" width="70" height="40" fill="#1a1a1a"/>
+            <rect x="30" y="55" width="80" height="30" fill="#2d2d2d"/>
+            
+            <!-- Red/crimson armor on body -->
+            <rect x="40" y="52" width="60" height="35" fill="#8B2C3B"/>
+            <rect x="45" y="55" width="50" height="28" fill="#A03344"/>
+            <rect x="50" y="58" width="40" height="22" fill="#B84455"/>
+            
+            <!-- Golden armor trim -->
+            <rect x="48" y="60" width="44" height="3" fill="#FFD700"/>
+            <rect x="48" y="75" width="44" height="3" fill="#FFD700"/>
+            <rect x="50" y="63" width="3" height="12" fill="#FFA500"/>
+            <rect x="87" y="63" width="3" height="12" fill="#FFA500"/>
+            
+            <!-- Head - black with details -->
+            <rect x="45" y="25" width="50" height="30" fill="#1a1a1a"/>
+            <rect x="48" y="28" width="44" height="24" fill="#2d2d2d"/>
+            
+            <!-- Snout -->
+            <rect x="40" y="35" width="25" height="15" fill="#2d2d2d"/>
+            <rect x="35" y="38" width="20" height="10" fill="#1a1a1a"/>
+            
+            <!-- Tusks - beige/cream colored -->
+            <rect x="25" y="40" width="8" height="20" fill="#F5DEB3"/>
+            <rect x="28" y="42" width="4" height="16" fill="#FAEBD7"/>
+            <rect x="107" y="40" width="8" height="20" fill="#F5DEB3"/>
+            <rect x="108" y="42" width="4" height="16" fill="#FAEBD7"/>
+            
+            <!-- Tusk tips -->
+            <polygon points="25,60 30,65 33,60" fill="#F5DEB3"/>
+            <polygon points="107,60 110,65 115,60" fill="#F5DEB3"/>
+            
+            <!-- Eyes - pink/red -->
+            <rect x="55" y="32" width="8" height="8" fill="#FF1493"/>
+            <rect x="77" y="32" width="8" height="8" fill="#FF1493"/>
+            <rect x="57" y="34" width="4" height="4" fill="#8B008B"/>
+            <rect x="79" y="34" width="4" height="4" fill="#8B008B"/>
+            
+            <!-- Ears - beige -->
+            <rect x="92" y="20" width="12" height="18" fill="#D2B48C"/>
+            <rect x="36" y="20" width="12" height="18" fill="#D2B48C"/>
+            <rect x="94" y="22" width="8" height="14" fill="#F5DEB3"/>
+            <rect x="38" y="22" width="8" height="14" fill="#F5DEB3"/>
+            
+            <!-- Legs - black -->
+            <rect x="40" y="85" width="15" height="25" fill="#1a1a1a"/>
+            <rect x="85" y="85" width="15" height="25" fill="#1a1a1a"/>
+            <rect x="42" y="87" width="11" height="21" fill="#2d2d2d"/>
+            <rect x="87" y="87" width="11" height="21" fill="#2d2d2d"/>
+            
+            <!-- Hooves -->
+            <rect x="40" y="105" width="15" height="8" fill="#4a4a4a"/>
+            <rect x="85" y="105" width="15" height="8" fill="#4a4a4a"/>
+            
+            <!-- Back legs partially visible -->
+            <rect x="60" y="88" width="12" height="20" fill="#1a1a1a" opacity="0.7"/>
+            <rect x="68" y="88" width="12" height="20" fill="#1a1a1a" opacity="0.7"/>
+            
+            <!-- Weapon/spear held by hog -->
+            <rect x="15" y="30" width="4" height="60" fill="#8B4513"/>
+            <rect x="10" y="25" width="14" height="8" fill="#696969"/>
+            <rect x="12" y="27" width="10" height="4" fill="#A9A9A9"/>
+            
+            <!-- Additional armor details -->
+            <rect x="55" y="45" width="30" height="8" fill="#8B2C3B"/>
+            <rect x="60" y="47" width="20" height="4" fill="#A03344"/>
         </svg>
     `,
     endwither: `
@@ -2889,6 +3077,151 @@ const sprites = {
             <rect x="6" y="6.5" width="1.5" height="1.5" fill="#8b00ff"/>
             <rect x="4" y="7" width="1" height="1" fill="#ffffff"/>
             <rect x="6.5" y="7" width="1" height="1" fill="#ffffff"/>
+        </svg>
+    `,
+    endersent: `
+        <svg width="80" height="100" viewBox="0 0 80 100">
+            <!-- Tall sentinel-like End creature -->
+            <!-- Base/body -->
+            <rect x="25" y="40" width="30" height="50" fill="#2a1b3d"/>
+            <rect x="20" y="45" width="40" height="40" fill="#1a1a2e"/>
+            
+            <!-- Head -->
+            <rect x="30" y="25" width="20" height="20" fill="#16213e"/>
+            <rect x="25" y="30" width="30" height="15" fill="#2a1b3d"/>
+            
+            <!-- Eyes (purple glowing) -->
+            <rect x="30" y="32" width="8" height="3" fill="#8b00ff"/>
+            <rect x="42" y="32" width="8" height="3" fill="#8b00ff"/>
+            <rect x="31" y="33" width="6" height="1" fill="#ffffff"/>
+            <rect x="43" y="33" width="6" height="1" fill="#ffffff"/>
+            
+            <!-- Arms -->
+            <rect x="15" y="50" width="8" height="30" fill="#1a1a2e"/>
+            <rect x="57" y="50" width="8" height="30" fill="#1a1a2e"/>
+            
+            <!-- Teleport particles -->
+            <rect x="10" y="85" width="3" height="3" fill="#8b00ff" opacity="0.7"/>
+            <rect x="67" y="85" width="3" height="3" fill="#8b00ff" opacity="0.7"/>
+            <rect x="15" y="90" width="2" height="2" fill="#d896ff" opacity="0.5"/>
+            <rect x="63" y="90" width="2" height="2" fill="#d896ff" opacity="0.5"/>
+        </svg>
+    `,
+    heart_of_ender: `
+        <svg width="120" height="120" viewBox="0 0 120 120">
+            <!-- Dark menacing creature with glowing eyes based on provided image -->
+            <!-- Main dark body - blocky shadowy form -->
+            <rect x="30" y="25" width="60" height="45" fill="#0a0a0a"/>
+            <rect x="25" y="35" width="70" height="25" fill="#1a1a1a"/>
+            <rect x="35" y="20" width="50" height="55" fill="#0d0d0d"/>
+            
+            <!-- Additional dark mass for bulk -->
+            <rect x="20" y="40" width="80" height="35" fill="#050505"/>
+            <rect x="40" y="70" width="40" height="25" fill="#0a0a0a"/>
+            
+            <!-- Glowing purple/magenta eyes -->
+            <rect x="40" y="35" width="12" height="8" fill="#ff00ff"/>
+            <rect x="68" y="35" width="12" height="8" fill="#ff00ff"/>
+            <!-- Eye glow effect -->
+            <rect x="38" y="33" width="16" height="12" fill="#ff00ff" opacity="0.3"/>
+            <rect x="66" y="33" width="16" height="12" fill="#ff00ff" opacity="0.3"/>
+            
+            <!-- Inner bright eye cores -->
+            <rect x="42" y="37" width="8" height="4" fill="#ffffff"/>
+            <rect x="70" y="37" width="8" height="4" fill="#ffffff"/>
+            
+            <!-- Menacing mouth/grin -->
+            <rect x="45" y="50" width="6" height="3" fill="#ff00ff"/>
+            <rect x="52" y="48" width="6" height="3" fill="#ff00ff"/>
+            <rect x="58" y="50" width="6" height="3" fill="#ff00ff"/>
+            <rect x="65" y="48" width="6" height="3" fill="#ff00ff"/>
+            <!-- Mouth glow -->
+            <rect x="44" y="47" width="28" height="8" fill="#ff00ff" opacity="0.2"/>
+            
+            <!-- Floating purple particles all around -->
+            <rect x="10" y="15" width="3" height="3" fill="#ff69b4" opacity="0.8"/>
+            <rect x="105" y="20" width="3" height="3" fill="#ff69b4" opacity="0.8"/>
+            <rect x="15" y="85" width="3" height="3" fill="#ff69b4" opacity="0.8"/>
+            <rect x="100" y="90" width="3" height="3" fill="#ff69b4" opacity="0.8"/>
+            <rect x="5" y="45" width="2" height="2" fill="#d896ff" opacity="0.9"/>
+            <rect x="112" y="50" width="2" height="2" fill="#d896ff" opacity="0.9"/>
+            <rect x="8" y="75" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
+            <rect x="110" y="35" width="2" height="2" fill="#8b00ff" opacity="0.7"/>
+            <rect x="20" y="10" width="2" height="2" fill="#ff00ff" opacity="0.6"/>
+            <rect x="95" y="105" width="2" height="2" fill="#ff00ff" opacity="0.6"/>
+        </svg>
+    `,
+    enderman_head: `
+        <svg width="40" height="40" viewBox="0 0 40 40">
+            <!-- Floating Enderman head summoned by Heart of Ender -->
+            <rect x="5" y="10" width="30" height="20" fill="#1a1a2e"/>
+            <rect x="8" y="12" width="24" height="16" fill="#16213e"/>
+            
+            <!-- Eyes (purple glowing) -->
+            <rect x="10" y="18" width="8" height="2" fill="#8b00ff"/>
+            <rect x="22" y="18" width="8" height="2" fill="#8b00ff"/>
+            <rect x="11" y="18.5" width="6" height="1" fill="#ffffff"/>
+            <rect x="23" y="18.5" width="6" height="1" fill="#ffffff"/>
+            
+            <!-- Shadow effect -->
+            <rect x="7" y="28" width="26" height="2" fill="#0a0a0a" opacity="0.5"/>
+        </svg>
+    `,
+    pink_beam: `
+        <svg width="30" height="8" viewBox="0 0 30 8">
+            <!-- Pink energy beam shot by enderman heads -->
+            <rect x="0" y="2" width="30" height="4" fill="#ff1493"/>
+            <rect x="0" y="3" width="30" height="2" fill="#ff69b4"/>
+            <rect x="0" y="3.5" width="30" height="1" fill="#ffffff"/>
+        </svg>
+    `,
+    vengeful_heart_of_ender: `
+        <svg width="140" height="140" viewBox="0 0 140 140">
+            <!-- Vengeful Heart of Ender - tall vertical creature with purple flames -->
+            <!-- Main vertical tower body - dark with purple highlights -->
+            <rect x="55" y="15" width="30" height="80" fill="#1a0a2a"/>
+            <rect x="60" y="20" width="20" height="70" fill="#2d1b3d"/>
+            
+            <!-- Upper body segments with glowing sections -->
+            <rect x="50" y="25" width="40" height="8" fill="#2d1b3d"/>
+            <rect x="55" y="27" width="30" height="4" fill="#4a1b5a"/>
+            <rect x="60" y="28" width="20" height="2" fill="#8b00ff"/>
+            
+            <rect x="50" y="40" width="40" height="8" fill="#2d1b3d"/>
+            <rect x="55" y="42" width="30" height="4" fill="#4a1b5a"/>
+            <rect x="60" y="43" width="20" height="2" fill="#ff00ff"/>
+            
+            <rect x="50" y="55" width="40" height="8" fill="#2d1b3d"/>
+            <rect x="55" y="57" width="30" height="4" fill="#4a1b5a"/>
+            <rect x="60" y="58" width="20" height="2" fill="#8b00ff"/>
+            
+            <!-- Purple flames on top -->
+            <polygon points="70,5 65,15 60,10 55,15 50,12 48,18 52,20 88,20 92,18 90,12 85,15 80,10 75,15" fill="#ff00ff"/>
+            <polygon points="70,8 67,12 64,10 62,12 60,11 61,15 79,15 80,11 78,12 76,10 73,12" fill="#ffffff" opacity="0.5"/>
+            
+            <!-- Lower body/legs -->
+            <!-- Left leg -->
+            <rect x="45" y="90" width="15" height="35" fill="#2d1b3d"/>
+            <rect x="47" y="95" width="11" height="30" fill="#1a0a2a"/>
+            <rect x="49" y="100" width="7" height="20" fill="#4a1b5a"/>
+            <rect x="50" y="115" width="5" height="3" fill="#ff00ff"/>
+            
+            <!-- Right leg -->
+            <rect x="80" y="90" width="15" height="35" fill="#2d1b3d"/>
+            <rect x="82" y="95" width="11" height="30" fill="#1a0a2a"/>
+            <rect x="84" y="100" width="7" height="20" fill="#4a1b5a"/>
+            <rect x="85" y="115" width="5" height="3" fill="#ff00ff"/>
+            
+            <!-- Central glowing core -->
+            <rect x="65" y="65" width="10" height="10" fill="#8b00ff"/>
+            <rect x="67" y="67" width="6" height="6" fill="#ff00ff"/>
+            <rect x="69" y="69" width="2" height="2" fill="#ffffff"/>
+            
+            <!-- Floating particles -->
+            <rect x="20" y="30" width="3" height="3" fill="#d896ff" opacity="0.8"/>
+            <rect x="117" y="35" width="3" height="3" fill="#d896ff" opacity="0.8"/>
+            <rect x="25" y="80" width="2" height="2" fill="#ff69b4" opacity="0.7"/>
+            <rect x="115" y="85" width="2" height="2" fill="#ff69b4" opacity="0.7"/>
         </svg>
     `
     };

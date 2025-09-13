@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const allDefaultInfo = document.querySelectorAll('.default-info');
             allDefaultInfo.forEach(info => info.style.display = 'block');
             
-            if (option.dataset.dimension === 'overworld') {
+            if (option.dataset.dimension === 'overworld' || option.dataset.dimension === 'end' || option.dataset.dimension === 'nether') {
                 const subSelection = option.querySelector('.sub-dimension-selection');
                 const defaultInfo = option.querySelector('.default-info');
                 if (subSelection && defaultInfo) {

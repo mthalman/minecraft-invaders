@@ -51,7 +51,11 @@ function createEnemies() {
     // Set enemy types based on selected dimension and sub-dimension
     let enemyTypes;
     if (game.selectedDimension === 'nether') {
-        enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+        if (game.selectedSubDimension === 'flames-of-nether') {
+            enemyTypes = ['piglin_legends'];
+        } else {
+            enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+        }
     } else if (game.selectedDimension === 'end') {
         enemyTypes = ['enderman'];
     } else if (game.selectedDimension === 'galaxy') {
@@ -79,8 +83,9 @@ function createEnemies() {
     game.formationPositions = [];
     game.enemySpawnQueue = [];
     
-    // Check if this is a boss level (every 5th level)
-    const isBossLevel = game.level % 5 === 0;
+    // Check if this is a boss level (every 5th level) OR if we're in Echoing Void (always boss)
+    const isBossLevel = (game.level % 5 === 0) || 
+                       (game.selectedDimension === 'end' && game.selectedSubDimension === 'echoing-void');
     
     if (isBossLevel) {
         // Check if boss already created for this level
@@ -333,7 +338,11 @@ function createSpiralFormation(centerX, centerY, spacing) {
 function getEnemyTypeForLevel(level, index, totalEnemies) {
     let enemyTypes;
     if (game.selectedDimension === 'nether') {
-        enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+        if (game.selectedSubDimension === 'flames-of-nether') {
+            enemyTypes = ['piglin_legends'];
+        } else {
+            enemyTypes = ['piglin', 'zombie_piglin', 'wither_skeleton'];
+        }
     } else if (game.selectedDimension === 'end') {
         enemyTypes = ['enderman'];
     } else if (game.selectedDimension === 'galaxy') {
@@ -360,15 +369,38 @@ function getEnemyTypeForLevel(level, index, totalEnemies) {
 
 function getBossTypeForLevel(level) {
     if (game.selectedDimension === 'nether') {
-        // Nether bosses: Blaze, Ghast, Wither
-        const bossIndex = Math.floor((level / 5) - 1) % 3;
-        const netherBossTypes = ['blaze', 'ghast', 'wither'];
-        return netherBossTypes[bossIndex];
+        if (game.selectedSubDimension === 'flames-of-nether') {
+            // Flames of the Nether bosses: Devourer at levels 5, 10, 15; Great Hog at 20+ (every 5 levels)
+            if (level === 5 || level === 10 || level === 15) {
+                return 'devourer';
+            } else if (level >= 20 && level % 5 === 0) {
+                return 'great_hog';
+            } else {
+                // No boss for non-boss levels
+                return null;
+            }
+        } else {
+            // Normal Nether bosses: Blaze, Ghast, Wither
+            const bossIndex = Math.floor((level / 5) - 1) % 3;
+            const netherBossTypes = ['blaze', 'ghast', 'wither'];
+            return netherBossTypes[bossIndex];
+        }
     } else if (game.selectedDimension === 'end') {
-        // End bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity (cycling through 7)
-        const bossIndex = Math.floor((level / 5) - 1) % 7;
-        const endBossTypes = ['baby_endermite', 'shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'];
-        return endBossTypes[bossIndex];
+        if (game.selectedSubDimension === 'echoing-void') {
+            // Echoing Void bosses: Endersent first, then Heart of Ender, then Vengeful Heart of Ender
+            if (level <= 6) {
+                return 'endersent';
+            } else if (level <= 8) {
+                return 'heart_of_ender';
+            } else {
+                return 'vengeful_heart_of_ender';
+            }
+        } else {
+            // Normal End bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity (cycling through 7)
+            const bossIndex = Math.floor((level / 5) - 1) % 7;
+            const endBossTypes = ['baby_endermite', 'shulker', 'ender_dragon', 'endwither', 'the_endermite', 'end_golem', 'end_monstrosity'];
+            return endBossTypes[bossIndex];
+        }
     } else if (game.selectedDimension === 'galaxy') {
         // Galaxy dimension: Overworld → Nether → End progression
         const bossIndex = Math.floor((level / 5) - 1);
@@ -425,6 +457,9 @@ function getBossHealth(bossType) {
         'blaze': 20,
         'ghast': 30,
         'wither': 50,
+        // Flames of the Nether bosses
+        'devourer': 300,
+        'great_hog': 600,
         // End bosses
         'baby_endermite': 1,  // Very easy first boss for The End
         'shulker': 100,
@@ -432,7 +467,11 @@ function getBossHealth(bossType) {
         'endwither': 150,
         'the_endermite': 170,
         'end_golem': 250,
-        'end_monstrosity': 310
+        'end_monstrosity': 310,
+        // Echoing Void bosses
+        'vengeful_heart_of_ender': 700,
+        'endersent': 50,
+        'heart_of_ender': 500
     };
     
     let baseHealth = healthMap[bossType] || 1;

@@ -51,15 +51,49 @@
             <div class="dimension-option nether" data-dimension="nether">
                 <div class="dimension-title">NETHER</div>
                 <div class="dimension-description">A hellish dimension with crimson landscapes and fiery foes</div>
-                <div class="dimension-enemies">Enemies: Piglins, Zombie Piglins, Wither Skeletons</div>
-                <div class="dimension-bosses">Bosses: Blaze, Ghast, Wither</div>
+                
+                <div class="sub-dimension-selection" style="display: none;">
+                    <div class="sub-dimension-option normal selected" data-sub-dimension="normal">
+                        <div class="sub-dimension-title">NORMAL</div>
+                        <div class="dimension-enemies">Enemies: Piglins, Zombie Piglins, Wither Skeletons</div>
+                        <div class="dimension-bosses">Bosses: Blaze, Ghast, Wither</div>
+                    </div>
+                    
+                    <div class="sub-dimension-option flames-of-nether" data-sub-dimension="flames-of-nether">
+                        <div class="sub-dimension-title">FLAMES OF THE NETHER</div>
+                        <div class="dimension-enemies">Enemies: Piglin (Minecraft Legends)</div>
+                        <div class="dimension-bosses">Bosses: Devourer, Great Hog</div>
+                    </div>
+                </div>
+                
+                <div class="default-info">
+                    <div class="dimension-enemies">Enemies: Piglins, Zombie Piglins, Wither Skeletons</div>
+                    <div class="dimension-bosses">Bosses: Blaze, Ghast, Wither</div>
+                </div>
             </div>
             
             <div class="dimension-option end" data-dimension="end">
                 <div class="dimension-title">THE END</div>
                 <div class="dimension-description">A void dimension inhabited by mysterious teleporting beings</div>
-                <div class="dimension-enemies">Enemies: Endermen</div>
-                <div class="dimension-bosses">Bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity</div>
+                
+                <div class="sub-dimension-selection" style="display: none;">
+                    <div class="sub-dimension-option normal selected" data-sub-dimension="normal">
+                        <div class="sub-dimension-title">NORMAL</div>
+                        <div class="dimension-enemies">Enemies: Endermen</div>
+                        <div class="dimension-bosses">Bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity</div>
+                    </div>
+                    
+                    <div class="sub-dimension-option echoing-void" data-sub-dimension="echoing-void">
+                        <div class="sub-dimension-title">ECHOING VOID</div>
+                        <div class="dimension-enemies">Enemies: None (Boss Rush Mode)</div>
+                        <div class="dimension-bosses">Bosses: Endersent, Heart of Ender, Vengeful Heart of Ender</div>
+                    </div>
+                </div>
+                
+                <div class="default-info">
+                    <div class="dimension-enemies">Enemies: Endermen</div>
+                    <div class="dimension-bosses">Bosses: Baby Endermite, Shulker, Ender Dragon, Endwither, THE Endermite, End Golem, End Monstrosity</div>
+                </div>
             </div>
             
             <div class="dimension-option galaxy" data-dimension="galaxy">
@@ -71,6 +105,155 @@
         </div>
         
         <div class="start-instruction">Press ENTER to Continue</div>
+        <div class="inventory-button" id="inventoryButton">View Complete Inventory</div>
+    </div>
+    
+    <div class="inventory-screen" id="inventoryScreen" style="display: none;">
+        <div class="inventory-header">
+            <div class="game-title">COMPLETE INVENTORY</div>
+            <div class="back-button" id="backButton">← Back to Home</div>
+        </div>
+        
+        <div class="inventory-container">
+            <!-- Overworld Section -->
+            <div class="dimension-inventory">
+                <h2 class="dimension-header">OVERWORLD</h2>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Normal</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="overworldNormalEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="overworldNormalBosses"></div>
+                    </div>
+                </div>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Woodland Mansion</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="woodlandEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="woodlandBosses"></div>
+                    </div>
+                </div>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Trial Chamber</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="trialEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="trialBosses"></div>
+                    </div>
+                </div>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Ocean Monument</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="oceanEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="oceanBosses"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Nether Section -->
+            <div class="dimension-inventory">
+                <h2 class="dimension-header nether-header">NETHER</h2>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Normal</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="netherNormalEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="netherNormalBosses"></div>
+                    </div>
+                </div>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Flames of the Nether</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="flamesEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="flamesBosses"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- End Section -->
+            <div class="dimension-inventory">
+                <h2 class="dimension-header end-header">THE END</h2>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Normal</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="endNormalEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="endNormalBosses"></div>
+                    </div>
+                </div>
+                
+                <div class="sub-dimension-inventory">
+                    <h3>Echoing Void</h3>
+                    <div class="entity-section">
+                        <h4>Enemies</h4>
+                        <div class="entity-grid" id="echoingEnemies"></div>
+                    </div>
+                    <div class="entity-section">
+                        <h4>Bosses</h4>
+                        <div class="entity-grid" id="echoingBosses"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Galaxy Section -->
+            <div class="dimension-inventory">
+                <h2 class="dimension-header galaxy-header">GALAXY</h2>
+                
+                <div class="entity-section">
+                    <h4>Enemies</h4>
+                    <div class="entity-grid" id="galaxyEnemies"></div>
+                </div>
+                <div class="entity-section">
+                    <h4>Bosses</h4>
+                    <div class="entity-grid" id="galaxyBosses"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Entity Detail Modal -->
+    <div class="entity-modal" id="entityModal" style="display: none;">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-close" id="modalClose">×</div>
+            <div class="modal-sprite" id="modalSprite"></div>
+            <div class="modal-name" id="modalName"></div>
+            <div class="modal-type" id="modalType"></div>
+            <div class="modal-health" id="modalHealth"></div>
+            <div class="modal-dimension" id="modalDimension"></div>
+            <div class="modal-description" id="modalDescription"></div>
+        </div>
     </div>
     
     <div class="pet-selection" id="petSelection" style="display: none;">
@@ -208,6 +391,7 @@
     <script src="js/combat.js"></script>
     <script src="js/gameLogic.js"></script>
     <script src="js/input.js"></script>
+    <script src="js/inventory.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

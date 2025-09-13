@@ -131,9 +131,31 @@ function enemyShoot() {
             } else if (enemy.type === 'end_monstrosity') {
                 customCooldown = 2000; // End Monstrosity powerful attacks
                 shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2;
+            } else if (enemy.type === 'endersent') {
+                customCooldown = 3000; // Endersent teleport attack every 3 seconds
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 1.5;
+            } else if (enemy.type === 'vengeful_heart_of_ender') {
+                customCooldown = 1200; // Vengeful Heart shoots every 1.2 seconds with varied attacks
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 4;
+            } else if (enemy.type === 'heart_of_ender') {
+                customCooldown = 800; // Heart of Ender shoots very frequently - every 0.8 seconds
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 6;
+            } else if (enemy.type === 'devourer') {
+                customCooldown = 1800; // Devourer shoots slimeballs and spawns slimes
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2.5;
+            } else if (enemy.type === 'great_hog') {
+                customCooldown = 2000; // Great Hog shoots ginormous fireballs and summons piglins
+                shouldShoot = now - enemy.lastShot > customCooldown && Math.random() < baseChance * 2;
             }
         } else {
-            shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
+            // Special shooting rates for specific regular enemies
+            if (enemy.type === 'enderman_head') {
+                // Enderman heads shoot much more frequently
+                const headCooldown = 800; // Shoot every 0.8 seconds
+                shouldShoot = now - enemy.lastShot > headCooldown && Math.random() < baseChance * 8;
+            } else {
+                shouldShoot = now - enemy.lastShot > shootCooldown && Math.random() < baseChance;
+            }
         }
         
         if (shouldShoot) {
@@ -178,10 +200,20 @@ function enemyShoot() {
                     createElderGuardianAttack(enemy, now);
                 } else if (enemy.type === 'end_monstrosity') {
                     createEndMonstrosityAttack(enemy, now);
+                } else if (enemy.type === 'vengeful_heart_of_ender') {
+                    createVengefulHeartAttack(enemy, now);
+                } else if (enemy.type === 'endersent') {
+                    createEndersentTeleportAttack(enemy, now);
+                } else if (enemy.type === 'heart_of_ender') {
+                    createHeartOfEnderSummon(enemy, now);
+                } else if (enemy.type === 'devourer') {
+                    createDevourerAttack(enemy, now);
+                } else if (enemy.type === 'great_hog') {
+                    createGreatHogAttack(enemy, now);
                 }
             } else {
                 // Regular enemy attacks
-                if (game.selectedDimension === 'nether' && (enemy.type === 'piglin' || enemy.type === 'zombie_piglin' || enemy.type === 'wither_skeleton')) {
+                if (game.selectedDimension === 'nether' && (enemy.type === 'piglin' || enemy.type === 'zombie_piglin' || enemy.type === 'wither_skeleton' || enemy.type === 'piglin_legends')) {
                     // Nether enemies shoot fireballs
                     createFireballProjectile(enemy, now);
                 } else if (enemy.type === 'vex') {
@@ -196,6 +228,12 @@ function enemyShoot() {
                 } else if (enemy.type === 'small_endermite') {
                     // Small endermites shoot ender pearls
                     createSmallEndermiteEnderPearl(enemy, now);
+                } else if (enemy.type === 'enderman_head') {
+                    // Enderman heads shoot pink beams
+                    createEndermanHeadPinkBeam(enemy, now);
+                } else if (enemy.type === 'slime') {
+                    // Slimes shoot small green projectiles
+                    createSlimeProjectile(enemy, now);
                 } else if (game.level >= 3 && enemy.type === 'creeper' && Math.random() < 0.4) {
                     // Creepers shoot faster projectiles at medium levels
                     createFastProjectile(enemy, now);
@@ -1111,6 +1149,29 @@ function moveProjectiles() {
                 }
                 game.enemyProjectiles.splice(index, 1);
             }
+        } else if (projectile.isExplosiveSquare) {
+            // Explosive square hits the bottom and explodes
+            if (projectile.y >= canvasSize.height - 20) {
+                // Create explosion effect
+                createExplosiveSquareExplosion(projectile.x, projectile.y);
+                
+                // Play explosion sound effect
+                if (sounds && sounds.explosion) {
+                    sounds.explosion();
+                }
+                
+                // Remove the projectile
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
+            } else if (projectile.x < 0 || projectile.x > canvasSize.width) {
+                // Remove if goes off sides
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+                game.enemyProjectiles.splice(index, 1);
+            }
         } else {
             // Normal projectile boundary check
             if (projectile.y > canvasSize.height || projectile.x < 0 || projectile.x > canvasSize.width) {
@@ -1264,6 +1325,8 @@ function checkCollisions() {
                             else if (enemy.type === 'endwither') points = 7500;
                             else if (enemy.type === 'the_endermite') points = 8500;
                             else if (enemy.type === 'end_monstrosity') points = 12000;
+                            else if (enemy.type === 'devourer') points = 4000;
+                            else if (enemy.type === 'great_hog') points = 6000;
                             
                             // Special handling for shulker boss defeat
                             if (enemy.type === 'shulker' && enemy.isBoss) {
@@ -1310,6 +1373,43 @@ function checkCollisions() {
                         }
                     } else {
                         // Normal enemy - dies in one hit
+                        
+                        // Special handling for slimes - they divide when hit
+                        if (enemy.type === 'slime' && enemy.divisionCount < 2) {
+                            // Create two smaller slimes
+                            for (let i = 0; i < 2; i++) {
+                                const newSize = enemy.size === 'large' ? 'medium' : 'small';
+                                const scale = newSize === 'medium' ? 1.0 : 0.6;
+                                const newHealth = enemy.divisionCount === 0 ? 1 : 1;
+                                
+                                const smallSlime = {
+                                    element: createSprite('enemy', enemy.x + (i * 40) - 20, enemy.y),
+                                    x: enemy.x + (i * 40) - 20,
+                                    y: enemy.y,
+                                    formationX: enemy.x + (i * 40) - 20,
+                                    formationY: enemy.y,
+                                    formationIndex: 0,
+                                    type: 'slime',
+                                    lastShot: 0,
+                                    state: 'formation',
+                                    progress: 0,
+                                    capturedPlayer: null,
+                                    canCapture: false,
+                                    isBoss: false,
+                                    maxHealth: newHealth,
+                                    health: newHealth,
+                                    size: newSize,
+                                    divisionCount: enemy.divisionCount + 1
+                                };
+                                
+                                smallSlime.element.innerHTML = sprites.slime;
+                                smallSlime.element.style.transform = `scale(${scale})`;
+                                
+                                game.enemies.push(smallSlime);
+                                game.canvas.appendChild(smallSlime.element);
+                            }
+                        }
+                        
                         if (enemy.element && enemy.element.parentNode) {
                             game.canvas.removeChild(enemy.element);
                         }
@@ -1317,6 +1417,7 @@ function checkCollisions() {
                         let points = 100 + (game.level - 1) * 10;
                         if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
                         else if (enemy.type === 'small_endermite') points = 200 + (game.level - 1) * 20;
+                        else if (enemy.type === 'slime') points = 75 + (game.level - 1) * 8; // Slimes worth slightly less
                         
                         game.score += points;
                         game.enemiesDefeated++;
@@ -1737,4 +1838,398 @@ function checkCollisions() {
             }
         }
     });
+}
+
+// Echoing Void boss attacks
+function createEndersentTeleportAttack(enemy, now) {
+    // Endersent teleports to a new location and deals damage in a burst
+    const canvasSize = getCanvasDimensions();
+    
+    // Teleport effect - create particles at old position
+    for (let i = 0; i < 8; i++) {
+        const particle = {
+            element: createSprite('projectile', enemy.x + Math.random() * 80, enemy.y + Math.random() * 100),
+            x: enemy.x + Math.random() * 80,
+            y: enemy.y + Math.random() * 100,
+            speed: 0,
+            isParticle: true,
+            fadeTime: now + 500
+        };
+        particle.element.innerHTML = sprites.enderPearl;
+        particle.element.style.transform = 'scale(0.5)';
+        particle.element.style.opacity = '0.6';
+        game.enemyProjectiles.push(particle);
+        game.canvas.appendChild(particle.element);
+    }
+    
+    // Teleport to new position near player
+    const newX = game.player.x + (Math.random() - 0.5) * 400;
+    const newY = game.player.y - 150 + (Math.random() - 0.5) * 200;
+    
+    // Clamp to screen bounds
+    enemy.x = Math.max(50, Math.min(canvasSize.width - 150, newX));
+    enemy.y = Math.max(canvasSize.height * 0.1, Math.min(canvasSize.height * 0.5, newY));
+    enemy.element.style.left = enemy.x + 'px';
+    enemy.element.style.top = enemy.y + 'px';
+    
+    // Update formation position to new location
+    enemy.formationX = enemy.x;
+    enemy.formationY = enemy.y;
+    
+    // Create damage projectile after teleport
+    setTimeout(() => {
+        const damageProjectile = {
+            element: createSprite('enemy-projectile', enemy.x + 40, enemy.y + 90),
+            x: enemy.x + 40,
+            y: enemy.y + 90,
+            speed: 6,
+            damage: 5 // Endersent deals 5 damage
+        };
+        damageProjectile.element.innerHTML = sprites.enderPearl;
+        damageProjectile.element.style.transform = 'scale(1.5)';
+        damageProjectile.element.style.filter = 'brightness(1.3) hue-rotate(270deg)';
+        game.enemyProjectiles.push(damageProjectile);
+        game.canvas.appendChild(damageProjectile.element);
+    }, 200);
+}
+
+function createHeartOfEnderSummon(enemy, now) {
+    // Count existing enderman heads
+    const existingHeads = game.enemies.filter(e => e.isEndermanHead && e.summonerId === enemy.uniqueId).length;
+    
+    // Initialize unique ID if not present
+    if (!enemy.uniqueId) {
+        enemy.uniqueId = 'heart_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Heart of Ender ALWAYS shoots multiple projectiles in a spread pattern
+    for (let i = -1; i <= 1; i++) {
+        const heartProjectile = {
+            element: createSprite('enemy-projectile', enemy.x + 60 + (i * 15), enemy.y + 80),
+            x: enemy.x + 60 + (i * 15),
+            y: enemy.y + 80,
+            speed: 5,
+            damage: 20, // Heart of Ender deals 20 damage when shooting directly
+            vx: i * 0.8 // Horizontal spread for projectiles
+        };
+        heartProjectile.element.innerHTML = sprites.enderPearl;
+        heartProjectile.element.style.transform = 'scale(2.0)';
+        heartProjectile.element.style.filter = 'brightness(1.5) hue-rotate(300deg)';
+        game.enemyProjectiles.push(heartProjectile);
+        game.canvas.appendChild(heartProjectile.element);
+    }
+    
+    // Don't summon more than 3 heads at a time
+    if (existingHeads >= 3) {
+        return; // Just shoot, don't summon more heads
+    }
+    
+    // Summon enderman head
+    const canvasSize = getCanvasDimensions();
+    const headX = enemy.x + (Math.random() - 0.5) * 300;
+    const headY = enemy.y + 100 + Math.random() * 200;
+    
+    const clampedX = Math.max(20, Math.min(canvasSize.width - 60, headX));
+    const clampedY = Math.max(canvasSize.height * 0.3, Math.min(canvasSize.height * 0.7, headY));
+    
+    const endermanHead = {
+        element: createSprite('enemy', clampedX, clampedY),
+        x: clampedX,
+        y: clampedY,
+        formationX: clampedX,
+        formationY: clampedY,
+        type: 'enderman_head',
+        lastShot: now,
+        state: 'formation',
+        progress: 1,
+        capturedPlayer: null,
+        canCapture: false,
+        isBoss: false,
+        isEndermanHead: true,
+        summonerId: enemy.uniqueId,
+        maxHealth: 1,
+        health: 1
+    };
+    
+    endermanHead.element.innerHTML = sprites.enderman_head;
+    
+    game.enemies.push(endermanHead);
+    game.canvas.appendChild(endermanHead.element);
+    
+    // Remove head after 15 seconds
+    setTimeout(() => {
+        const index = game.enemies.indexOf(endermanHead);
+        if (index > -1 && endermanHead.element && endermanHead.element.parentNode) {
+            game.canvas.removeChild(endermanHead.element);
+            game.enemies.splice(index, 1);
+        }
+    }, 15000);
+}
+
+function createEndermanHeadPinkBeam(enemy, now) {
+    // Enderman heads shoot 10-damage pink beams
+    const projectile = {
+        element: createSprite('enemy-projectile', enemy.x + 20, enemy.y + 30),
+        x: enemy.x + 20,
+        y: enemy.y + 30,
+        speed: 5,
+        damage: 10 // Enderman heads deal 10 damage
+    };
+    projectile.element.innerHTML = sprites.pink_beam;
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+}
+
+function createVengefulHeartAttack(enemy, now) {
+    // Initialize attack pattern counter if not present
+    if (!enemy.attackPattern) {
+        enemy.attackPattern = 0;
+        enemy.lastAttackTime = now;
+    }
+    
+    // Cycle between two attacks: 0=5-shot spread, 1=explosive square
+    const attackType = enemy.attackPattern % 2;
+    
+    if (attackType === 0) {
+        // 5-projectile spread attack with sparkly purple/pink projectiles
+        for (let i = -2; i <= 2; i++) {
+            const projectile = {
+                element: createSprite('enemy-projectile', enemy.x + 70 + (i * 20), enemy.y + 120),
+                x: enemy.x + 70 + (i * 20),
+                y: enemy.y + 120,
+                speed: 6,
+                damage: 20, // Each projectile deals 20 damage
+                vx: i * 0.6, // Horizontal spread
+                isSparkly: true
+            };
+            projectile.element.innerHTML = sprites.enderPearl;
+            projectile.element.style.transform = 'scale(1.3)';
+            projectile.element.style.filter = 'brightness(1.8) hue-rotate(280deg)';
+            // Add sparkle animation
+            projectile.element.style.animation = 'sparkle 0.5s infinite alternate';
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+    } else {
+        // Pink square explosive projectile
+        const explosiveSquare = {
+            element: createSprite('enemy-projectile', enemy.x + 70, enemy.y + 120),
+            x: enemy.x + 70,
+            y: enemy.y + 120,
+            speed: 4,
+            damage: 25,
+            isExplosiveSquare: true
+        };
+        explosiveSquare.element.innerHTML = sprites.pink_square;
+        explosiveSquare.element.style.transform = 'scale(1.5)';
+        game.enemyProjectiles.push(explosiveSquare);
+        game.canvas.appendChild(explosiveSquare.element);
+    }
+    
+    enemy.attackPattern++;
+}
+
+
+function createExplosiveSquareExplosion(x, y) {
+    // Create visual explosion effect
+    for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 30 + Math.random() * 40;
+        const particleX = x + Math.cos(angle) * distance;
+        const particleY = y + Math.sin(angle) * distance;
+        
+        const explosionParticle = {
+            element: createSprite('projectile', particleX, particleY),
+            x: particleX,
+            y: particleY,
+            speed: 0,
+            damage: 30, // High damage explosion
+            isExplosionParticle: true,
+            lifetime: Date.now() + 800 // Explosion lasts 0.8 seconds
+        };
+        
+        explosionParticle.element.innerHTML = sprites.pink_square;
+        explosionParticle.element.style.transform = 'scale(0.8)';
+        explosionParticle.element.style.filter = 'brightness(3) hue-rotate(20deg)';
+        explosionParticle.element.style.animation = 'sparkle 0.2s infinite';
+        
+        game.enemyProjectiles.push(explosionParticle);
+        game.canvas.appendChild(explosionParticle.element);
+        
+        // Remove particle after lifetime
+        setTimeout(() => {
+            const index = game.enemyProjectiles.indexOf(explosionParticle);
+            if (index > -1 && explosionParticle.element && explosionParticle.element.parentNode) {
+                game.canvas.removeChild(explosionParticle.element);
+                game.enemyProjectiles.splice(index, 1);
+            }
+        }, 800);
+    }
+}
+
+// Devourer boss attack - shoots slimeballs and spawns slimes
+function createDevourerAttack(enemy, now) {
+    // Initialize attack pattern counter if not present
+    if (!enemy.attackPattern) {
+        enemy.attackPattern = 0;
+    }
+    
+    const attackType = enemy.attackPattern % 3; // Cycle through 3 attacks
+    
+    if (attackType === 0 || attackType === 1) {
+        // Slimeball attack - shoot 3 green projectiles
+        for (let i = 0; i < 3; i++) {
+            const angle = (i - 1) * 0.3; // Spread shots
+            const projectile = {
+                element: createSprite('projectile', enemy.x + 50, enemy.y + 60),
+                x: enemy.x + 50,
+                y: enemy.y + 60,
+                speed: 4,
+                damage: 1,
+                angle: angle,
+                vx: Math.sin(angle) * 4,
+                vy: 4
+            };
+            
+            // Green slimeball sprite
+            projectile.element.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <circle cx="10" cy="10" r="8" fill="#32CD32"/>
+                    <circle cx="10" cy="10" r="6" fill="#90EE90"/>
+                    <circle cx="8" cy="8" r="2" fill="#FFFFFF"/>
+                </svg>
+            `;
+            
+            game.enemyProjectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
+    } else {
+        // Slime spawning attack - spawn 2 slimes
+        for (let i = 0; i < 2; i++) {
+            const slimeX = enemy.x + (i * 120) - 60;
+            const slimeY = enemy.y + 80;
+            
+            const slime = {
+                element: createSprite('enemy', slimeX, slimeY),
+                x: slimeX,
+                y: slimeY,
+                formationX: slimeX,
+                formationY: slimeY,
+                formationIndex: 0,
+                type: 'slime',
+                lastShot: 0,
+                state: 'formation',
+                progress: 0,
+                capturedPlayer: null,
+                canCapture: false,
+                isBoss: false,
+                maxHealth: 2,
+                health: 2,
+                size: 'large', // Track slime size for division
+                divisionCount: 0 // Track how many times this slime has divided
+            };
+            
+            slime.element.innerHTML = sprites.slime;
+            slime.element.style.transform = 'scale(1.5)'; // Large slime
+            
+            game.enemies.push(slime);
+            game.canvas.appendChild(slime.element);
+        }
+    }
+    
+    enemy.attackPattern++;
+    enemy.lastShot = now;
+}
+
+// Great Hog boss attack - shoots ginormous fireballs and summons piglins
+function createGreatHogAttack(enemy, now) {
+    // Initialize attack pattern counter if not present
+    if (!enemy.attackPattern) {
+        enemy.attackPattern = 0;
+    }
+    
+    const attackType = enemy.attackPattern % 4; // Cycle through 4 attacks
+    
+    if (attackType === 0 || attackType === 1 || attackType === 2) {
+        // Ginormous fireball attack
+        const projectile = {
+            element: createSprite('projectile', enemy.x + 60, enemy.y + 80),
+            x: enemy.x + 60,
+            y: enemy.y + 80,
+            speed: 3,
+            damage: 3, // High damage
+            isLarge: true
+        };
+        
+        // Ginormous fireball sprite
+        projectile.element.innerHTML = `
+            <svg width="40" height="40" viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="18" fill="#FF4500"/>
+                <circle cx="20" cy="20" r="15" fill="#FF6347"/>
+                <circle cx="20" cy="20" r="12" fill="#FFA500"/>
+                <circle cx="20" cy="20" r="8" fill="#FFD700"/>
+                <circle cx="16" cy="16" r="3" fill="#FFFFFF"/>
+            </svg>
+        `;
+        projectile.element.style.transform = 'scale(2)'; // Make it ginormous
+        
+        game.enemyProjectiles.push(projectile);
+        game.canvas.appendChild(projectile.element);
+    } else {
+        // Piglin summoning attack - spawn 3 piglin legends
+        for (let i = 0; i < 3; i++) {
+            const piglinX = enemy.x + (i * 80) - 80;
+            const piglinY = enemy.y + 100;
+            
+            const piglin = {
+                element: createSprite('enemy', piglinX, piglinY),
+                x: piglinX,
+                y: piglinY,
+                formationX: piglinX,
+                formationY: piglinY,
+                formationIndex: 0,
+                type: 'piglin_legends',
+                lastShot: 0,
+                state: 'formation',
+                progress: 0,
+                capturedPlayer: null,
+                canCapture: false,
+                isBoss: false,
+                maxHealth: 3,
+                health: 3
+            };
+            
+            piglin.element.innerHTML = sprites.piglin_legends;
+            
+            game.enemies.push(piglin);
+            game.canvas.appendChild(piglin.element);
+        }
+    }
+    
+    enemy.attackPattern++;
+    enemy.lastShot = now;
+}
+
+// Slime projectile attack - small green bouncing balls
+function createSlimeProjectile(enemy, now) {
+    const projectile = {
+        element: createSprite('projectile', enemy.x + 15, enemy.y + 20),
+        x: enemy.x + 15,
+        y: enemy.y + 20,
+        speed: 3,
+        damage: 1
+    };
+    
+    // Small green slime ball
+    projectile.element.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 12 12">
+            <circle cx="6" cy="6" r="5" fill="#32CD32"/>
+            <circle cx="6" cy="6" r="3" fill="#90EE90"/>
+            <circle cx="5" cy="5" r="1" fill="#FFFFFF"/>
+        </svg>
+    `;
+    
+    game.enemyProjectiles.push(projectile);
+    game.canvas.appendChild(projectile.element);
+    enemy.lastShot = now;
 }
