@@ -248,5 +248,96 @@ const sounds = {
             crackle.start(crackleStart);
             crackle.stop(crackleStart + crackleDuration);
         }
+    },
+    corruptedBeacon: () => {
+        const startTime = audioContext.currentTime;
+        const duration = 5.0; // Full 5 seconds to match laser duration
+
+        // Create ominous charging sound with frequency sweep
+        const baseOsc = audioContext.createOscillator();
+        const baseGain = audioContext.createGain();
+
+        baseOsc.connect(baseGain);
+        baseGain.connect(audioContext.destination);
+
+        // Start low and sweep up and down throughout the full duration
+        baseOsc.frequency.setValueAtTime(80, startTime);
+        baseOsc.frequency.exponentialRampToValueAtTime(400, startTime + 1.5);
+        baseOsc.frequency.exponentialRampToValueAtTime(150, startTime + 3.0);
+        baseOsc.frequency.exponentialRampToValueAtTime(300, startTime + 4.0);
+        baseOsc.frequency.exponentialRampToValueAtTime(120, startTime + duration);
+        baseOsc.type = 'sawtooth';
+
+        baseGain.gain.setValueAtTime(0.15, startTime);
+        baseGain.gain.exponentialRampToValueAtTime(0.25, startTime + 1.0);
+        baseGain.gain.exponentialRampToValueAtTime(0.2, startTime + 3.0);
+        baseGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+        baseOsc.start(startTime);
+        baseOsc.stop(startTime + duration);
+
+        // Add corrupted digital glitches throughout the full duration
+        for (let i = 0; i < 20; i++) {
+            const glitch = audioContext.createOscillator();
+            const glitchGain = audioContext.createGain();
+
+            glitch.connect(glitchGain);
+            glitchGain.connect(audioContext.destination);
+
+            glitch.frequency.value = 300 + Math.random() * 600;
+            glitch.type = 'square';
+
+            const glitchStart = startTime + (i * 0.2) + Math.random() * 0.15;
+            const glitchDuration = 0.05 + Math.random() * 0.08;
+
+            if (glitchStart < startTime + duration) {
+                glitchGain.gain.setValueAtTime(0.08, glitchStart);
+                glitchGain.gain.exponentialRampToValueAtTime(0.01, glitchStart + glitchDuration);
+
+                glitch.start(glitchStart);
+                glitch.stop(Math.min(glitchStart + glitchDuration, startTime + duration));
+            }
+        }
+
+        // Add continuous deep corrupted bass pulse throughout
+        const bassPulse = audioContext.createOscillator();
+        const bassPulseGain = audioContext.createGain();
+
+        bassPulse.connect(bassPulseGain);
+        bassPulseGain.connect(audioContext.destination);
+
+        bassPulse.frequency.value = 40;
+        bassPulse.type = 'sine';
+
+        bassPulseGain.gain.setValueAtTime(0.25, startTime + 0.3);
+        bassPulseGain.gain.exponentialRampToValueAtTime(0.3, startTime + 2.0);
+        bassPulseGain.gain.exponentialRampToValueAtTime(0.2, startTime + 4.0);
+        bassPulseGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+        bassPulse.start(startTime + 0.3);
+        bassPulse.stop(startTime + duration);
+
+        // Add periodic energy pulses to match the laser oscillation
+        for (let pulse = 0; pulse < 4; pulse++) {
+            const energyPulse = audioContext.createOscillator();
+            const energyGain = audioContext.createGain();
+
+            energyPulse.connect(energyGain);
+            energyGain.connect(audioContext.destination);
+
+            energyPulse.frequency.value = 200 + pulse * 50;
+            energyPulse.type = 'sine';
+
+            const pulseStart = startTime + (pulse * 1.2) + 0.5;
+            const pulseDuration = 0.8;
+
+            if (pulseStart < startTime + duration) {
+                energyGain.gain.setValueAtTime(0.12, pulseStart);
+                energyGain.gain.exponentialRampToValueAtTime(0.01, pulseStart + pulseDuration);
+
+                energyPulse.start(pulseStart);
+                energyPulse.stop(Math.min(pulseStart + pulseDuration, startTime + duration));
+            }
+        }
     }
 };

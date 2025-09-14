@@ -1,6 +1,81 @@
 // Combat module for Minecraft Invaders
 // Contains all shooting and collision detection functions
 
+// Centralized enemy defeat function to avoid code duplication
+function defeatEnemy(enemy, enemyIndex, pointMultiplier = 1, source = 'normal') {
+    if (!enemy || !enemy.element) return 0;
+
+    // Check if this enemy has captured player
+    if (enemy.capturedPlayer) {
+        rescuePlayer(enemy);
+    }
+
+    // Remove enemy from DOM
+    if (enemy.element && enemy.element.parentNode) {
+        game.canvas.removeChild(enemy.element);
+    }
+
+    // Calculate points based on enemy type and source
+    let points = 100 + (game.level - 1) * 10; // Base points
+    if (enemy.type === 'creeper') points = 150 + (game.level - 1) * 15;
+
+    // Apply point multiplier for different sources
+    points = Math.floor(points * pointMultiplier);
+
+    if (enemy.isBoss) {
+        // Boss points (standardized values)
+        if (enemy.type === 'witch') points = 1000;
+        else if (enemy.type === 'evoker') points = 1500;
+        else if (enemy.type === 'ravager') points = 2000;
+        else if (enemy.type === 'warden') points = 2500;
+        else if (enemy.type === 'guardian') points = 1200;
+        else if (enemy.type === 'elder_guardian') points = 3000;
+        else if (enemy.type === 'blaze') points = 1000;
+        else if (enemy.type === 'ghast') points = 1500;
+        else if (enemy.type === 'wither') points = 2500;
+        else if (enemy.type === 'shulker') points = 5000;
+        else if (enemy.type === 'ender_dragon') points = 10000;
+
+        // Hide boss health bar when boss is defeated
+        hideBossHealth();
+    }
+
+    // Award points and update counters
+    game.score += points;
+    game.enemiesDefeated++;
+
+    // Remove from enemies array
+    if (enemyIndex >= 0) {
+        game.enemies.splice(enemyIndex, 1);
+    }
+
+    // Update score display
+    document.getElementById('score').textContent = game.score;
+    updateHighScore();
+
+    // Play sound effect
+    sounds.enemyHit();
+
+    return points;
+}
+
+// Function to handle boss damage (when not defeated)
+function damageBoss(enemy, damage) {
+    if (!enemy || !enemy.isBoss) return 0;
+
+    enemy.health -= damage;
+    updateBossHealth(enemy.health, enemy.maxHealth);
+
+    // Award small points for hitting boss
+    const hitPoints = 50;
+    game.score += hitPoints;
+    document.getElementById('score').textContent = game.score;
+    updateHighScore();
+
+    sounds.enemyHit();
+    return hitPoints;
+}
+
 // Player shooting functions
 function shoot() {
     if (!game.player || game.capturedPlayer) return;
@@ -41,7 +116,15 @@ function shoot() {
             game.nextExplosiveShot = false;
             updatePowerUpDisplay();
         }
-        
+
+        // Check for corrupted beacon effect
+        if (game.nextCorruptedBeaconShot) {
+            triggerCorruptedBeaconLaser();
+            sounds.corruptedBeacon(); // Use unique corrupted beacon sound
+            game.lastShot = now;
+            return; // Don't fire normal projectile
+        }
+
         // Check for lava chicken effect
         if (powerUps.active.lavaChicken && powerUps.active.lavaChicken > now) {
             triggerVerticalBlast();

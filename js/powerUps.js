@@ -11,7 +11,8 @@ const powerUps = {
         blazeRod: { name: 'Blaze Rod', duration: 25000, effect: 'spreadingFire' },
         stevesLavaChicken: { name: "Steve's Lava Chicken", duration: 5000, effect: 'lavaChicken' },
         shield: { name: 'Shield', duration: 10000, effect: 'shield' },
-        iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' }
+        iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' },
+        corruptedBeacon: { name: 'Corrupted Beacon', duration: 0, effect: 'corruptedBeacon' }
     }
 };
 
@@ -48,6 +49,9 @@ function activatePowerUp(type) {
         case 'freezeEnemies':
             powerUps.active.freezeEnemies = Date.now() + powerUp.duration;
             break;
+        case 'corruptedBeacon':
+            game.nextCorruptedBeaconShot = true;
+            break;
     }
     
     updatePowerUpDisplay();
@@ -66,6 +70,7 @@ function updatePowerUpDisplay() {
     });
     
     if (game.nextExplosiveShot) activeEffects.push('TNT Ready');
+    if (game.nextCorruptedBeaconShot) activeEffects.push('Corrupted Beacon Ready');
     if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > now) activeEffects.push('Spreading Fire');
     
     const indicator = document.getElementById('powerupIndicator');
@@ -86,7 +91,16 @@ function spawnPowerUp() {
     if (Math.random() < 0.25) { // 25% chance
         const canvasSize = getCanvasDimensions();
         const types = Object.keys(powerUps.types);
-        const randomType = types[Math.floor(Math.random() * types.length)];
+
+        // Make corrupted beacon much rarer (5% chance when a power-up spawns)
+        let randomType;
+        if (Math.random() < 0.05) {
+            randomType = 'corruptedBeacon';
+        } else {
+            // Choose from other power-ups
+            const otherTypes = types.filter(type => type !== 'corruptedBeacon');
+            randomType = otherTypes[Math.floor(Math.random() * otherTypes.length)];
+        }
         
         const x = Math.random() * (canvasSize.width - 40);
         const powerUp = {
@@ -443,6 +457,194 @@ function updateFreezeEffect() {
     if (!isFrozen) {
         const allFreezeEffects = document.querySelectorAll('[id^="freeze-"]');
         allFreezeEffects.forEach(effect => effect.remove());
+    }
+}
+
+function triggerCorruptedBeaconLaser() {
+    if (!game.player) return;
+
+    // Remove any existing corrupted beacon laser first
+    if (game.corruptedBeaconLaser && game.corruptedBeaconLaser.element) {
+        if (game.corruptedBeaconLaser.element.parentNode) {
+            game.canvas.removeChild(game.corruptedBeaconLaser.element);
+        }
+        game.corruptedBeaconLaser = null;
+    }
+
+    const canvasSize = getCanvasDimensions();
+    const startX = game.player.x + 50; // Center of player
+    const startY = game.player.y; // Start from player position
+    const duration = 5000; // 5 seconds
+    const startTime = Date.now();
+
+    // Create the main laser effect that will animate
+    const laserEffect = {
+        element: createSprite('corrupted-laser', 0, 0),
+        startX: startX,
+        startY: startY,
+        currentAngle: 0,
+        active: true,
+        startTime: startTime,
+        duration: duration
+    };
+
+    // Create custom SVG for wide pink laser (long enough to reach any screen edge, pointing upward)
+    const maxLaserLength = Math.sqrt(canvasSize.width * canvasSize.width + canvasSize.height * canvasSize.height);
+    laserEffect.element.innerHTML = `
+        <svg width="60" height="${maxLaserLength}" viewBox="0 0 60 ${maxLaserLength}" style="pointer-events: none;">
+            <defs>
+                <linearGradient id="corruptedLaserGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ff006e;stop-opacity:0.1" />
+                    <stop offset="20%" style="stop-color:#ff006e;stop-opacity:0.6" />
+                    <stop offset="50%" style="stop-color:#ff69b4;stop-opacity:0.9" />
+                    <stop offset="80%" style="stop-color:#ff006e;stop-opacity:0.6" />
+                    <stop offset="100%" style="stop-color:#ff006e;stop-opacity:0.1" />
+                </linearGradient>
+                <filter id="glowVertical">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Outer glow - wide spreading beam -->
+            <polygon points="0,${maxLaserLength} 60,${maxLaserLength} 35,0 25,0" fill="url(#corruptedLaserGradient)" opacity="0.4" filter="url(#glowVertical)" transform="scale(1,-1) translate(0,-${maxLaserLength})"/>
+            <!-- Main laser beam - wide spreading beam -->
+            <polygon points="8,${maxLaserLength} 52,${maxLaserLength} 34,0 26,0" fill="#ff006e" opacity="0.8" transform="scale(1,-1) translate(0,-${maxLaserLength})"/>
+            <!-- Inner bright core - moderate spread -->
+            <polygon points="18,${maxLaserLength} 42,${maxLaserLength} 32,0 28,0" fill="#ff69b4" opacity="0.9" transform="scale(1,-1) translate(0,-${maxLaserLength})"/>
+            <!-- Center hotline - slight spread -->
+            <polygon points="26,${maxLaserLength} 34,${maxLaserLength} 31,0 29,0" fill="#ffffff" opacity="0.7" transform="scale(1,-1) translate(0,-${maxLaserLength})"/>
+            <!-- Animated energy pulses - spreading -->
+            <polygon points="12,${maxLaserLength} 22,${maxLaserLength} 31,0 27,0" fill="#d896ff" opacity="0.6" transform="scale(1,-1) translate(0,-${maxLaserLength})">
+                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="0.3s" repeatCount="indefinite"/>
+            </polygon>
+            <polygon points="38,${maxLaserLength} 48,${maxLaserLength} 33,0 29,0" fill="#d896ff" opacity="0.6" transform="scale(1,-1) translate(0,-${maxLaserLength})">
+                <animate attributeName="opacity" values="0.8;0.2;0.8" dur="0.3s" repeatCount="indefinite"/>
+            </polygon>
+        </svg>
+    `;
+
+    laserEffect.element.style.pointerEvents = 'none';
+    laserEffect.element.style.zIndex = '150';
+    laserEffect.element.style.transformOrigin = `30px ${maxLaserLength}px`; // Pivot from laser start point (now at bottom)
+    laserEffect.element.style.position = 'absolute';
+    laserEffect.element.style.left = (startX - 30) + 'px'; // Center the laser on player
+    laserEffect.element.style.top = (startY - maxLaserLength) + 'px'; // Position so bottom is at player
+
+    game.canvas.appendChild(laserEffect.element);
+    game.corruptedBeaconLaser = laserEffect;
+
+    // Clear the ready state
+    game.nextCorruptedBeaconShot = false;
+    updatePowerUpDisplay();
+}
+
+function updateCorruptedBeaconLaser() {
+    if (!game.corruptedBeaconLaser || !game.corruptedBeaconLaser.active) return;
+
+    const laser = game.corruptedBeaconLaser;
+    const now = Date.now();
+    const elapsed = now - laser.startTime;
+
+    // Check if duration has ended
+    if (elapsed >= laser.duration) {
+        // Remove the laser
+        if (laser.element && laser.element.parentNode) {
+            game.canvas.removeChild(laser.element);
+        }
+        game.corruptedBeaconLaser = null;
+        return;
+    }
+
+    // Calculate pivot angle (sweeps back and forth)
+    const maxAngle = 60; // degrees
+    const sweepSpeed = 0.05; // radians per frame
+
+    // Create oscillating motion
+    const progress = elapsed / laser.duration;
+    const oscillation = Math.sin(progress * Math.PI * 4); // 4 complete sweeps over 5 seconds
+    const currentAngle = oscillation * maxAngle;
+
+    // Update laser position to follow player
+    if (game.player) {
+        const currentPlayerX = game.player.x + 50; // Center of player
+        const currentPlayerY = game.player.y; // Player Y position
+        const canvasSize = getCanvasDimensions();
+        const maxLaserLength = Math.sqrt(canvasSize.width * canvasSize.width + canvasSize.height * canvasSize.height);
+        laser.startX = currentPlayerX;
+        laser.startY = currentPlayerY;
+        laser.element.style.left = (currentPlayerX - 30) + 'px'; // Center the laser on player
+        laser.element.style.top = (currentPlayerY - maxLaserLength) + 'px'; // Position so bottom is at player
+    }
+
+    // Apply rotation (start pointing up, then add oscillation)
+    const totalAngle = 0 + currentAngle; // 0 to point up initially, then add oscillation
+    laser.element.style.transform = `rotate(${totalAngle}deg)`;
+
+    // Check collision with enemies (vertical laser with rotation, starting from player)
+    const canvasSize = getCanvasDimensions();
+    const laserStartX = laser.startX;
+    const laserStartY = laser.startY;
+    const totalAngleRad = (currentAngle * Math.PI) / 180; // Use the oscillation angle directly
+
+    for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+        const enemy = game.enemies[eIndex];
+        if (!enemy || !enemy.element) continue;
+
+        const enemyDimensions = getEnemyDimensions(enemy);
+        const enemyCenterX = enemy.x + enemyDimensions.width / 2;
+        const enemyCenterY = enemy.y + enemyDimensions.height / 2;
+
+        // Calculate distance from laser start point (player position)
+        const dx = enemyCenterX - laserStartX;
+        const dy = enemyCenterY - laserStartY;
+
+        // Rotate point to laser coordinate system (laser rotates around start point)
+        const rotatedX = dx * Math.cos(-totalAngleRad) - dy * Math.sin(-totalAngleRad);
+        const rotatedY = dx * Math.sin(-totalAngleRad) + dy * Math.cos(-totalAngleRad);
+
+        // Check if enemy is within laser beam (tapered beam - wide at base, narrow at tip)
+        // Enemy must be in the laser direction (rotatedY >= 0) and within tapered beam width
+        const maxLaserLength = Math.sqrt(canvasSize.width * canvasSize.width + canvasSize.height * canvasSize.height);
+
+        // Debug: Log collision detection for first enemy
+        if (eIndex === game.enemies.length - 1) {
+            console.log(`Laser collision check:`, {
+                enemyPos: {x: enemyCenterX, y: enemyCenterY},
+                laserPos: {x: laserStartX, y: laserStartY},
+                delta: {x: dx, y: dy},
+                rotated: {x: rotatedX, y: rotatedY},
+                angle: currentAngle,
+                maxLength: maxLaserLength,
+                rotatedYCheck: `${rotatedY} >= 0 && ${rotatedY} <= ${maxLaserLength} = ${rotatedY >= 0 && rotatedY <= maxLaserLength}`
+            });
+        }
+
+        // Since enemies are above the player (negative dy), we need to check rotatedY <= 0
+        if (rotatedY <= 0 && rotatedY >= -maxLaserLength) {
+            // Calculate beam width at enemy distance (spreads from 10px at base to 30px at far end)
+            const distanceRatio = Math.abs(rotatedY) / maxLaserLength; // 0 at player, 1 at max distance
+            const beamWidthAtDistance = 10 + (distanceRatio * 20); // Spreads from 10px to 30px
+
+            if (Math.abs(rotatedX) <= beamWidthAtDistance) {
+                console.log(`Enemy hit by laser!`, {enemy: enemy.type, damage: 5, health: enemy.health});
+            // Apply 5 damage to the enemy (powerful laser)
+            enemy.health -= 5;
+
+            if (enemy.health <= 0) {
+                // Enemy is defeated - use centralized function with bonus multiplier
+                defeatEnemy(enemy, eIndex, 2.0, 'corruptedBeacon'); // 2x points for corrupted beacon
+            } else if (enemy.isBoss) {
+                // Boss damaged but still alive - use centralized function
+                damageBoss(enemy, 0); // 0 damage since we already applied it above
+            } else {
+                // Regular enemy hit but not defeated
+                sounds.enemyHit();
+            }
+            }
+        }
     }
 }
 

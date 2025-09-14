@@ -163,6 +163,7 @@ function gameLoop() {
         moveFireSpreadEffects();
         updateShieldEffect();
         updateFreezeEffect();
+        updateCorruptedBeaconLaser();
         enemyShoot();
         
         // Continuous shooting when spacebar is held
