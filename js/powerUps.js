@@ -12,7 +12,8 @@ const powerUps = {
         stevesLavaChicken: { name: "Steve's Lava Chicken", duration: 5000, effect: 'lavaChicken' },
         shield: { name: 'Shield', duration: 10000, effect: 'shield' },
         iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' },
-        corruptedBeacon: { name: 'Corrupted Beacon', duration: 0, effect: 'corruptedBeacon' }
+        corruptedBeacon: { name: 'Corrupted Beacon', duration: 0, effect: 'corruptedBeacon' },
+        ricochetEgg: { name: 'Ricochet Egg', duration: 0, effect: 'ricochetEgg' }
     }
 };
 
@@ -51,6 +52,10 @@ function activatePowerUp(type) {
             break;
         case 'corruptedBeacon':
             game.nextCorruptedBeaconShot = true;
+            break;
+        case 'ricochetEgg':
+            // Launch a ricochet egg immediately
+            launchRicochetEgg();
             break;
     }
     
@@ -662,6 +667,164 @@ function movePowerUps() {
                 game.canvas.removeChild(powerUp.element);
             }
             powerUps.items.splice(index, 1);
+        }
+    }
+}
+
+function launchRicochetEgg() {
+    if (!game.player) return;
+
+    const canvasSize = getCanvasDimensions();
+    const startX = game.player.x + 50; // Center of player
+    const startY = game.player.y;
+
+    // Create ricochet egg with random initial velocity
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Slightly random upward angle
+    const speed = 8;
+
+    const ricochetEgg = {
+        element: createSprite('ricochet-egg', startX - 20, startY - 20),
+        x: startX - 20,
+        y: startY - 20,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        bounces: 0,
+        maxBounces: 50, // Maximum bounces before disappearing
+        life: 15000, // 15 seconds lifetime
+        startTime: Date.now(),
+        width: 40,
+        height: 40
+    };
+
+    // Use the ricochet egg sprite
+    ricochetEgg.element.innerHTML = sprites.ricochetEgg;
+    ricochetEgg.element.style.zIndex = '75';
+
+    game.ricochetEggs.push(ricochetEgg);
+    game.canvas.appendChild(ricochetEgg.element);
+
+    // Play launch sound
+    sounds.shoot();
+}
+
+function moveRicochetEggs() {
+    const canvasSize = getCanvasDimensions();
+
+    for (let index = game.ricochetEggs.length - 1; index >= 0; index--) {
+        const egg = game.ricochetEggs[index];
+        if (!egg || !egg.element) continue;
+
+        const now = Date.now();
+
+        // Check if egg has expired
+        if (now - egg.startTime > egg.life || egg.bounces >= egg.maxBounces) {
+            if (egg.element && egg.element.parentNode) {
+                game.canvas.removeChild(egg.element);
+            }
+            game.ricochetEggs.splice(index, 1);
+            continue;
+        }
+
+        // Move the egg
+        egg.x += egg.vx;
+        egg.y += egg.vy;
+
+        // Check boundary collisions and bounce
+        let bounced = false;
+
+        // Left boundary
+        if (egg.x <= 0 && egg.vx < 0) {
+            egg.vx = Math.abs(egg.vx);
+            egg.x = 0;
+            bounced = true;
+        }
+        // Right boundary
+        else if (egg.x + egg.width >= canvasSize.width && egg.vx > 0) {
+            egg.vx = -Math.abs(egg.vx);
+            egg.x = canvasSize.width - egg.width;
+            bounced = true;
+        }
+
+        // Top boundary
+        if (egg.y <= 0 && egg.vy < 0) {
+            egg.vy = Math.abs(egg.vy);
+            egg.y = 0;
+            bounced = true;
+        }
+        // Bottom boundary
+        else if (egg.y + egg.height >= canvasSize.height && egg.vy > 0) {
+            egg.vy = -Math.abs(egg.vy);
+            egg.y = canvasSize.height - egg.height;
+            bounced = true;
+        }
+
+        if (bounced) {
+            egg.bounces++;
+            // Play a bounce sound effect
+            playSound(300 + egg.bounces * 10, 0.1);
+
+            // Add a slight random variation to prevent infinite loops
+            egg.vx += (Math.random() - 0.5) * 0.5;
+            egg.vy += (Math.random() - 0.5) * 0.5;
+
+            // Ensure minimum velocity
+            const minSpeed = 4;
+            const currentSpeed = Math.sqrt(egg.vx * egg.vx + egg.vy * egg.vy);
+            if (currentSpeed < minSpeed) {
+                egg.vx = (egg.vx / currentSpeed) * minSpeed;
+                egg.vy = (egg.vy / currentSpeed) * minSpeed;
+            }
+        }
+
+        // Update position
+        egg.element.style.left = egg.x + 'px';
+        egg.element.style.top = egg.y + 'px';
+
+        // Check collision with enemies
+        for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+            const enemy = game.enemies[eIndex];
+            if (!enemy || !enemy.element) continue;
+
+            const enemyDimensions = getEnemyDimensions(enemy);
+
+            // Check if egg hits enemy
+            if (egg.x < enemy.x + enemyDimensions.width &&
+                egg.x + egg.width > enemy.x &&
+                egg.y < enemy.y + enemyDimensions.height &&
+                egg.y + egg.height > enemy.y) {
+
+                // Deal damage to enemy
+                enemy.health -= 2; // 2 damage per hit
+
+                if (enemy.health <= 0) {
+                    // Enemy defeated - use centralized function
+                    defeatEnemy(enemy, eIndex, 1.5, 'ricochetEgg'); // 1.5x points
+                } else if (enemy.isBoss) {
+                    // Boss damaged but still alive
+                    damageBoss(enemy, 0); // 0 damage since we already applied it
+                } else {
+                    // Regular enemy hit but not defeated
+                    sounds.enemyHit();
+                }
+
+                // Bounce off the enemy (reflect based on hit position)
+                const eggCenterX = egg.x + egg.width / 2;
+                const eggCenterY = egg.y + egg.height / 2;
+                const enemyCenterX = enemy.x + enemyDimensions.width / 2;
+                const enemyCenterY = enemy.y + enemyDimensions.height / 2;
+
+                const dx = eggCenterX - enemyCenterX;
+                const dy = eggCenterY - enemyCenterY;
+                const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+
+                // Normalize and apply bounce
+                const bounceForce = 8;
+                egg.vx = (dx / distance) * bounceForce;
+                egg.vy = (dy / distance) * bounceForce;
+
+                egg.bounces++;
+                break; // Only hit one enemy per frame
+            }
         }
     }
 }

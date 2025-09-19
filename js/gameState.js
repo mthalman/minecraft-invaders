@@ -38,7 +38,8 @@ const game = {
     selectedSubDimension: 'normal',
     selectedPet: 'wolf',
     pet: null,
-    petProjectiles: []
+    petProjectiles: [],
+    ricochetEggs: []
 };
 
 // Initialize UI

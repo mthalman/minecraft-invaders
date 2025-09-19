@@ -92,6 +92,7 @@ function restartGame() {
     game.enemyProjectiles = [];
     game.pet = null;
     game.petProjectiles = [];
+    game.ricochetEggs = [];
     game.score = 0;
     game.lives = 3;
     game.gameRunning = true;
@@ -164,6 +165,7 @@ function gameLoop() {
         updateShieldEffect();
         updateFreezeEffect();
         updateCorruptedBeaconLaser();
+        moveRicochetEggs();
         enemyShoot();
         
         // Continuous shooting when spacebar is held
