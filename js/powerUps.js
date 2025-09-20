@@ -191,49 +191,8 @@ function triggerVerticalBlast() {
                 rescuePlayer(enemy);
             }
             
-            // Apply 3 damage to the enemy
-            enemy.health -= 3;
-            
-            if (enemy.health <= 0) {
-                // Enemy is defeated
-                if (enemy.element && enemy.element.parentNode) {
-                    game.canvas.removeChild(enemy.element);
-                }
-                
-                // Award points
-                let points = 150 + (game.level - 1) * 15; // Bonus points for vertical blast
-                if (enemy.type === 'creeper') points = 200 + (game.level - 1) * 20;
-                if (enemy.isBoss) {
-                    // Boss points
-                    if (enemy.type === 'witch') points = 1000;
-                    else if (enemy.type === 'evoker') points = 1500;
-                    else if (enemy.type === 'ravager') points = 2000;
-                    else if (enemy.type === 'warden') points = 2500;
-                    else if (enemy.type === 'guardian') points = 1200;
-                    else if (enemy.type === 'elder_guardian') points = 3000;
-                    else if (enemy.type === 'blaze') points = 1000;
-                    else if (enemy.type === 'ghast') points = 1500;
-                    else if (enemy.type === 'wither') points = 2500;
-                    else if (enemy.type === 'shulker') points = 5000;
-                    else if (enemy.type === 'ender_dragon') points = 10000;
-                    
-                    // Hide boss health bar when boss is defeated
-                    hideBossHealth();
-                }
-                
-                game.score += points;
-                game.enemiesDefeated++;
-                game.enemies.splice(eIndex, 1);
-            } else if (enemy.isBoss) {
-                // Boss damaged but still alive, update health bar
-                updateBossHealth(enemy.health, enemy.maxHealth);
-                
-                // Award small points for hitting boss
-                let points = 50;
-                game.score += points;
-            }
-            
-            sounds.enemyHit();
+            // Handle collision using common handler
+            handleProjectileEnemyCollision(enemy, eIndex, 3, 1.5, 'verticalBlast');
         }
     }
     
@@ -303,55 +262,13 @@ function moveFireSpreadEffects() {
             );
             
             if (distance < 40) {
-                // Apply 3 damage to the enemy
-                enemy.health -= 3;
-                
-                if (enemy.health <= 0) {
-                    // Enemy is defeated
-                    if (enemy.element && enemy.element.parentNode) {
-                        game.canvas.removeChild(enemy.element);
-                    }
-                    
-                    let points = 75 + (game.level - 1) * 7; // Spread fire points
-                    if (enemy.type === 'creeper') points = 112 + (game.level - 1) * 11;
-                    if (enemy.isBoss) {
-                        // Boss points
-                        if (enemy.type === 'witch') points = 1000;
-                        else if (enemy.type === 'evoker') points = 1500;
-                        else if (enemy.type === 'ravager') points = 2000;
-                        else if (enemy.type === 'warden') points = 2500;
-                        else if (enemy.type === 'guardian') points = 1200;
-                        else if (enemy.type === 'elder_guardian') points = 3000;
-                        else if (enemy.type === 'blaze') points = 1000;
-                        else if (enemy.type === 'ghast') points = 1500;
-                        else if (enemy.type === 'wither') points = 2500;
-                        else if (enemy.type === 'shulker') points = 5000;
-                        else if (enemy.type === 'ender_dragon') points = 10000;
-                        
-                        // Hide boss health bar when boss is defeated
-                        hideBossHealth();
-                    }
-                    
-                    game.score += points;
-                    game.enemiesDefeated++;
-                    game.enemies.splice(eIndex, 1);
-                    
-                    // Create secondary fire spread from this enemy
-                    if (Math.random() < 0.3) { // 30% chance to spread further
-                        createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
-                    }
-                } else if (enemy.isBoss) {
-                    // Boss damaged but still alive, update health bar
-                    updateBossHealth(enemy.health, enemy.maxHealth);
-                    
-                    // Award small points for hitting boss
-                    let points = 50;
-                    game.score += points;
+                // Handle collision using common handler
+                const result = handleProjectileEnemyCollision(enemy, eIndex, 3, 0.75, 'fireSpread');
+
+                // Create secondary fire spread from defeated enemy
+                if (result === 'defeated' && Math.random() < 0.3) { // 30% chance to spread further
+                    createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
                 }
-                
-                document.getElementById('score').textContent = game.score;
-                updateHighScore();
-                sounds.enemyHit();
                 break;
             }
         }
@@ -655,19 +572,8 @@ function updateCorruptedBeaconLaser() {
 
             if (Math.abs(rotatedX) <= beamWidthAtDistance) {
                 console.log(`Enemy hit by laser!`, {enemy: enemy.type, damage: 5, health: enemy.health});
-            // Apply 5 damage to the enemy (powerful laser)
-            enemy.health -= 5;
-
-            if (enemy.health <= 0) {
-                // Enemy is defeated - use centralized function with bonus multiplier
-                defeatEnemy(enemy, eIndex, 2.0, 'corruptedBeacon'); // 2x points for corrupted beacon
-            } else if (enemy.isBoss) {
-                // Boss damaged but still alive - use centralized function
-                damageBoss(enemy, 0); // 0 damage since we already applied it above
-            } else {
-                // Regular enemy hit but not defeated
-                sounds.enemyHit();
-            }
+            // Handle collision using common handler
+            handleProjectileEnemyCollision(enemy, eIndex, 5, 2.0, 'corruptedBeacon');
             }
         }
     }
@@ -813,19 +719,8 @@ function moveRicochetEggs() {
                 egg.y < enemy.y + enemyDimensions.height &&
                 egg.y + egg.height > enemy.y) {
 
-                // Deal damage to enemy
-                enemy.health -= 2; // 2 damage per hit
-
-                if (enemy.health <= 0) {
-                    // Enemy defeated - use centralized function
-                    defeatEnemy(enemy, eIndex, 1.5, 'ricochetEgg'); // 1.5x points
-                } else if (enemy.isBoss) {
-                    // Boss damaged but still alive
-                    damageBoss(enemy, 0); // 0 damage since we already applied it
-                } else {
-                    // Regular enemy hit but not defeated
-                    sounds.enemyHit();
-                }
+                // Handle collision using common handler
+                handleProjectileEnemyCollision(enemy, eIndex, 2, 1.5, 'ricochetEgg');
 
                 // Bounce off the enemy (reflect based on hit position)
                 const eggCenterX = egg.x + egg.width / 2;
@@ -970,19 +865,8 @@ function moveLightningBolts() {
                 }
                 game.lightningBolts.splice(index, 1);
 
-                // Deal 10 damage to enemy
-                enemy.health -= bolt.damage;
-
-                if (enemy.health <= 0) {
-                    // Enemy defeated - use centralized function with bonus multiplier
-                    defeatEnemy(enemy, eIndex, 1.8, 'stormlander'); // 1.8x points for lightning
-                } else if (enemy.isBoss) {
-                    // Boss damaged but still alive
-                    damageBoss(enemy, 0); // 0 damage since we already applied it above
-                } else {
-                    // Regular enemy hit but not defeated
-                    sounds.enemyHit();
-                }
+                // Handle collision using common handler
+                handleProjectileEnemyCollision(enemy, eIndex, bolt.damage, 1.8, 'stormlander');
 
                 // Create electric impact effect
                 createElectricImpactEffect(currentX, bolt.y);
@@ -1169,17 +1053,8 @@ function moveHarpArrows() {
                 }
                 game.harpArrows.splice(index, 1);
 
-                // Handle enemy damage/defeat
-                if (enemy.isBoss) {
-                    enemy.health -= arrow.damage;
-                    if (enemy.health <= 0) {
-                        defeatEnemy(enemy, enemyIndex, 1, 'harpArrow');
-                    } else {
-                        damageBoss(enemy, arrow.damage);
-                    }
-                } else {
-                    defeatEnemy(enemy, enemyIndex, 1, 'harpArrow');
-                }
+                // Handle collision using common handler
+                handleProjectileEnemyCollision(enemy, enemyIndex, arrow.damage, 1, 'harpArrow');
 
                 break; // Only hit one enemy per arrow
             }

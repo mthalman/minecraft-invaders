@@ -1370,7 +1370,7 @@ function checkCollisions() {
                 projectile.y < enemy.y + enemyDimensions.height &&
                 projectile.y + 24 > enemy.y) {
 
-                // Check for Heartstealer Egg effect
+                // Apply heartstealer effect and handle damage (will be processed by the damage logic below)
                 const now = Date.now();
                 if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
                     // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
@@ -2435,6 +2435,101 @@ function createSlimeProjectile(enemy, now) {
     enemy.lastShot = now;
 }
 
+// Common projectile collision handler for all player projectiles
+function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier = 1, source = 'normal') {
+    const enemyDimensions = getEnemyDimensions(enemy);
+
+    // Apply Heartstealer Egg effect first (before damage)
+    const now = Date.now();
+    if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
+        // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
+        if (enemy.isBoss && enemy.health > 1) {
+            // Only steal from bosses with more than 1 health
+            enemy.health -= 1;
+            game.lives += 1;
+            document.getElementById('lives').textContent = game.lives;
+
+            // Create visual effect for stolen health
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+            // Update boss health display
+            updateBossHealth(enemy.health, enemy.maxHealth);
+
+            // Play special sound
+            playSound(800, 0.2, 'sine');
+        } else if (!enemy.isBoss) {
+            // For normal enemies, steal 1 health before they die
+            game.lives += 1;
+            document.getElementById('lives').textContent = game.lives;
+
+            // Create visual effect for stolen health
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+            // Play special sound
+            playSound(800, 0.2, 'sine');
+        }
+    }
+
+    // Apply damage
+    enemy.health -= damage;
+
+    // Handle defeat or damage
+    if (enemy.health <= 0) {
+        // Enemy defeated
+        defeatEnemy(enemy, enemyIndex, pointMultiplier, source);
+        return 'defeated';
+    } else if (enemy.isBoss) {
+        // Boss damaged but still alive
+        updateBossHealth(enemy.health, enemy.maxHealth);
+
+        // Award small points for hitting boss
+        const hitPoints = 50;
+        game.score += hitPoints;
+        document.getElementById('score').textContent = game.score;
+        updateHighScore();
+
+        sounds.enemyHit();
+        return 'boss_damaged';
+    } else {
+        // Regular enemy hit but not defeated
+        sounds.enemyHit();
+        return 'damaged';
+    }
+}
+
+// Helper function for Heartstealer Egg effect (kept for backwards compatibility)
+function applyHeartstealerEffect(enemy, enemyDimensions) {
+    const now = Date.now();
+    if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
+        // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
+        if (enemy.isBoss && enemy.health > 1) {
+            // Only steal from bosses with more than 1 health
+            enemy.health -= 1;
+            game.lives += 1;
+            document.getElementById('lives').textContent = game.lives;
+
+            // Create visual effect for stolen health
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+            // Update boss health display
+            updateBossHealth(enemy.health, enemy.maxHealth);
+
+            // Play special sound
+            playSound(800, 0.2, 'sine');
+        } else if (!enemy.isBoss) {
+            // For normal enemies, steal 1 health before they die
+            game.lives += 1;
+            document.getElementById('lives').textContent = game.lives;
+
+            // Create visual effect for stolen health
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+            // Play special sound
+            playSound(800, 0.2, 'sine');
+        }
+    }
+}
+
 // Hungry Horror power-up functions
 function spawnTinyHorror(x, y) {
     const canvasSize = getCanvasDimensions();
@@ -2528,23 +2623,19 @@ function moveTinyHorrors() {
                 if (enemyIndex >= 0) {
                     const enemy = horror.targetEnemy;
 
-                    if (enemy.isBoss) {
-                        enemy.health -= 2; // 2 damage to bosses
-                        if (enemy.health <= 0) {
-                            defeatEnemy(enemy, enemyIndex, 1, 'tinyHorror');
-                        } else {
-                            updateBossHealth(enemy.health, enemy.maxHealth);
-                            // Visual bite effect
-                            enemy.element.style.filter = 'brightness(2) hue-rotate(180deg)';
-                            setTimeout(() => {
-                                if (enemy.element) {
-                                    enemy.element.style.filter = '';
-                                }
-                            }, 200);
-                        }
-                    } else {
-                        // Instant kill regular enemies
-                        defeatEnemy(enemy, enemyIndex, 0.5, 'tinyHorror'); // Half points
+                    // Handle collision using common handler
+                    const damage = enemy.isBoss ? 2 : enemy.health; // 2 damage to bosses, instant kill for regular enemies
+                    const pointMultiplier = enemy.isBoss ? 1 : 0.5; // Half points for regular enemies
+                    const result = handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier, 'tinyHorror');
+
+                    // Add visual bite effect for bosses
+                    if (result === 'boss_damaged') {
+                        enemy.element.style.filter = 'brightness(2) hue-rotate(180deg)';
+                        setTimeout(() => {
+                            if (enemy.element) {
+                                enemy.element.style.filter = '';
+                            }
+                        }, 200);
                     }
 
                     // Play chomp sound
