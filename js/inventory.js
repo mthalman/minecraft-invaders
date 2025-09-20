@@ -116,6 +116,31 @@ const inventoryData = {
     }
 };
 
+// Power-ups data organized by category
+const powerUpsData = {
+    offensive: [
+        { name: 'Fire Potion', sprite: 'firePotion', duration: '20s', effect: 'Rapid fire shooting (3x faster)' },
+        { name: 'TNT', sprite: 'tnt', duration: 'Instant', effect: 'Next shot creates explosive blast' },
+        { name: 'Blaze Rod', sprite: 'blazeRod', duration: '25s', effect: 'Spreading fire that chains between enemies' },
+        { name: 'Stormlander', sprite: 'stormlander', duration: '20s', effect: 'Shoots lightning bolts that zigzag upward' },
+        { name: 'Harp Crossbow', sprite: 'harpCrossbow', duration: '20s', effect: 'Fires 3 arrows at once with spread pattern' },
+        { name: 'Ricochet Egg', sprite: 'ricochetEgg', duration: 'Instant', effect: 'Launches bouncing egg that ricochets off walls for 15s' },
+        { name: 'Corrupted Beacon', sprite: 'corruptedBeacon', duration: 'Instant', effect: 'Sweeping laser beam that rotates for 5s' },
+        { name: 'Hungry Horror', sprite: 'hungryHorror', duration: '30s', effect: 'Spawns tiny horrors when hit by enemy projectiles' }
+    ],
+    defensive: [
+        { name: 'Golden Apple', sprite: 'goldenApple', duration: '5s', effect: 'Complete invincibility to all damage' },
+        { name: 'Shield', sprite: 'shield', duration: '10s', effect: 'Visual shield effect with damage protection' },
+        { name: 'Totem of Undying', sprite: 'totem', duration: 'Instant', effect: '+1 extra life immediately' }
+    ],
+    utility: [
+        { name: 'Redstone', sprite: 'redstone', duration: '15s', effect: 'Slows down all enemy movement' },
+        { name: "Steve's Lava Chicken", sprite: 'stevesLavaChicken', duration: '5s', effect: 'Mysterious chicken power effect' },
+        { name: 'Swiftness Potion', sprite: 'swiftness', duration: '15s', effect: 'Increases player movement speed' },
+        { name: 'Heartstealer Egg', sprite: 'heartstealerEgg', duration: '15s', effect: 'Gain life when hitting enemies with any projectile' }
+    ]
+};
+
 // Entity descriptions for modal
 const entityDescriptions = {
     // Overworld enemies
@@ -161,7 +186,24 @@ const entityDescriptions = {
     'end_monstrosity': 'Colossal end creature with devastating attacks.',
     'endersent': 'Sentinel of the End with teleportation attacks.',
     'heart_of_ender': 'Dark creature that constantly shoots projectiles and summons heads.',
-    'vengeful_heart_of_ender': 'The vengeful form with multiple attack patterns and explosive powers.'
+    'vengeful_heart_of_ender': 'The vengeful form with multiple attack patterns and explosive powers.',
+
+    // Power-ups
+    'firePotion': 'Magical potion that supercharges your firing rate, allowing rapid-fire shooting.',
+    'tnt': 'Explosive block that transforms your next shot into a devastating area-of-effect blast.',
+    'blazeRod': 'Magical rod that creates spreading fire effects that chain between enemies.',
+    'stormlander': 'Lightning-charged weapon that shoots zigzagging electrical bolts.',
+    'harpCrossbow': 'Musical crossbow that fires 3 arrows simultaneously in a spread pattern.',
+    'ricochetEgg': 'Special egg that bounces around the battlefield for 15 seconds.',
+    'corruptedBeacon': 'Dark beacon that creates a sweeping laser beam for 5 seconds.',
+    'hungryHorror': 'Cursed block that spawns tiny horror minions when you take damage.',
+    'goldenApple': 'Divine fruit that grants complete invincibility to all forms of damage.',
+    'shield': 'Protective barrier that deflects enemy attacks with a visual shield effect.',
+    'totem': 'Mystical totem that instantly grants an extra life when collected.',
+    'redstone': 'Magical dust that slows down all enemy movement and attacks.',
+    'stevesLavaChicken': 'Mysterious chicken with unknown but powerful abilities.',
+    'swiftness': 'Speed potion that dramatically increases your movement capabilities.',
+    'heartstealerEgg': 'Dark egg that steals health from enemies hit by any of your projectiles.'
 };
 
 // Function to create an entity card
@@ -193,6 +235,39 @@ function createEntityCard(entity, isEnemy = true, dimension = '', subDimension =
         showEntityModal(entity, isEnemy, dimension, subDimension);
     });
     
+    return card;
+}
+
+// Function to create a power-up card
+function createPowerUpCard(powerup) {
+    const card = document.createElement('div');
+    card.className = 'entity-card powerup-card';
+    card.style.cursor = 'pointer';
+
+    const spriteContainer = document.createElement('div');
+    spriteContainer.className = 'entity-sprite';
+    spriteContainer.innerHTML = sprites[powerup.sprite] || '<div>?</div>';
+
+    const name = document.createElement('div');
+    name.className = 'entity-name';
+    name.textContent = powerup.name;
+
+    const duration = document.createElement('div');
+    duration.className = 'powerup-duration';
+    duration.textContent = powerup.duration;
+    duration.style.fontSize = '10px';
+    duration.style.color = '#888';
+    duration.style.marginTop = '2px';
+
+    card.appendChild(spriteContainer);
+    card.appendChild(name);
+    card.appendChild(duration);
+
+    // Add click handler
+    card.addEventListener('click', () => {
+        showPowerUpModal(powerup);
+    });
+
     return card;
 }
 
@@ -250,6 +325,60 @@ function showEntityModal(entity, isEnemy, dimension, subDimension) {
     modalClose.onclick = closeModal;
     modalOverlay.onclick = closeModal;
     
+    // Close on escape key
+    const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+    document.addEventListener('keydown', escapeHandler);
+}
+
+// Function to show power-up modal
+function showPowerUpModal(powerup) {
+    const modal = document.getElementById('entityModal');
+    const modalSprite = document.getElementById('modalSprite');
+    const modalName = document.getElementById('modalName');
+    const modalType = document.getElementById('modalType');
+    const modalHealth = document.getElementById('modalHealth');
+    const modalDimension = document.getElementById('modalDimension');
+    const modalDescription = document.getElementById('modalDescription');
+
+    // Set sprite
+    modalSprite.innerHTML = sprites[powerup.sprite] || '<div style="font-size: 48px; color: #fff;">?</div>';
+
+    // Set name
+    modalName.textContent = powerup.name;
+
+    // Set type
+    modalType.textContent = 'Power-up';
+
+    // Set duration instead of health
+    modalHealth.textContent = `Duration: ${powerup.duration}`;
+    modalHealth.style.display = 'block';
+
+    // Set dimension to effect
+    modalDimension.textContent = `Effect: ${powerup.effect}`;
+
+    // Set description
+    modalDescription.textContent = entityDescriptions[powerup.sprite] ||
+        `A powerful enhancement that ${powerup.effect.toLowerCase()}.`;
+
+    // Show modal
+    modal.style.display = 'block';
+
+    // Add close handlers
+    const modalClose = document.getElementById('modalClose');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+    };
+
+    modalClose.onclick = closeModal;
+    modalOverlay.onclick = closeModal;
+
     // Close on escape key
     const escapeHandler = (e) => {
         if (e.key === 'Escape') {
@@ -372,6 +501,25 @@ function populateInventory() {
     
     // Galaxy bosses info
     galaxyBosses.innerHTML = '<div style="color: #888;">All bosses from Overworld → Nether → End progression</div>';
+
+    // Power-ups
+    const offensivePowerups = document.getElementById('offensivePowerups');
+    const defensivePowerups = document.getElementById('defensivePowerups');
+    const utilityPowerups = document.getElementById('utilityPowerups');
+
+    if (offensivePowerups && defensivePowerups && utilityPowerups) {
+        powerUpsData.offensive.forEach(powerup => {
+            offensivePowerups.appendChild(createPowerUpCard(powerup));
+        });
+
+        powerUpsData.defensive.forEach(powerup => {
+            defensivePowerups.appendChild(createPowerUpCard(powerup));
+        });
+
+        powerUpsData.utility.forEach(powerup => {
+            utilityPowerups.appendChild(createPowerUpCard(powerup));
+        });
+    }
 }
 
 // Initialize inventory when page loads
