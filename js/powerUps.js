@@ -11,7 +11,6 @@ const powerUps = {
         blazeRod: { name: 'Blaze Rod', duration: 25000, effect: 'spreadingFire' },
         stevesLavaChicken: { name: "Steve's Lava Chicken", duration: 5000, effect: 'lavaChicken' },
         shield: { name: 'Shield', duration: 10000, effect: 'shield' },
-        iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' },
         corruptedBeacon: { name: 'Corrupted Beacon', duration: 0, effect: 'corruptedBeacon' },
         ricochetEgg: { name: 'Ricochet Egg', duration: 0, effect: 'ricochetEgg' },
         heartstealerEgg: { name: 'Heartstealer Egg', duration: 15000, effect: 'heartstealerEgg' },
@@ -51,9 +50,6 @@ function activatePowerUp(type) {
             break;
         case 'shield':
             powerUps.active.shield = Date.now() + powerUp.duration;
-            break;
-        case 'freezeEnemies':
-            powerUps.active.freezeEnemies = Date.now() + powerUp.duration;
             break;
         case 'corruptedBeacon':
             game.nextCorruptedBeaconShot = true;
@@ -339,13 +335,13 @@ function updateShieldEffect() {
 function updateFreezeEffect() {
     const now = Date.now();
     const isFrozen = powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now;
-    
+
     game.enemies.forEach((enemy, index) => {
         if (!enemy || !enemy.element) return;
-        
+
         const freezeId = `freeze-${index}`;
         const existingFreeze = document.getElementById(freezeId);
-        
+
         if (isFrozen && !existingFreeze) {
             // Add freeze effect
             const freezeEffect = document.createElement('div');
@@ -357,7 +353,7 @@ function updateFreezeEffect() {
             freezeEffect.style.zIndex = '60';
             freezeEffect.style.left = enemy.x + 'px';
             freezeEffect.style.top = enemy.y + 'px';
-            
+
             // Create ice overlay effect
             freezeEffect.innerHTML = `
                 <svg width="60" height="60" viewBox="0 0 60 60">
@@ -383,7 +379,7 @@ function updateFreezeEffect() {
                     </circle>
                 </svg>
             `;
-            
+
             game.canvas.appendChild(freezeEffect);
         } else if (!isFrozen && existingFreeze) {
             // Remove freeze effect
@@ -394,7 +390,7 @@ function updateFreezeEffect() {
             existingFreeze.style.top = enemy.y + 'px';
         }
     });
-    
+
     // Clean up freeze effects for destroyed enemies
     if (!isFrozen) {
         const allFreezeEffects = document.querySelectorAll('[id^="freeze-"]');

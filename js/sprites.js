@@ -475,28 +475,6 @@ const sprites = {
             <path d="M20 2 L30 10 L30 25 L20 38 L10 25 L10 10 Z" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.7"/>
         </svg>
     `,
-    iceBlock: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <!-- Ice Block Base -->
-            <rect x="6" y="6" width="28" height="28" fill="#B0E0E6" stroke="#4682B4" stroke-width="2"/>
-            <!-- Ice Block Highlight -->
-            <rect x="8" y="8" width="24" height="24" fill="#E0F6FF" opacity="0.8"/>
-            <!-- Ice Crystals -->
-            <polygon points="20,10 22,14 18,14" fill="#FFFFFF" opacity="0.9"/>
-            <polygon points="20,30 22,26 18,26" fill="#FFFFFF" opacity="0.9"/>
-            <polygon points="10,20 14,22 14,18" fill="#FFFFFF" opacity="0.9"/>
-            <polygon points="30,20 26,22 26,18" fill="#FFFFFF" opacity="0.9"/>
-            <!-- Ice Sparkles -->
-            <circle cx="15" cy="15" r="1" fill="#FFFFFF" opacity="0.8"/>
-            <circle cx="25" cy="15" r="1" fill="#FFFFFF" opacity="0.8"/>
-            <circle cx="15" cy="25" r="1" fill="#FFFFFF" opacity="0.8"/>
-            <circle cx="25" cy="25" r="1" fill="#FFFFFF" opacity="0.8"/>
-            <circle cx="20" cy="20" r="1.5" fill="#FFFFFF" opacity="1"/>
-            <!-- Ice Shine Effect -->
-            <rect x="10" y="8" width="4" height="2" fill="#FFFFFF" opacity="0.6"/>
-            <rect x="26" y="12" width="2" height="4" fill="#FFFFFF" opacity="0.6"/>
-        </svg>
-    `,
     windCharge: `
         <svg width="24" height="24" viewBox="0 0 24 24">
             <!-- Wind charge core -->
