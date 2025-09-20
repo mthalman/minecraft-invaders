@@ -1685,12 +1685,18 @@ function checkCollisions() {
             }
             
             sounds.hit();
-            
+
+            // Check for Hungry Horror power-up
+            if (powerUps.active.hungryHorror && powerUps.active.hungryHorror > now) {
+                // Spawn a tiny horror to help fight
+                spawnTinyHorror(game.player.x + 50, game.player.y);
+            }
+
             // Handle projectile damage (witch snowballs cause 2 damage)
             const damage = projectile.damage || 1;
             game.lives -= damage;
             document.getElementById('lives').textContent = game.lives;
-            
+
             if (game.lives <= 0) {
                 gameOver();
             }
@@ -2427,4 +2433,148 @@ function createSlimeProjectile(enemy, now) {
     game.enemyProjectiles.push(projectile);
     game.canvas.appendChild(projectile.element);
     enemy.lastShot = now;
+}
+
+// Hungry Horror power-up functions
+function spawnTinyHorror(x, y) {
+    const canvasSize = getCanvasDimensions();
+
+    // Create tiny horror minion
+    const tinyHorror = {
+        element: createSprite('tiny-horror', x - 15, y - 40),
+        x: x - 15,
+        y: y - 40,
+        targetEnemy: null,
+        speed: 4,
+        life: 600, // Lasts 10 seconds at 60 FPS
+        attackCooldown: 0,
+        width: 30,
+        height: 30
+    };
+
+    tinyHorror.element.innerHTML = sprites.tinyHorror;
+    tinyHorror.element.style.zIndex = '85';
+
+    game.tinyHorrors.push(tinyHorror);
+    game.canvas.appendChild(tinyHorror.element);
+
+    // Play spawn sound
+    playSound(400, 0.1, 'triangle');
+}
+
+function moveTinyHorrors() {
+    const canvasSize = getCanvasDimensions();
+
+    for (let index = game.tinyHorrors.length - 1; index >= 0; index--) {
+        const horror = game.tinyHorrors[index];
+        if (!horror || !horror.element) continue;
+
+        horror.life--;
+
+        // Remove if expired
+        if (horror.life <= 0) {
+            if (horror.element && horror.element.parentNode) {
+                game.canvas.removeChild(horror.element);
+            }
+            game.tinyHorrors.splice(index, 1);
+            continue;
+        }
+
+        // Find nearest enemy if no target or target is dead
+        if (!horror.targetEnemy || !game.enemies.includes(horror.targetEnemy)) {
+            let nearestEnemy = null;
+            let nearestDistance = Infinity;
+
+            for (const enemy of game.enemies) {
+                if (!enemy || !enemy.element) continue;
+
+                const distance = Math.sqrt(
+                    Math.pow(horror.x - enemy.x, 2) +
+                    Math.pow(horror.y - enemy.y, 2)
+                );
+
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestEnemy = enemy;
+                }
+            }
+
+            horror.targetEnemy = nearestEnemy;
+        }
+
+        // Move toward target enemy
+        if (horror.targetEnemy) {
+            const dx = horror.targetEnemy.x + 30 - (horror.x + 15);
+            const dy = horror.targetEnemy.y + 30 - (horror.y + 15);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 5) {
+                // Move toward enemy
+                horror.x += (dx / distance) * horror.speed;
+                horror.y += (dy / distance) * horror.speed;
+
+                // Keep within bounds
+                horror.x = Math.max(0, Math.min(horror.x, canvasSize.width - horror.width));
+                horror.y = Math.max(0, Math.min(horror.y, canvasSize.height - horror.height));
+
+                horror.element.style.left = horror.x + 'px';
+                horror.element.style.top = horror.y + 'px';
+            }
+
+            // Attack if close enough
+            if (distance < 50 && horror.attackCooldown <= 0) {
+                // Deal damage to enemy
+                const enemyIndex = game.enemies.indexOf(horror.targetEnemy);
+                if (enemyIndex >= 0) {
+                    const enemy = horror.targetEnemy;
+
+                    if (enemy.isBoss) {
+                        enemy.health -= 2; // 2 damage to bosses
+                        if (enemy.health <= 0) {
+                            defeatEnemy(enemy, enemyIndex, 1, 'tinyHorror');
+                        } else {
+                            updateBossHealth(enemy.health, enemy.maxHealth);
+                            // Visual bite effect
+                            enemy.element.style.filter = 'brightness(2) hue-rotate(180deg)';
+                            setTimeout(() => {
+                                if (enemy.element) {
+                                    enemy.element.style.filter = '';
+                                }
+                            }, 200);
+                        }
+                    } else {
+                        // Instant kill regular enemies
+                        defeatEnemy(enemy, enemyIndex, 0.5, 'tinyHorror'); // Half points
+                    }
+
+                    // Play chomp sound
+                    playSound(200, 0.1, 'square');
+                    horror.attackCooldown = 30; // 0.5 second cooldown
+                }
+            }
+        } else {
+            // No enemies, hover near player
+            if (game.player) {
+                const targetX = game.player.x + 50 + (Math.sin(Date.now() / 500) * 60);
+                const targetY = game.player.y - 20;
+
+                const dx = targetX - horror.x;
+                const dy = targetY - horror.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 5) {
+                    horror.x += (dx / distance) * horror.speed * 0.5;
+                    horror.y += (dy / distance) * horror.speed * 0.5;
+
+                    horror.element.style.left = horror.x + 'px';
+                    horror.element.style.top = horror.y + 'px';
+                }
+            }
+        }
+
+        // Reduce attack cooldown
+        if (horror.attackCooldown > 0) {
+            horror.attackCooldown--;
+        }
+    }
 }

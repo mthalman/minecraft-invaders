@@ -97,6 +97,7 @@ function restartGame() {
     game.lightningBolts = [];
     game.electricSparks = [];
     game.harpArrows = [];
+    game.tinyHorrors = [];
     game.score = 0;
     game.lives = 3;
     game.gameRunning = true;
@@ -174,6 +175,7 @@ function gameLoop() {
         moveLightningBolts();
         updateElectricSparks();
         moveHarpArrows();
+        moveTinyHorrors();
         enemyShoot();
         
         // Continuous shooting when spacebar is held

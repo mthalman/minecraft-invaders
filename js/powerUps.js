@@ -17,7 +17,8 @@ const powerUps = {
         heartstealerEgg: { name: 'Heartstealer Egg', duration: 15000, effect: 'heartstealerEgg' },
         stormlander: { name: 'Stormlander', duration: 20000, effect: 'stormlander' },
         swiftness: { name: 'Swiftness Potion', duration: 15000, effect: 'swiftness' },
-        harpCrossbow: { name: 'Harp Crossbow', duration: 20000, effect: 'harpCrossbow' }
+        harpCrossbow: { name: 'Harp Crossbow', duration: 20000, effect: 'harpCrossbow' },
+        hungryHorror: { name: 'Hungry Horror', duration: 30000, effect: 'hungryHorror' }
     }
 };
 
@@ -72,6 +73,9 @@ function activatePowerUp(type) {
             break;
         case 'harpCrossbow':
             powerUps.active.harpCrossbow = Date.now() + powerUp.duration;
+            break;
+        case 'hungryHorror':
+            powerUps.active.hungryHorror = Date.now() + powerUp.duration;
             break;
     }
     

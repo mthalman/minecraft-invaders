@@ -3500,6 +3500,88 @@ const sprites = {
                 <animate attributeName="d" values="M 8,15 Q 30,12 52,15; M 8,15 Q 30,18 52,15; M 8,15 Q 30,12 52,15" dur="0.5s" repeatCount="indefinite"/>
             </path>
         </svg>
+    `,
+    hungryHorror: `
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <!-- Red block body with gradient -->
+            <defs>
+                <radialGradient id="horrorGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#ff0000;stop-opacity:1" />
+                    <stop offset="70%" style="stop-color:#8b0000;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4b0000;stop-opacity:1" />
+                </radialGradient>
+                <filter id="horrorGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Main body -->
+            <rect x="10" y="15" width="40" height="35" fill="url(#horrorGradient)" stroke="#2b0000" stroke-width="2" rx="3"/>
+            <!-- Darker inner area for mouth -->
+            <rect x="15" y="25" width="30" height="20" fill="#2b0000" rx="2"/>
+            <!-- Yellow glowing eyes -->
+            <circle cx="20" cy="22" r="4" fill="#ffff00" filter="url(#horrorGlow)">
+                <animate attributeName="r" values="4;5;4" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="40" cy="22" r="4" fill="#ffff00" filter="url(#horrorGlow)">
+                <animate attributeName="r" values="4;5;4" dur="1s" begin="0.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Black pupils -->
+            <circle cx="20" cy="22" r="2" fill="#000000"/>
+            <circle cx="40" cy="22" r="2" fill="#000000"/>
+            <!-- Sharp teeth top row -->
+            <polygon points="17,30 20,25 23,30" fill="#ffffff"/>
+            <polygon points="23,30 26,25 29,30" fill="#ffffff"/>
+            <polygon points="29,30 32,25 35,30" fill="#ffffff"/>
+            <polygon points="35,30 38,25 41,30" fill="#ffffff"/>
+            <polygon points="41,30 44,25 47,30" fill="#ffffff"/>
+            <!-- Sharp teeth bottom row -->
+            <polygon points="17,40 20,45 23,40" fill="#ffffff"/>
+            <polygon points="23,40 26,45 29,40" fill="#ffffff"/>
+            <polygon points="29,40 32,45 35,40" fill="#ffffff"/>
+            <polygon points="35,40 38,45 41,40" fill="#ffffff"/>
+            <polygon points="41,40 44,45 47,40" fill="#ffffff"/>
+            <!-- Hungry mouth animation -->
+            <rect x="18" y="32" width="24" height="6" fill="#000000">
+                <animate attributeName="height" values="6;8;6" dur="0.5s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Drool effect -->
+            <ellipse cx="25" cy="46" rx="2" ry="3" fill="#87CEEB" opacity="0.6">
+                <animate attributeName="cy" values="46;50;46" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+        </svg>
+    `,
+    tinyHorror: `
+        <svg width="30" height="30" viewBox="0 0 30 30">
+            <!-- Tiny red block body -->
+            <rect x="5" y="8" width="20" height="18" fill="#cc0000" stroke="#660000" stroke-width="1" rx="2"/>
+            <!-- Dark mouth area -->
+            <rect x="8" y="14" width="14" height="10" fill="#330000" rx="1"/>
+            <!-- Yellow eyes -->
+            <circle cx="10" cy="12" r="2" fill="#ffff00">
+                <animate attributeName="opacity" values="1;0.7;1" dur="0.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="20" cy="12" r="2" fill="#ffff00">
+                <animate attributeName="opacity" values="1;0.7;1" dur="0.8s" begin="0.4s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Tiny pupils -->
+            <circle cx="10" cy="12" r="1" fill="#000000"/>
+            <circle cx="20" cy="12" r="1" fill="#000000"/>
+            <!-- Small teeth -->
+            <polygon points="9,16 11,14 13,16" fill="#ffffff"/>
+            <polygon points="14,16 16,14 18,16" fill="#ffffff"/>
+            <polygon points="19,16 21,14 23,16" fill="#ffffff"/>
+            <polygon points="9,22 11,24 13,22" fill="#ffffff"/>
+            <polygon points="14,22 16,24 18,22" fill="#ffffff"/>
+            <polygon points="19,22 21,24 23,22" fill="#ffffff"/>
+            <!-- Chomping animation -->
+            <rect x="10" y="18" width="10" height="2" fill="#000000">
+                <animate attributeName="height" values="2;3;2" dur="0.3s" repeatCount="indefinite"/>
+            </rect>
+        </svg>
     `
     };
 

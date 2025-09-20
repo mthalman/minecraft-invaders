@@ -41,7 +41,8 @@ const game = {
     petProjectiles: [],
     ricochetEggs: [],
     lightningBolts: [],
-    harpArrows: []
+    harpArrows: [],
+    tinyHorrors: []
 };
 
 // Initialize UI
