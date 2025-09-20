@@ -39,7 +39,9 @@ const game = {
     selectedPet: 'wolf',
     pet: null,
     petProjectiles: [],
-    ricochetEggs: []
+    ricochetEggs: [],
+    lightningBolts: [],
+    harpArrows: []
 };
 
 // Initialize UI

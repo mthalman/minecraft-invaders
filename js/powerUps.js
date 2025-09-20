@@ -13,7 +13,11 @@ const powerUps = {
         shield: { name: 'Shield', duration: 10000, effect: 'shield' },
         iceBlock: { name: 'Ice Block', duration: 10000, effect: 'freezeEnemies' },
         corruptedBeacon: { name: 'Corrupted Beacon', duration: 0, effect: 'corruptedBeacon' },
-        ricochetEgg: { name: 'Ricochet Egg', duration: 0, effect: 'ricochetEgg' }
+        ricochetEgg: { name: 'Ricochet Egg', duration: 0, effect: 'ricochetEgg' },
+        heartstealerEgg: { name: 'Heartstealer Egg', duration: 15000, effect: 'heartstealerEgg' },
+        stormlander: { name: 'Stormlander', duration: 20000, effect: 'stormlander' },
+        swiftness: { name: 'Swiftness Potion', duration: 15000, effect: 'swiftness' },
+        harpCrossbow: { name: 'Harp Crossbow', duration: 20000, effect: 'harpCrossbow' }
     }
 };
 
@@ -56,6 +60,18 @@ function activatePowerUp(type) {
         case 'ricochetEgg':
             // Launch a ricochet egg immediately
             launchRicochetEgg();
+            break;
+        case 'heartstealerEgg':
+            powerUps.active.heartstealerEgg = Date.now() + powerUp.duration;
+            break;
+        case 'stormlander':
+            powerUps.active.stormlander = Date.now() + powerUp.duration;
+            break;
+        case 'swiftness':
+            powerUps.active.swiftness = Date.now() + powerUp.duration;
+            break;
+        case 'harpCrossbow':
+            powerUps.active.harpCrossbow = Date.now() + powerUp.duration;
             break;
     }
     
@@ -824,6 +840,389 @@ function moveRicochetEggs() {
 
                 egg.bounces++;
                 break; // Only hit one enemy per frame
+            }
+        }
+    }
+}
+
+function createStolenHealthEffect(x, y) {
+    // Create floating heart effect that moves toward the player
+    const heartEffect = {
+        element: createSprite('stolen-heart', x, y),
+        x: x,
+        y: y,
+        startX: x,
+        startY: y,
+        targetX: game.player ? game.player.x + 50 : x,
+        targetY: game.player ? game.player.y : y,
+        life: 60, // frames to live
+        maxLife: 60
+    };
+
+    // Create floating heart SVG
+    heartEffect.element.innerHTML = `
+        <svg width="30" height="30" viewBox="0 0 30 30">
+            <path d="M 15,12 C 12,9 7,9 10,15 L 15,20 L 20,15 C 23,9 18,9 15,12 Z"
+                  fill="#ff1744" stroke="#ffffff" stroke-width="1" opacity="0.9">
+                <animate attributeName="opacity" values="0.9;0.5;0.9" dur="0.5s" repeatCount="indefinite"/>
+            </path>
+            <text x="15" y="25" text-anchor="middle" fill="#ffffff" font-size="8" font-weight="bold">+1</text>
+        </svg>
+    `;
+
+    heartEffect.element.style.pointerEvents = 'none';
+    heartEffect.element.style.zIndex = '200';
+    game.canvas.appendChild(heartEffect.element);
+
+    // Store for animation
+    if (!game.stolenHeartEffects) game.stolenHeartEffects = [];
+    game.stolenHeartEffects.push(heartEffect);
+}
+
+function updateStolenHeartEffects() {
+    if (!game.stolenHeartEffects) return;
+
+    for (let index = game.stolenHeartEffects.length - 1; index >= 0; index--) {
+        const effect = game.stolenHeartEffects[index];
+        if (!effect || !effect.element) continue;
+
+        effect.life--;
+
+        // Animate heart moving toward player
+        const progress = 1 - (effect.life / effect.maxLife); // 0 to 1
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+
+        effect.x = effect.startX + (effect.targetX - effect.startX) * easeProgress;
+        effect.y = effect.startY + (effect.targetY - effect.startY) * easeProgress;
+
+        // Update position
+        effect.element.style.left = effect.x + 'px';
+        effect.element.style.top = effect.y + 'px';
+
+        // Fade out near the end
+        if (effect.life < 15) {
+            const opacity = effect.life / 15;
+            effect.element.style.opacity = opacity;
+        }
+
+        // Remove when life expires
+        if (effect.life <= 0) {
+            if (effect.element && effect.element.parentNode) {
+                game.canvas.removeChild(effect.element);
+            }
+            game.stolenHeartEffects.splice(index, 1);
+        }
+    }
+}
+
+function moveLightningBolts() {
+    const canvasSize = getCanvasDimensions();
+
+    for (let index = game.lightningBolts.length - 1; index >= 0; index--) {
+        const bolt = game.lightningBolts[index];
+        if (!bolt || !bolt.element) continue;
+
+        bolt.life--;
+
+        // Check if bolt has expired or gone off screen
+        if (bolt.life <= 0 || bolt.y < -50) {
+            if (bolt.element && bolt.element.parentNode) {
+                game.canvas.removeChild(bolt.element);
+            }
+            game.lightningBolts.splice(index, 1);
+            continue;
+        }
+
+        // Move bolt upward
+        bolt.y -= bolt.speed;
+
+        // Update zigzag phase for horizontal movement
+        bolt.zigzagPhase += bolt.zigzagFrequency;
+
+        // Calculate zigzag horizontal offset
+        const zigzagOffset = Math.sin(bolt.zigzagPhase) * bolt.zigzagAmplitude;
+        const currentX = bolt.x + zigzagOffset;
+
+        // Update position
+        bolt.element.style.left = currentX + 'px';
+        bolt.element.style.top = bolt.y + 'px';
+
+        // Check collision with enemies
+        for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
+            const enemy = game.enemies[eIndex];
+            if (!enemy || !enemy.element) continue;
+
+            const enemyDimensions = getEnemyDimensions(enemy);
+
+            // Check if lightning bolt hits enemy
+            if (currentX < enemy.x + enemyDimensions.width &&
+                currentX + 20 > enemy.x &&
+                bolt.y < enemy.y + enemyDimensions.height &&
+                bolt.y + 30 > enemy.y) {
+
+                // Remove lightning bolt
+                if (bolt.element && bolt.element.parentNode) {
+                    game.canvas.removeChild(bolt.element);
+                }
+                game.lightningBolts.splice(index, 1);
+
+                // Deal 10 damage to enemy
+                enemy.health -= bolt.damage;
+
+                if (enemy.health <= 0) {
+                    // Enemy defeated - use centralized function with bonus multiplier
+                    defeatEnemy(enemy, eIndex, 1.8, 'stormlander'); // 1.8x points for lightning
+                } else if (enemy.isBoss) {
+                    // Boss damaged but still alive
+                    damageBoss(enemy, 0); // 0 damage since we already applied it above
+                } else {
+                    // Regular enemy hit but not defeated
+                    sounds.enemyHit();
+                }
+
+                // Create electric impact effect
+                createElectricImpactEffect(currentX, bolt.y);
+                break; // Only hit one enemy per lightning bolt
+            }
+        }
+
+        // Check collision with power-ups
+        for (let powerUpIndex = powerUps.items.length - 1; powerUpIndex >= 0; powerUpIndex--) {
+            const powerUp = powerUps.items[powerUpIndex];
+            if (!powerUp || !powerUp.element) continue;
+
+            const powerUpRect = {
+                x: powerUp.x,
+                y: powerUp.y,
+                width: 60,
+                height: 60
+            };
+
+            const boltRect = {
+                x: currentX,
+                y: bolt.y,
+                width: 20,
+                height: 30
+            };
+
+            // Check collision
+            if (boltRect.x < powerUpRect.x + powerUpRect.width &&
+                boltRect.x + boltRect.width > powerUpRect.x &&
+                boltRect.y < powerUpRect.y + powerUpRect.height &&
+                boltRect.y + boltRect.height > powerUpRect.y) {
+
+                // Remove lightning bolt
+                if (bolt.element && bolt.element.parentNode) {
+                    game.canvas.removeChild(bolt.element);
+                }
+                game.lightningBolts.splice(index, 1);
+
+                // Collect the power-up
+                if (powerUp.element && powerUp.element.parentNode) {
+                    game.canvas.removeChild(powerUp.element);
+                }
+                powerUps.items.splice(powerUpIndex, 1);
+
+                // Activate the power-up
+                activatePowerUp(powerUp.type);
+                sounds.shoot(); // Collection sound
+
+                // Create electric impact effect at power-up location
+                createElectricImpactEffect(powerUp.x + 30, powerUp.y + 30);
+
+                break; // Only collect one power-up per lightning bolt
+            }
+        }
+    }
+}
+
+function createElectricImpactEffect(x, y) {
+    // Create electric spark effect
+    const sparkEffect = {
+        element: createSprite('electric-spark', x - 15, y - 15),
+        x: x - 15,
+        y: y - 15,
+        life: 20, // frames to live
+        maxLife: 20
+    };
+
+    // Create electric spark SVG
+    sparkEffect.element.innerHTML = `
+        <svg width="30" height="30" viewBox="0 0 30 30">
+            <defs>
+                <radialGradient id="sparkGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#60a5fa;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.2" />
+                </radialGradient>
+            </defs>
+            <!-- Electric burst -->
+            <circle cx="15" cy="15" r="12" fill="url(#sparkGradient)" opacity="0.8">
+                <animate attributeName="r" values="2;15;8" dur="0.3s" />
+                <animate attributeName="opacity" values="1;0.3;0" dur="0.3s" />
+            </circle>
+            <!-- Electric arcs -->
+            <path d="M 15,5 Q 20,10 15,15 Q 10,20 15,25" stroke="#fbbf24" stroke-width="2" fill="none" opacity="0.9">
+                <animate attributeName="opacity" values="0.9;0.2;0" dur="0.3s" />
+            </path>
+            <path d="M 5,15 Q 10,10 15,15 Q 20,20 25,15" stroke="#60a5fa" stroke-width="2" fill="none" opacity="0.9">
+                <animate attributeName="opacity" values="0.9;0.2;0" dur="0.3s" />
+            </path>
+        </svg>
+    `;
+
+    sparkEffect.element.style.pointerEvents = 'none';
+    sparkEffect.element.style.zIndex = '150';
+    game.canvas.appendChild(sparkEffect.element);
+
+    // Store for cleanup
+    if (!game.electricSparks) game.electricSparks = [];
+    game.electricSparks.push(sparkEffect);
+
+    // Play electric sound
+    playSound(1200, 0.15, 'square');
+}
+
+function updateElectricSparks() {
+    if (!game.electricSparks) return;
+
+    for (let index = game.electricSparks.length - 1; index >= 0; index--) {
+        const spark = game.electricSparks[index];
+        if (!spark || !spark.element) continue;
+
+        spark.life--;
+
+        // Remove spark when life expires
+        if (spark.life <= 0) {
+            if (spark.element && spark.element.parentNode) {
+                game.canvas.removeChild(spark.element);
+            }
+            game.electricSparks.splice(index, 1);
+        }
+    }
+}
+
+function moveHarpArrows() {
+    if (!game.harpArrows) return;
+
+    const canvasSize = getCanvasDimensions();
+
+    for (let index = game.harpArrows.length - 1; index >= 0; index--) {
+        const arrow = game.harpArrows[index];
+        if (!arrow || !arrow.element) continue;
+
+        arrow.life--;
+
+        // Check if arrow has expired or gone off screen
+        if (arrow.life <= 0 || arrow.y < -30) {
+            if (arrow.element && arrow.element.parentNode) {
+                game.canvas.removeChild(arrow.element);
+            }
+            game.harpArrows.splice(index, 1);
+            continue;
+        }
+
+        // Move arrow upward with spread
+        arrow.y -= arrow.speed;
+        arrow.x += arrow.xOffset;
+
+        // Keep arrows within screen bounds horizontally
+        if (arrow.x < 0 || arrow.x > canvasSize.width - 15) {
+            arrow.xOffset *= -0.5; // Bounce back with reduced spread
+        }
+
+        arrow.element.style.left = arrow.x + 'px';
+        arrow.element.style.top = arrow.y + 'px';
+
+        // Collision detection with enemies
+        for (let enemyIndex = game.enemies.length - 1; enemyIndex >= 0; enemyIndex--) {
+            const enemy = game.enemies[enemyIndex];
+            if (!enemy || !enemy.element) continue;
+
+            const enemyRect = {
+                x: enemy.x,
+                y: enemy.y,
+                width: 60,
+                height: 60
+            };
+
+            const arrowRect = {
+                x: arrow.x,
+                y: arrow.y,
+                width: 15,
+                height: 25
+            };
+
+            // Check collision
+            if (arrowRect.x < enemyRect.x + enemyRect.width &&
+                arrowRect.x + arrowRect.width > enemyRect.x &&
+                arrowRect.y < enemyRect.y + enemyRect.height &&
+                arrowRect.y + arrowRect.height > enemyRect.y) {
+
+                // Remove arrow
+                if (arrow.element && arrow.element.parentNode) {
+                    game.canvas.removeChild(arrow.element);
+                }
+                game.harpArrows.splice(index, 1);
+
+                // Handle enemy damage/defeat
+                if (enemy.isBoss) {
+                    enemy.health -= arrow.damage;
+                    if (enemy.health <= 0) {
+                        defeatEnemy(enemy, enemyIndex, 1, 'harpArrow');
+                    } else {
+                        damageBoss(enemy, arrow.damage);
+                    }
+                } else {
+                    defeatEnemy(enemy, enemyIndex, 1, 'harpArrow');
+                }
+
+                break; // Only hit one enemy per arrow
+            }
+        }
+
+        // Collision detection with power-ups
+        for (let powerUpIndex = powerUps.items.length - 1; powerUpIndex >= 0; powerUpIndex--) {
+            const powerUp = powerUps.items[powerUpIndex];
+            if (!powerUp || !powerUp.element) continue;
+
+            const powerUpRect = {
+                x: powerUp.x,
+                y: powerUp.y,
+                width: 60,
+                height: 60
+            };
+
+            const arrowRect = {
+                x: arrow.x,
+                y: arrow.y,
+                width: 15,
+                height: 25
+            };
+
+            // Check collision
+            if (arrowRect.x < powerUpRect.x + powerUpRect.width &&
+                arrowRect.x + arrowRect.width > powerUpRect.x &&
+                arrowRect.y < powerUpRect.y + powerUpRect.height &&
+                arrowRect.y + arrowRect.height > powerUpRect.y) {
+
+                // Remove arrow
+                if (arrow.element && arrow.element.parentNode) {
+                    game.canvas.removeChild(arrow.element);
+                }
+                game.harpArrows.splice(index, 1);
+
+                // Collect the power-up
+                if (powerUp.element && powerUp.element.parentNode) {
+                    game.canvas.removeChild(powerUp.element);
+                }
+                powerUps.items.splice(powerUpIndex, 1);
+
+                // Activate the power-up
+                activatePowerUp(powerUp.type);
+                sounds.shoot(); // Collection sound
+
+                break; // Only collect one power-up per arrow
             }
         }
     }

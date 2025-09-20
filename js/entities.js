@@ -15,23 +15,27 @@ function initPlayer() {
 
 function movePlayer() {
     if (!game.player || game.capturedPlayer) return;
-    
+
     const canvasSize = getCanvasDimensions();
     const minY = canvasSize.height * 0.6; // Player can only move in bottom 40% of screen
-    
+
+    // Calculate movement speed with swiftness boost
+    const baseSpeed = game.player.speed;
+    const currentSpeed = powerUps.active.swiftness ? baseSpeed * 2.5 : baseSpeed;
+
     if (game.keys['ArrowLeft'] && game.player.x > 0) {
-        game.player.x -= game.player.speed;
+        game.player.x -= currentSpeed;
     }
     if (game.keys['ArrowRight'] && game.player.x < canvasSize.width - 100) {
-        game.player.x += game.player.speed;
+        game.player.x += currentSpeed;
     }
     if (game.keys['ArrowUp'] && game.player.y > minY) {
-        game.player.y -= game.player.speed;
+        game.player.y -= currentSpeed;
     }
     if (game.keys['ArrowDown'] && game.player.y < canvasSize.height - 80) {
-        game.player.y += game.player.speed;
+        game.player.y += currentSpeed;
     }
-    
+
     game.player.element.style.left = game.player.x + 'px';
     game.player.element.style.top = game.player.y + 'px';
     

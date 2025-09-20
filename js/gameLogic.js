@@ -93,6 +93,10 @@ function restartGame() {
     game.pet = null;
     game.petProjectiles = [];
     game.ricochetEggs = [];
+    game.stolenHeartEffects = [];
+    game.lightningBolts = [];
+    game.electricSparks = [];
+    game.harpArrows = [];
     game.score = 0;
     game.lives = 3;
     game.gameRunning = true;
@@ -166,6 +170,10 @@ function gameLoop() {
         updateFreezeEffect();
         updateCorruptedBeaconLaser();
         moveRicochetEggs();
+        updateStolenHeartEffects();
+        moveLightningBolts();
+        updateElectricSparks();
+        moveHarpArrows();
         enemyShoot();
         
         // Continuous shooting when spacebar is held

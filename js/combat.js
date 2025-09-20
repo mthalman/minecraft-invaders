@@ -84,18 +84,99 @@ function shoot() {
     const fireRate = powerUps.active.rapidFire && powerUps.active.rapidFire > now ? 66 : 200; // 3x faster with rapid fire
     
     if (now - game.lastShot > fireRate) {
-        // Main ship projectile
-        const projectile = {
-            element: createSprite('projectile', game.player.x + 42, game.player.y),
-            x: game.player.x + 42,
-            y: game.player.y,
-            speed: 10,
-            explosive: game.nextExplosiveShot
-        };
-        
-        projectile.element.innerHTML = sprites.egg;
-        game.projectiles.push(projectile);
-        game.canvas.appendChild(projectile.element);
+        // Check if Stormlander is active
+        if (powerUps.active.stormlander && powerUps.active.stormlander > now) {
+            // Create lightning bolt instead of normal projectile
+            const lightningBolt = {
+                element: createSprite('lightning-bolt', game.player.x + 42, game.player.y),
+                x: game.player.x + 42,
+                y: game.player.y,
+                speed: 8,
+                zigzagPhase: 0,
+                zigzagAmplitude: 30,
+                zigzagFrequency: 0.2,
+                damage: 10,
+                life: 300 // frames to live
+            };
+
+            // Create lightning bolt SVG
+            lightningBolt.element.innerHTML = `
+                <svg width="20" height="30" viewBox="0 0 20 30">
+                    <defs>
+                        <filter id="electricGlow">
+                            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M 8,0 L 12,0 L 6,15 L 14,15 L 2,30 L 10,15 L 4,15 Z"
+                          fill="#60a5fa" stroke="#3b82f6" stroke-width="1" filter="url(#electricGlow)">
+                        <animate attributeName="fill" values="#60a5fa;#fbbf24;#60a5fa" dur="0.1s" repeatCount="indefinite"/>
+                    </path>
+                </svg>
+            `;
+
+            lightningBolt.element.style.zIndex = '80';
+            game.lightningBolts.push(lightningBolt);
+            game.canvas.appendChild(lightningBolt.element);
+        } else if (powerUps.active.harpCrossbow && powerUps.active.harpCrossbow > now) {
+            // Harp Crossbow - fire 3 arrows at once
+            sounds.harpCrossbow();
+
+            // Create 3 arrows with slight spread
+            for (let i = 0; i < 3; i++) {
+                const arrow = {
+                    element: createSprite('arrow', game.player.x + 42, game.player.y),
+                    x: game.player.x + 42,
+                    y: game.player.y,
+                    speed: 12,
+                    damage: 15,
+                    // Spread arrows: center, left, right
+                    xOffset: (i - 1) * 1.5, // -1.5, 0, 1.5 pixels per frame
+                    life: 400 // frames to live
+                };
+
+                // Create arrow SVG
+                arrow.element.innerHTML = `
+                    <svg width="15" height="25" viewBox="0 0 15 25">
+                        <defs>
+                            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8b4513;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#a0522d;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Arrow shaft -->
+                        <rect x="6" y="5" width="3" height="15" fill="url(#arrowGradient)"/>
+                        <!-- Arrow head -->
+                        <path d="M 7.5,0 L 12,5 L 7.5,5 L 3,5 Z" fill="#c0c0c0" stroke="#a0a0a0" stroke-width="1"/>
+                        <!-- Arrow fletching -->
+                        <path d="M 4,20 L 7.5,18 L 11,20 L 7.5,25 Z" fill="#228b22" stroke="#006400" stroke-width="0.5"/>
+                    </svg>
+                `;
+
+                arrow.element.style.zIndex = '70';
+
+                if (!game.harpArrows) game.harpArrows = [];
+                game.harpArrows.push(arrow);
+                game.canvas.appendChild(arrow.element);
+            }
+        } else {
+            // Normal projectile
+            const projectile = {
+                element: createSprite('projectile', game.player.x + 42, game.player.y),
+                x: game.player.x + 42,
+                y: game.player.y,
+                speed: 10,
+                explosive: game.nextExplosiveShot
+            };
+
+            projectile.element.innerHTML = sprites.egg;
+            game.projectiles.push(projectile);
+            game.canvas.appendChild(projectile.element);
+        }
         
         // Dual ship projectile if available
         if (game.player.dualShip) {
@@ -1288,7 +1369,38 @@ function checkCollisions() {
                 projectile.x + 16 > enemy.x &&
                 projectile.y < enemy.y + enemyDimensions.height &&
                 projectile.y + 24 > enemy.y) {
-                
+
+                // Check for Heartstealer Egg effect
+                const now = Date.now();
+                if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
+                    // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
+                    if (enemy.isBoss && enemy.health > 1) {
+                        // Only steal from bosses with more than 1 health
+                        enemy.health -= 1;
+                        game.lives += 1;
+                        document.getElementById('lives').textContent = game.lives;
+
+                        // Create visual effect for stolen health
+                        createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+                        // Update boss health display
+                        updateBossHealth(enemy.health, enemy.maxHealth);
+
+                        // Play special sound
+                        playSound(800, 0.2, 'sine');
+                    } else if (!enemy.isBoss) {
+                        // For normal enemies, steal 1 health before they die
+                        game.lives += 1;
+                        document.getElementById('lives').textContent = game.lives;
+
+                        // Create visual effect for stolen health
+                        createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+
+                        // Play special sound
+                        playSound(800, 0.2, 'sine');
+                    }
+                }
+
                 // Handle explosive shots (TNT power-up)
                 if (projectile.explosive) {
                     // Destroy enemies in explosion radius

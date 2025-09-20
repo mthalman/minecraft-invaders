@@ -339,5 +339,59 @@ const sounds = {
                 energyPulse.stop(Math.min(pulseStart + pulseDuration, startTime + duration));
             }
         }
+    },
+    harpCrossbow: () => {
+        const startTime = audioContext.currentTime;
+
+        // Harp-like chord progression (C major arpeggio)
+        const harpNotes = [
+            { freq: 261.63, delay: 0.0 },    // C4
+            { freq: 329.63, delay: 0.05 },   // E4
+            { freq: 392.00, delay: 0.1 },    // G4
+            { freq: 523.25, delay: 0.15 },   // C5
+            { freq: 659.25, delay: 0.2 },    // E5
+            { freq: 783.99, delay: 0.25 }    // G5
+        ];
+
+        // Create each harp note
+        harpNotes.forEach((note, index) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = note.freq;
+            oscillator.type = 'sine'; // Soft harp-like tone
+
+            const noteStart = startTime + note.delay;
+            const noteDuration = 0.6;
+
+            // Gentle attack and long decay like a harp
+            gainNode.gain.setValueAtTime(0, noteStart);
+            gainNode.gain.linearRampToValueAtTime(0.08, noteStart + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, noteStart + noteDuration);
+
+            oscillator.start(noteStart);
+            oscillator.stop(noteStart + noteDuration);
+        });
+
+        // Add a subtle crossbow "twang" sound after the harp
+        setTimeout(() => {
+            const twang = audioContext.createOscillator();
+            const twangGain = audioContext.createGain();
+
+            twang.connect(twangGain);
+            twangGain.connect(audioContext.destination);
+
+            twang.frequency.value = 150;
+            twang.type = 'square';
+
+            twangGain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            twangGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+
+            twang.start(audioContext.currentTime);
+            twang.stop(audioContext.currentTime + 0.3);
+        }, 300); // After harp melody
     }
 };
