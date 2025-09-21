@@ -1142,3 +1142,81 @@ function movePetProjectiles() {
         }
     });
 }
+
+function moveNightmareBats() {
+    const canvasSize = getCanvasDimensions();
+    const now = Date.now();
+
+    game.nightmareBats.forEach((bat, index) => {
+        bat.life--;
+
+        // Remove bats that have expired
+        if (bat.life <= 0) {
+            if (bat.element && bat.element.parentNode) {
+                game.canvas.removeChild(bat.element);
+            }
+            game.nightmareBats.splice(index, 1);
+            return;
+        }
+
+        // Find or update target every 30 frames (0.5 seconds)
+        if (!bat.target || now - bat.lastTargetUpdate > 500) {
+            let nearestEnemy = null;
+            let nearestDistance = Infinity;
+
+            game.enemies.forEach(enemy => {
+                const dx = enemy.x - bat.x;
+                const dy = enemy.y - bat.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestEnemy = enemy;
+                }
+            });
+
+            bat.target = nearestEnemy;
+            bat.lastTargetUpdate = now;
+        }
+
+        // Move towards target
+        if (bat.target) {
+            const dx = bat.target.x - bat.x;
+            const dy = bat.target.y - bat.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 5) {
+                // Move towards target
+                bat.x += (dx / distance) * bat.speed;
+                bat.y += (dy / distance) * bat.speed;
+            } else {
+                // Hit the target
+                const enemyIndex = game.enemies.indexOf(bat.target);
+                if (enemyIndex >= 0) {
+                    handleProjectileEnemyCollision(bat.target, enemyIndex, bat.damage, 1.0, 'bat');
+                }
+
+                // Find new target immediately
+                bat.target = null;
+                bat.lastTargetUpdate = 0;
+            }
+        } else {
+            // No target found, move upward slowly
+            bat.y -= 1;
+        }
+
+        // Update bat position
+        bat.element.style.left = bat.x + 'px';
+        bat.element.style.top = bat.y + 'px';
+
+        // Remove bats that go off screen
+        if (bat.x < -50 || bat.x > canvasSize.width + 50 ||
+            bat.y < -50 || bat.y > canvasSize.height + 50) {
+
+            if (bat.element && bat.element.parentNode) {
+                game.canvas.removeChild(bat.element);
+            }
+            game.nightmareBats.splice(index, 1);
+        }
+    });
+}

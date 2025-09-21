@@ -17,7 +17,8 @@ const powerUps = {
         stormlander: { name: 'Stormlander', duration: 20000, effect: 'stormlander' },
         swiftness: { name: 'Swiftness Potion', duration: 15000, effect: 'swiftness' },
         harpCrossbow: { name: 'Harp Crossbow', duration: 20000, effect: 'harpCrossbow' },
-        hungryHorror: { name: 'Hungry Horror', duration: 30000, effect: 'hungryHorror' }
+        hungryHorror: { name: 'Hungry Horror', duration: 30000, effect: 'hungryHorror' },
+        nightmaresBite: { name: "Nightmare's Bite", duration: 5000, effect: 'nightmaresBite' }
     }
 };
 
@@ -72,6 +73,9 @@ function activatePowerUp(type) {
             break;
         case 'hungryHorror':
             powerUps.active.hungryHorror = Date.now() + powerUp.duration;
+            break;
+        case 'nightmaresBite':
+            powerUps.active.nightmaresBite = Date.now() + powerUp.duration;
             break;
     }
     

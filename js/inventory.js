@@ -126,7 +126,8 @@ const powerUpsData = {
         { name: 'Harp Crossbow', sprite: 'harpCrossbow', duration: '20s', effect: 'Fires 3 arrows at once with spread pattern' },
         { name: 'Ricochet Egg', sprite: 'ricochetEgg', duration: 'Instant', effect: 'Launches bouncing egg that ricochets off walls for 15s' },
         { name: 'Corrupted Beacon', sprite: 'corruptedBeacon', duration: 'Instant', effect: 'Sweeping laser beam that rotates for 5s' },
-        { name: 'Hungry Horror', sprite: 'hungryHorror', duration: '30s', effect: 'Spawns tiny horrors when hit by enemy projectiles' }
+        { name: 'Hungry Horror', sprite: 'hungryHorror', duration: '30s', effect: 'Spawns tiny horrors when hit by enemy projectiles' },
+        { name: "Nightmare's Bite", sprite: 'nightmaresBite', duration: '5s', effect: 'Shoots seeking bats that hunt enemies for 20s each' }
     ],
     defensive: [
         { name: 'Golden Apple', sprite: 'goldenApple', duration: '5s', effect: 'Complete invincibility to all damage' },
@@ -197,6 +198,7 @@ const entityDescriptions = {
     'ricochetEgg': 'Special egg that bounces around the battlefield for 15 seconds.',
     'corruptedBeacon': 'Dark beacon that creates a sweeping laser beam for 5 seconds.',
     'hungryHorror': 'Cursed block that spawns tiny horror minions when you take damage.',
+    'nightmaresBite': 'Cursed fang that summons seeking bats with green aura. Each bat hunts enemies for 20 seconds.',
     'goldenApple': 'Divine fruit that grants complete invincibility to all forms of damage.',
     'shield': 'Protective barrier that deflects enemy attacks with a visual shield effect.',
     'totem': 'Mystical totem that instantly grants an extra life when collected.',

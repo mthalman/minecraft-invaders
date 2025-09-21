@@ -121,6 +121,26 @@ function shoot() {
             lightningBolt.element.style.zIndex = '80';
             game.lightningBolts.push(lightningBolt);
             game.canvas.appendChild(lightningBolt.element);
+        } else if (powerUps.active.nightmaresBite && powerUps.active.nightmaresBite > now) {
+            // Nightmare's Bite - spawn bats
+            sounds.shoot();
+
+            // Create bat that seeks enemies
+            const bat = {
+                element: createSprite('bat', game.player.x + 42, game.player.y),
+                x: game.player.x + 42,
+                y: game.player.y,
+                speed: 4,
+                damage: 2,
+                life: 1200, // 20 seconds at 60 FPS
+                target: null,
+                lastTargetUpdate: 0
+            };
+
+            bat.element.innerHTML = sprites.bat;
+            bat.element.style.zIndex = '80';
+            game.nightmareBats.push(bat);
+            game.canvas.appendChild(bat.element);
         } else if (powerUps.active.harpCrossbow && powerUps.active.harpCrossbow > now) {
             // Harp Crossbow - fire 3 arrows at once
             sounds.harpCrossbow();

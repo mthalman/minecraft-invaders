@@ -166,6 +166,7 @@ function gameLoop() {
         moveEnemies();
         moveProjectiles();
         movePetProjectiles();
+        moveNightmareBats();
         movePowerUps();
         moveFireSpreadEffects();
         updateShieldEffect();

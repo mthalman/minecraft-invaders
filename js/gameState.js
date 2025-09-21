@@ -43,7 +43,8 @@ const game = {
     ricochetEggs: [],
     lightningBolts: [],
     harpArrows: [],
-    tinyHorrors: []
+    tinyHorrors: [],
+    nightmareBats: []
 };
 
 // Initialize UI

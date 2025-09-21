@@ -37,18 +37,18 @@ const sprites = {
     `,
     wargen: `
         <svg width="100" height="80" viewBox="0 0 100 80">
-            <!-- Hood/Head with blue interior -->
-            <rect x="38" y="5" width="24" height="22" fill="#0055AA"/>
-            <rect x="36" y="7" width="28" height="18" fill="#0066CC"/>
+            <!-- Hood/Head with blue exterior -->
+            <rect x="34" y="3" width="32" height="24" fill="#0066CC"/>
+            <rect x="36" y="5" width="28" height="20" fill="#0055AA"/>
 
-            <!-- Hood outline (golden/yellow trim) -->
-            <rect x="35" y="5" width="3" height="20" fill="#FFD700"/>
-            <rect x="62" y="5" width="3" height="20" fill="#FFD700"/>
-            <rect x="38" y="3" width="24" height="3" fill="#FFD700"/>
-            <rect x="35" y="23" width="30" height="2" fill="#FFD700"/>
+            <!-- Hood inner gold/yellow trim -->
+            <rect x="40" y="8" width="20" height="2" fill="#FFD700"/>
+            <rect x="40" y="8" width="2" height="14" fill="#FFD700"/>
+            <rect x="58" y="8" width="2" height="14" fill="#FFD700"/>
+            <rect x="40" y="20" width="20" height="2" fill="#FFD700"/>
 
             <!-- Face area (dark shadow under hood) -->
-            <rect x="42" y="10" width="16" height="12" fill="#000000"/>
+            <rect x="42" y="10" width="16" height="10" fill="#000000"/>
 
             <!-- Glowing red eyes -->
             <rect x="44" y="14" width="3" height="3" fill="#FF0000"/>
@@ -422,6 +422,49 @@ const sprites = {
             <rect x="18" y="14" width="4" height="12" fill="#FFFF00" opacity="0.7"/>
             <rect x="10" y="16" width="4" height="8" fill="#FFD700"/>
             <rect x="26" y="16" width="4" height="8" fill="#FFD700"/>
+        </svg>
+    `,
+    nightmaresBite: `
+        <svg width="40" height="40" viewBox="0 0 40 40">
+            <defs>
+                <radialGradient id="nightmareGlow" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#00FF00;stop-opacity:0.8" />
+                    <stop offset="50%" style="stop-color:#008000;stop-opacity:0.6" />
+                    <stop offset="100%" style="stop-color:#000000;stop-opacity:0.8" />
+                </radialGradient>
+                <filter id="nightmareGlowFilter">
+                    <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Background dark circle -->
+            <circle cx="20" cy="20" r="18" fill="url(#nightmareGlow)" filter="url(#nightmareGlowFilter)"/>
+
+            <!-- Fang/tooth shape -->
+            <path d="M 20,8 L 16,20 L 20,28 L 24,20 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1"/>
+            <path d="M 20,10 L 18,20 L 20,26 L 22,20 Z" fill="#F0F0F0"/>
+
+            <!-- Dark veins on the fang -->
+            <line x1="19" y1="12" x2="19" y2="24" stroke="#888888" stroke-width="0.5"/>
+            <line x1="21" y1="12" x2="21" y2="24" stroke="#888888" stroke-width="0.5"/>
+
+            <!-- Green mystical sparkles -->
+            <circle cx="12" cy="12" r="1" fill="#00FF00" opacity="0.8">
+                <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="28" cy="14" r="1.5" fill="#00FF00" opacity="0.6">
+                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="14" cy="28" r="1" fill="#00FF00" opacity="0.7">
+                <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="26" cy="26" r="1.2" fill="#00FF00" opacity="0.5">
+                <animate attributeName="opacity" values="0.1;0.7;0.1" dur="2.2s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     redstone: `
@@ -3315,6 +3358,53 @@ const sprites = {
             <polygon points="5,18 5,21 7,18" fill="#228B22"/>
             <polygon points="1.5,18.5 3.5,18.5 3.5,20" fill="#32CD32"/>
             <polygon points="4.5,18.5 4.5,20 6.5,18.5" fill="#32CD32"/>
+        </svg>
+    `,
+    bat: `
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <defs>
+                <filter id="greenGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+                <radialGradient id="batGlow" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#00FF00;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#00FF00;stop-opacity:0" />
+                </radialGradient>
+            </defs>
+
+            <!-- Green glow aura -->
+            <ellipse cx="12" cy="12" rx="11" ry="8" fill="url(#batGlow)" opacity="0.6"/>
+
+            <!-- Bat body -->
+            <ellipse cx="12" cy="12" rx="4" ry="6" fill="#1a1a1a"/>
+            <ellipse cx="12" cy="11" rx="3" ry="4" fill="#000000"/>
+
+            <!-- Left wing -->
+            <path d="M 8,10 Q 4,8 2,10 Q 3,12 4,12 Q 5,13 6,12 Q 7,12 8,13 Z" fill="#1a1a1a" stroke="#00FF00" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 8,10 Q 5,9 3,10.5 Q 4,11.5 5,11.5 Q 6,12 7,11.5 Z" fill="#000000"/>
+
+            <!-- Right wing -->
+            <path d="M 16,10 Q 20,8 22,10 Q 21,12 20,12 Q 19,13 18,12 Q 17,12 16,13 Z" fill="#1a1a1a" stroke="#00FF00" stroke-width="0.5" opacity="0.9"/>
+            <path d="M 16,10 Q 19,9 21,10.5 Q 20,11.5 19,11.5 Q 18,12 17,11.5 Z" fill="#000000"/>
+
+            <!-- Bat head -->
+            <ellipse cx="12" cy="9" rx="2.5" ry="2" fill="#1a1a1a"/>
+
+            <!-- Ears -->
+            <polygon points="10,8 9,6 10.5,7" fill="#1a1a1a"/>
+            <polygon points="14,8 15,6 13.5,7" fill="#1a1a1a"/>
+
+            <!-- Glowing green eyes -->
+            <circle cx="11" cy="9" r="0.8" fill="#00FF00" filter="url(#greenGlow)"/>
+            <circle cx="13" cy="9" r="0.8" fill="#00FF00" filter="url(#greenGlow)"/>
+
+            <!-- Wing membrane details -->
+            <line x1="4" y1="11" x2="7" y2="11" stroke="#00FF00" stroke-width="0.3" opacity="0.5"/>
+            <line x1="20" y1="11" x2="17" y2="11" stroke="#00FF00" stroke-width="0.3" opacity="0.5"/>
         </svg>
     `,
     ricochetEgg: `
