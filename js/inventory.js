@@ -211,30 +211,45 @@ function createEntityCard(entity, isEnemy = true, dimension = '', subDimension =
     const card = document.createElement('div');
     card.className = 'entity-card';
     card.style.cursor = 'pointer';
-    
+
     const spriteContainer = document.createElement('div');
     spriteContainer.className = 'entity-sprite';
-    spriteContainer.innerHTML = sprites[entity.sprite] || '<div>?</div>';
-    
+
+    // Fix SVG gradient/filter ID conflicts by making them unique
+    let spriteHTML = sprites[entity.sprite] || '<div>?</div>';
+    if (spriteHTML.includes('id="')) {
+        // Generate a unique suffix for this instance
+        const uniqueSuffix = '_inv_' + Math.random().toString(36).substr(2, 9);
+
+        // Replace all id="xxx" with id="xxx_inv_[random]"
+        spriteHTML = spriteHTML.replace(/id="([^"]*)"/g, `id="$1${uniqueSuffix}"`);
+
+        // Replace all references to those IDs (url(#xxx) and filter="url(#xxx)")
+        spriteHTML = spriteHTML.replace(/url\(#([^)]*)\)/g, `url(#$1${uniqueSuffix})`);
+        spriteHTML = spriteHTML.replace(/filter="url\(#([^)]*)\)"/g, `filter="url(#$1${uniqueSuffix})"`);
+    }
+
+    spriteContainer.innerHTML = spriteHTML;
+
     const name = document.createElement('div');
     name.className = 'entity-name';
     name.textContent = entity.name;
-    
+
     card.appendChild(spriteContainer);
     card.appendChild(name);
-    
+
     if (!isEnemy && entity.health) {
         const health = document.createElement('div');
         health.className = 'entity-health';
         health.textContent = `HP: ${entity.health}`;
         card.appendChild(health);
     }
-    
+
     // Add click handler
     card.addEventListener('click', () => {
         showEntityModal(entity, isEnemy, dimension, subDimension);
     });
-    
+
     return card;
 }
 
@@ -246,7 +261,22 @@ function createPowerUpCard(powerup) {
 
     const spriteContainer = document.createElement('div');
     spriteContainer.className = 'entity-sprite';
-    spriteContainer.innerHTML = sprites[powerup.sprite] || '<div>?</div>';
+
+    // Fix SVG gradient/filter ID conflicts by making them unique
+    let spriteHTML = sprites[powerup.sprite] || '<div>?</div>';
+    if (spriteHTML.includes('id="')) {
+        // Generate a unique suffix for this instance
+        const uniqueSuffix = '_inv_' + Math.random().toString(36).substr(2, 9);
+
+        // Replace all id="xxx" with id="xxx_inv_[random]"
+        spriteHTML = spriteHTML.replace(/id="([^"]*)"/g, `id="$1${uniqueSuffix}"`);
+
+        // Replace all references to those IDs (url(#xxx) and filter="url(#xxx)")
+        spriteHTML = spriteHTML.replace(/url\(#([^)]*)\)/g, `url(#$1${uniqueSuffix})`);
+        spriteHTML = spriteHTML.replace(/filter="url\(#([^)]*)\)"/g, `filter="url(#$1${uniqueSuffix})"`);
+    }
+
+    spriteContainer.innerHTML = spriteHTML;
 
     const name = document.createElement('div');
     name.className = 'entity-name';
