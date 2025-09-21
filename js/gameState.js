@@ -36,6 +36,7 @@ const game = {
     formationComplete: false,
     selectedDimension: 'overworld',
     selectedSubDimension: 'normal',
+    selectedSkin: 'chicken',
     selectedPet: 'wolf',
     pet: null,
     petProjectiles: [],

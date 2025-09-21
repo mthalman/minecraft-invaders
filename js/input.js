@@ -8,12 +8,17 @@ document.addEventListener('keydown', (e) => {
     if (e.code === 'Enter' && !game.gameStarted) {
         e.preventDefault();
         
-        // Check if we're on the dimension selection screen
+        // Check which screen we're on
         const startScreen = document.getElementById('startScreen');
+        const skinSelection = document.getElementById('skinSelection');
         const petSelection = document.getElementById('petSelection');
-        
+
         if (!startScreen.classList.contains('hidden')) {
-            // Move from dimension selection to pet selection
+            // Move from dimension selection to skin selection
+            showSkinSelection();
+            return;
+        } else if (skinSelection.style.display === 'flex') {
+            // Move from skin selection to pet selection
             showPetSelection();
             return;
         } else if (!petSelection.classList.contains('hidden')) {
@@ -106,7 +111,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    
+
+    // Skin selection event listeners
+    const skinOptions = document.querySelectorAll('.skin-option');
+
+    skinOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove selected class from all skin options
+            skinOptions.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selected class to clicked option
+            option.classList.add('selected');
+
+            // Update game state
+            game.selectedSkin = option.dataset.skin;
+        });
+    });
+
     // Pet selection event listeners
     const petOptions = document.querySelectorAll('.pet-option');
     
@@ -129,12 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
     startInstructions.forEach(instruction => {
         instruction.addEventListener('click', () => {
             if (!game.gameStarted) {
-                // Check if we're on the dimension selection screen
+                // Check which screen we're on
                 const startScreen = document.getElementById('startScreen');
+                const skinSelection = document.getElementById('skinSelection');
                 const petSelection = document.getElementById('petSelection');
-                
+
                 if (!startScreen.classList.contains('hidden')) {
-                    // Move from dimension selection to pet selection
+                    // Move from dimension selection to skin selection
+                    showSkinSelection();
+                } else if (skinSelection.style.display === 'flex') {
+                    // Move from skin selection to pet selection
                     showPetSelection();
                 } else if (!petSelection.classList.contains('hidden')) {
                     // Start the game from pet selection
@@ -156,11 +181,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Skin selection screen functions
+function showSkinSelection() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('skinSelection').style.display = 'flex';
+
+    // Initialize skin sprites in the selection screen
+    initSkinSprites();
+}
+
+function initSkinSprites() {
+    // Add sprites to skin selection screen
+    const skinSprites = {
+        'chickenSprite': 'chicken',
+        'wargenSprite': 'wargen'
+    };
+
+    Object.entries(skinSprites).forEach(([elementId, spriteType]) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = sprites[spriteType];
+        }
+    });
+}
+
 // Pet selection screen functions
 function showPetSelection() {
-    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('skinSelection').style.display = 'none';
     document.getElementById('petSelection').style.display = 'flex';
-    
+
     // Initialize pet sprites in the selection screen
     initPetSprites();
 }

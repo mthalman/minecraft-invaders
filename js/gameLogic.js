@@ -153,6 +153,7 @@ function startGame() {
     startMusic.pause();
     
     // Initialize game
+    initPlayer();
     createPet();
     createEnemies();
 }

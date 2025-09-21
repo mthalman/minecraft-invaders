@@ -35,6 +35,71 @@ const sprites = {
             <rect x="50" y="75" width="18" height="4" fill="#FF8C00"/>
         </svg>
     `,
+    wargen: `
+        <svg width="100" height="80" viewBox="0 0 100 80">
+            <!-- Hood/Head with blue interior -->
+            <rect x="38" y="5" width="24" height="22" fill="#0055AA"/>
+            <rect x="36" y="7" width="28" height="18" fill="#0066CC"/>
+
+            <!-- Hood outline (golden/yellow trim) -->
+            <rect x="35" y="5" width="3" height="20" fill="#FFD700"/>
+            <rect x="62" y="5" width="3" height="20" fill="#FFD700"/>
+            <rect x="38" y="3" width="24" height="3" fill="#FFD700"/>
+            <rect x="35" y="23" width="30" height="2" fill="#FFD700"/>
+
+            <!-- Face area (dark shadow under hood) -->
+            <rect x="42" y="10" width="16" height="12" fill="#000000"/>
+
+            <!-- Glowing red eyes -->
+            <rect x="44" y="14" width="3" height="3" fill="#FF0000"/>
+            <rect x="53" y="14" width="3" height="3" fill="#FF0000"/>
+            <rect x="44.5" y="14.5" width="2" height="2" fill="#FFAAAA" opacity="0.8"/>
+            <rect x="53.5" y="14.5" width="2" height="2" fill="#FFAAAA" opacity="0.8"/>
+
+            <!-- Blue tunic/chest with gold trim -->
+            <rect x="34" y="25" width="32" height="18" fill="#0066CC"/>
+            <rect x="36" y="27" width="28" height="14" fill="#0055AA"/>
+
+            <!-- Gold shoulder decorations -->
+            <rect x="30" y="26" width="6" height="6" fill="#FFD700"/>
+            <rect x="64" y="26" width="6" height="6" fill="#FFD700"/>
+
+            <!-- Center gold emblem -->
+            <rect x="47" y="30" width="6" height="6" fill="#FFD700"/>
+            <rect x="48" y="31" width="4" height="4" fill="#FFA500"/>
+
+            <!-- Brown belt with silver buckle -->
+            <rect x="34" y="43" width="32" height="4" fill="#654321"/>
+            <rect x="46" y="43" width="8" height="4" fill="#C0C0C0"/>
+            <rect x="48" y="44" width="4" height="2" fill="#808080"/>
+
+            <!-- Dark blue/gray pants -->
+            <rect x="38" y="47" width="10" height="16" fill="#2C3E50"/>
+            <rect x="52" y="47" width="10" height="16" fill="#2C3E50"/>
+            <rect x="39" y="48" width="8" height="14" fill="#34495E"/>
+            <rect x="53" y="48" width="8" height="14" fill="#34495E"/>
+
+            <!-- Brown boots -->
+            <rect x="36" y="63" width="12" height="10" fill="#654321"/>
+            <rect x="52" y="63" width="12" height="10" fill="#654321"/>
+            <rect x="37" y="71" width="10" height="5" fill="#8B4513"/>
+            <rect x="53" y="71" width="10" height="5" fill="#8B4513"/>
+
+            <!-- Arms with blue sleeves -->
+            <rect x="26" y="32" width="8" height="14" fill="#0066CC"/>
+            <rect x="66" y="32" width="8" height="14" fill="#0066CC"/>
+            <rect x="27" y="33" width="6" height="12" fill="#0055AA"/>
+            <rect x="67" y="33" width="6" height="12" fill="#0055AA"/>
+
+            <!-- Gold wrist guards -->
+            <rect x="26" y="44" width="8" height="3" fill="#FFD700"/>
+            <rect x="66" y="44" width="8" height="3" fill="#FFD700"/>
+
+            <!-- Hands/gloves -->
+            <rect x="27" y="47" width="6" height="5" fill="#8B7355"/>
+            <rect x="67" y="47" width="6" height="5" fill="#8B7355"/>
+        </svg>
+    `,
     zombie: `
         <svg width="60" height="60" viewBox="0 0 60 60">
             <!-- Head -->
@@ -3237,6 +3302,21 @@ const sprites = {
             </circle>
         </svg>
     `,
+    arrow: `
+        <svg width="8" height="24" viewBox="0 0 8 24">
+            <!-- Arrow shaft (vertical) -->
+            <rect x="3" y="6" width="2" height="12" fill="#8B4513"/>
+            <rect x="3.5" y="5" width="1" height="14" fill="#A0522D"/>
+            <!-- Arrow point (top) -->
+            <polygon points="4,0 1,6 7,6" fill="#C0C0C0"/>
+            <polygon points="4,2 2,5.5 6,5.5" fill="#E6E6E6"/>
+            <!-- Arrow fletching (bottom) -->
+            <polygon points="1,18 3,18 3,21" fill="#228B22"/>
+            <polygon points="5,18 5,21 7,18" fill="#228B22"/>
+            <polygon points="1.5,18.5 3.5,18.5 3.5,20" fill="#32CD32"/>
+            <polygon points="4.5,18.5 4.5,20 6.5,18.5" fill="#32CD32"/>
+        </svg>
+    `,
     ricochetEgg: `
         <svg width="60" height="60" viewBox="0 0 60 60">
             <!-- Egg shell - metallic sheen -->
@@ -3569,7 +3649,7 @@ function createSprite(type, x, y) {
     sprite.className = `sprite ${type}`;
     sprite.style.left = x + 'px';
     sprite.style.top = y + 'px';
-    sprite.innerHTML = sprites[type === 'player' ? 'chicken' : type];
+    sprite.innerHTML = sprites[type === 'player' ? game.selectedSkin : type];
     return sprite;
 }
 

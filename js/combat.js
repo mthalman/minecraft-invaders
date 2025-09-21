@@ -173,7 +173,12 @@ function shoot() {
                 explosive: game.nextExplosiveShot
             };
 
-            projectile.element.innerHTML = sprites.egg;
+            // Set projectile sprite based on selected skin
+            if (game.selectedSkin === 'wargen') {
+                projectile.element.innerHTML = sprites.arrow;
+            } else {
+                projectile.element.innerHTML = sprites.egg;
+            }
             game.projectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
         }
@@ -188,7 +193,12 @@ function shoot() {
                 explosive: false
             };
             
-            dualProjectile.element.innerHTML = sprites.egg;
+            // Set dual projectile sprite based on selected skin
+            if (game.selectedSkin === 'wargen') {
+                dualProjectile.element.innerHTML = sprites.arrow;
+            } else {
+                dualProjectile.element.innerHTML = sprites.egg;
+            }
             game.projectiles.push(dualProjectile);
             game.canvas.appendChild(dualProjectile.element);
         }

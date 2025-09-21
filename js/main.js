@@ -2,7 +2,7 @@
 
 // Initialize game
 initUI();
-initPlayer();
+// Don't initialize player here - wait until after skin selection
 
 // Start background music
 const startMusic = document.getElementById('startMusic');

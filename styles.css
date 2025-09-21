@@ -627,6 +627,96 @@
             display: none;
         }
 
+/* Skin Selection */
+.skin-selection {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: white;
+}
+
+.skin-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.skin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin-bottom: 2rem;
+    padding: 0 2rem;
+}
+
+.skin-option {
+    background: rgba(0, 0, 0, 0.6);
+    border: 3px solid #555;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.skin-option:hover {
+    border-color: #00aa00;
+    background: rgba(0, 170, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.skin-option.selected {
+    border-color: #00ff00;
+    background: rgba(0, 255, 0, 0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.skin-sprite {
+    width: 100px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skin-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.skin-weapon {
+    font-size: 1rem;
+    color: #ffaa00;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.skin-description {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.4;
+}
+
+.skin-selection.hidden {
+    display: none;
+}
+
 /* Inventory Button */
 .inventory-button {
     margin-top: 20px;
