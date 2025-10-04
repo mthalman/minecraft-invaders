@@ -423,12 +423,56 @@ const sprites = {
         </svg>
     `,
     goldenApple: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="16" y="8" width="8" height="24" fill="#FFD700"/>
-            <rect x="12" y="12" width="16" height="16" fill="#FFA500"/>
-            <rect x="18" y="4" width="4" height="8" fill="#228B22"/>
-            <rect x="14" y="14" width="12" height="12" fill="#FFFF00" opacity="0.7"/>
-            <rect x="20" y="10" width="4" height="4" fill="#ADFF2F"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <radialGradient id="goldenGradient" cx="40%" cy="30%">
+                    <stop offset="0%" style="stop-color:#FFFF00;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#FFD700;stop-opacity:1" />
+                    <stop offset="80%" style="stop-color:#FFA500;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+                </radialGradient>
+                <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ADFF2F;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#32CD32;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+                </linearGradient>
+                <filter id="goldenGlow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Apple body -->
+            <ellipse cx="30" cy="30" rx="18" ry="22" fill="url(#goldenGradient)" stroke="#B8860B" stroke-width="2"/>
+            <!-- Apple highlight -->
+            <ellipse cx="26" cy="25" rx="8" ry="10" fill="#FFFF00" opacity="0.6">
+                <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
+            <!-- Stem -->
+            <rect x="28" y="6" width="4" height="10" fill="#8B4513" stroke="#654321" stroke-width="1" rx="2"/>
+            <!-- Leaf -->
+            <ellipse cx="35" cy="12" rx="6" ry="8" fill="url(#leafGradient)" stroke="#228B22" stroke-width="1" transform="rotate(25 35 12)">
+                <animateTransform attributeName="transform" type="rotate" values="25 35 12;30 35 12;25 35 12" dur="3s" repeatCount="indefinite"/>
+            </ellipse>
+            <!-- Golden sparkles -->
+            <circle cx="20" cy="20" r="1.5" fill="#FFFF00" opacity="0.8" filter="url(#goldenGlow)">
+                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="45" cy="25" r="1" fill="#FFD700" opacity="0.9" filter="url(#goldenGlow)">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="1;1.8;1" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="25" cy="45" r="1.2" fill="#FFA500" opacity="0.7" filter="url(#goldenGlow)">
+                <animate attributeName="opacity" values="0.1;0.9;0.1" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="1.2;2.2;1.2" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="42" cy="42" r="0.8" fill="#FFFF00" opacity="0.8" filter="url(#goldenGlow)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0.8;1.6;0.8" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     enderPearl: `
@@ -459,24 +503,156 @@ const sprites = {
         </svg>
     `,
     firePotion: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="14" y="8" width="12" height="24" fill="#8B4513"/>
-            <rect x="16" y="10" width="8" height="20" fill="#FF4500"/>
-            <rect x="18" y="12" width="4" height="16" fill="#FF6347"/>
-            <rect x="16" y="4" width="8" height="8" fill="#696969"/>
-            <rect x="18" y="6" width="4" height="4" fill="#A9A9A9"/>
-            <rect x="20" y="14" width="2" height="2" fill="#FFFF00" opacity="0.8"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <linearGradient id="potionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#A0522D;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+                </linearGradient>
+                <radialGradient id="fireGlow" cx="50%" cy="70%">
+                    <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.9" />
+                    <stop offset="50%" style="stop-color:#FF4500;stop-opacity:0.7" />
+                    <stop offset="100%" style="stop-color:#DC143C;stop-opacity:0.5" />
+                </radialGradient>
+                <filter id="fireGlowFilter">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Bottle body -->
+            <rect x="21" y="12" width="18" height="36" fill="url(#potionGradient)" stroke="#654321" stroke-width="2" rx="3"/>
+            <!-- Cork/stopper -->
+            <rect x="24" y="6" width="12" height="12" fill="#696969" stroke="#4A4A4A" stroke-width="1" rx="2"/>
+            <rect x="27" y="9" width="6" height="6" fill="#A9A9A9" rx="1"/>
+            <!-- Fire liquid inside -->
+            <rect x="24" y="18" width="12" height="27" fill="url(#fireGlow)" rx="2">
+                <animate attributeName="height" values="27;30;27" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="y" values="18;15;18" dur="2s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Floating fire particles -->
+            <circle cx="30" cy="25" r="2" fill="#FFD700" opacity="0.8" filter="url(#fireGlowFilter)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="25;20;25" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="26" cy="35" r="1.5" fill="#FF6347" opacity="0.7" filter="url(#fireGlowFilter)">
+                <animate attributeName="opacity" values="0.2;0.9;0.2" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="35;30;35" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="34" cy="32" r="1" fill="#FFFF00" opacity="0.9" filter="url(#fireGlowFilter)">
+                <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="32;28;32" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     totem: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="16" y="8" width="8" height="24" fill="#FFD700"/>
-            <rect x="12" y="12" width="16" height="16" fill="#FFA500"/>
-            <rect x="14" y="4" width="12" height="8" fill="#32CD32"/>
-            <rect x="18" y="2" width="4" height="6" fill="#228B22"/>
-            <rect x="18" y="14" width="4" height="12" fill="#FFFF00" opacity="0.7"/>
-            <rect x="10" y="16" width="4" height="8" fill="#FFD700"/>
-            <rect x="26" y="16" width="4" height="8" fill="#FFD700"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <radialGradient id="totemGoldGradient" cx="50%" cy="40%">
+                    <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#B8860B;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#8B7355;stop-opacity:1" />
+                </radialGradient>
+                <radialGradient id="emeraldGlow" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#50FF50;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#32CD32;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+                </radialGradient>
+                <filter id="totemAura">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Main gold body (vertical center) -->
+            <rect x="26" y="6" width="8" height="48" fill="url(#totemGoldGradient)" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Head section with face -->
+            <rect x="20" y="6" width="20" height="20" fill="#D2B48C" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Face details -->
+            <!-- Eyes (white base) -->
+            <rect x="22" y="12" width="4" height="4" fill="#FFFFFF"/>
+            <rect x="34" y="12" width="4" height="4" fill="#FFFFFF"/>
+            <!-- Eye emeralds -->
+            <rect x="23" y="13" width="2" height="2" fill="url(#emeraldGlow)">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+            </rect>
+            <rect x="35" y="13" width="2" height="2" fill="url(#emeraldGlow)">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+            </rect>
+
+            <!-- Nose area -->
+            <rect x="28" y="16" width="4" height="4" fill="#DEB887"/>
+
+            <!-- Mouth area -->
+            <rect x="26" y="20" width="8" height="4" fill="#D2B48C"/>
+
+            <!-- Arms extending horizontally -->
+            <!-- Left arm -->
+            <rect x="8" y="26" width="12" height="6" fill="url(#totemGoldGradient)" stroke="#8B7355" stroke-width="1">
+                <animate attributeName="width" values="12;14;12" dur="3s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Left hand -->
+            <rect x="6" y="24" width="8" height="10" fill="#D2B48C" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Right arm -->
+            <rect x="40" y="26" width="12" height="6" fill="url(#totemGoldGradient)" stroke="#8B7355" stroke-width="1">
+                <animate attributeName="width" values="12;14;12" dur="3s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Right hand -->
+            <rect x="46" y="24" width="8" height="10" fill="#D2B48C" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Lower body section -->
+            <rect x="22" y="32" width="16" height="18" fill="#D2B48C" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Central glowing yellow section -->
+            <rect x="28" y="38" width="4" height="8" fill="#FFFF00" opacity="0.9">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+            </rect>
+
+            <!-- Legs/base -->
+            <rect x="26" y="50" width="8" height="8" fill="url(#totemGoldGradient)" stroke="#8B7355" stroke-width="1"/>
+
+            <!-- Magical life energy particles -->
+            <circle cx="12" cy="20" r="1.5" fill="#32CD32" opacity="0.8" filter="url(#totemAura)">
+                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="20;15;20" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="48" cy="18" r="1" fill="#50FF50" opacity="0.7" filter="url(#totemAura)">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="18;13;18" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="30" cy="8" r="1.2" fill="#FFD700" opacity="0.6" filter="url(#totemAura)">
+                <animate attributeName="opacity" values="0.1;0.8;0.1" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="8;3;8" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="15" cy="45" r="1" fill="#32CD32" opacity="0.9" filter="url(#totemAura)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="45;40;45" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="45" cy="48" r="1.3" fill="#50FF50" opacity="0.8" filter="url(#totemAura)">
+                <animate attributeName="opacity" values="0.4;1;0.4" dur="1.6s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="48;43;48" dur="1.6s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Life energy aura ring -->
+            <circle cx="30" cy="30" r="25" fill="none" stroke="#32CD32" stroke-width="1" opacity="0.4">
+                <animate attributeName="r" values="25;30;25" dur="4s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.4;0;0.4" dur="4s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Inner energy pulse -->
+            <circle cx="30" cy="30" r="15" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.3">
+                <animate attributeName="r" values="15;20;15" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     nightmaresBite: `
@@ -523,75 +699,253 @@ const sprites = {
         </svg>
     `,
     redstone: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="14" y="14" width="12" height="12" fill="#DC143C"/>
-            <rect x="16" y="12" width="8" height="16" fill="#FF0000"/>
-            <rect x="12" y="16" width="16" height="8" fill="#B22222"/>
-            <rect x="18" y="18" width="4" height="4" fill="#FF6347" opacity="0.8"/>
-            <rect x="8" y="20" width="2" height="2" fill="#FF0000" opacity="0.6"/>
-            <rect x="30" y="18" width="2" height="2" fill="#FF0000" opacity="0.6"/>
-            <rect x="20" y="8" width="2" height="2" fill="#FF0000" opacity="0.6"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <radialGradient id="redstoneGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FF6347;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#DC143C;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#8B0000;stop-opacity:1" />
+                </radialGradient>
+                <filter id="redstoneGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Main redstone block -->
+            <rect x="21" y="21" width="18" height="18" fill="url(#redstoneGradient)" stroke="#8B0000" stroke-width="2" rx="3"/>
+            <!-- Redstone cross pattern -->
+            <rect x="24" y="18" width="12" height="24" fill="#FF0000" rx="2">
+                <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+            </rect>
+            <rect x="18" y="24" width="24" height="12" fill="#B22222" rx="2">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="1.8s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Glowing center -->
+            <rect x="27" y="27" width="6" height="6" fill="#FF6347" opacity="0.9" rx="1" filter="url(#redstoneGlow)">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="1s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Redstone dust particles -->
+            <circle cx="12" cy="30" r="1.5" fill="#FF0000" opacity="0.7" filter="url(#redstoneGlow)">
+                <animate attributeName="opacity" values="0;0.9;0" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="30;27;30" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="45" cy="27" r="1" fill="#DC143C" opacity="0.8" filter="url(#redstoneGlow)">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="1.6s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="27;24;27" dur="1.6s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="30" cy="12" r="1.2" fill="#FF6347" opacity="0.6" filter="url(#redstoneGlow)">
+                <animate attributeName="opacity" values="0.1;0.8;0.1" dur="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="12;9;12" dur="1.4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="48" cy="45" r="1" fill="#FF0000" opacity="0.7" filter="url(#redstoneGlow)">
+                <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="45;42;45" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Energy circuit lines -->
+            <line x1="12" y1="30" x2="18" y2="30" stroke="#FF0000" stroke-width="2" opacity="0.6">
+                <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+            </line>
+            <line x1="42" y1="30" x2="48" y2="30" stroke="#FF0000" stroke-width="2" opacity="0.6">
+                <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.2s" repeatCount="indefinite"/>
+            </line>
         </svg>
     `,
     tnt: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="8" y="8" width="24" height="24" fill="#DC143C"/>
-            <rect x="10" y="10" width="20" height="20" fill="#FF0000"/>
-            <rect x="12" y="12" width="16" height="16" fill="#8B0000"/>
-            <rect x="14" y="18" width="12" height="4" fill="#FFFFFF"/>
-            <rect x="18" y="14" width="4" height="12" fill="#FFFFFF"/>
-            <rect x="16" y="4" width="8" height="8" fill="#228B22"/>
-            <rect x="20" y="2" width="2" height="6" fill="#000000"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <radialGradient id="tntGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FF4500;stop-opacity:1" />
+                    <stop offset="60%" style="stop-color:#DC143C;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#8B0000;stop-opacity:1" />
+                </radialGradient>
+                <linearGradient id="fuseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#32CD32;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#228B22;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#006400;stop-opacity:1" />
+                </linearGradient>
+                <filter id="explosiveGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Main TNT block -->
+            <rect x="12" y="12" width="36" height="36" fill="url(#tntGradient)" stroke="#8B0000" stroke-width="2" rx="4"/>
+            <!-- TNT label background -->
+            <rect x="18" y="24" width="24" height="6" fill="#FFFFFF" rx="2"/>
+            <rect x="27" y="21" width="6" height="18" fill="#FFFFFF" rx="2"/>
+            <!-- TNT letters -->
+            <rect x="21" y="25.5" width="3" height="3" fill="#000000"/>
+            <rect x="30" y="25.5" width="3" height="3" fill="#000000"/>
+            <rect x="39" y="25.5" width="3" height="3" fill="#000000"/>
+            <!-- Fuse body -->
+            <rect x="24" y="6" width="12" height="12" fill="url(#fuseGradient)" stroke="#006400" stroke-width="1" rx="3"/>
+            <!-- Fuse wire -->
+            <rect x="30" y="3" width="3" height="9" fill="#000000"/>
+            <!-- Sparking fuse tip -->
+            <circle cx="31.5" cy="3" r="2" fill="#FFD700" filter="url(#explosiveGlow)">
+                <animate attributeName="r" values="2;3;2" dur="0.5s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="0.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Explosive sparks -->
+            <circle cx="28" cy="2" r="1" fill="#FF6347" opacity="0.8">
+                <animate attributeName="opacity" values="0;1;0" dur="0.3s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="2;0;2" dur="0.3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="35" cy="1" r="1" fill="#FFFF00" opacity="0.9">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="0.4s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="1;-1;1" dur="0.4s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     blazeRod: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
-            <rect x="18" y="4" width="4" height="32" fill="#8B4513"/>
-            <rect x="16" y="6" width="8" height="28" fill="#DAA520"/>
-            <rect x="14" y="8" width="12" height="24" fill="#FF8C00"/>
-            <rect x="16" y="10" width="8" height="20" fill="#FF4500"/>
-            <rect x="18" y="12" width="4" height="16" fill="#FF0000"/>
-            <!-- Fire particles -->
-            <rect x="12" y="14" width="2" height="2" fill="#FFD700" opacity="0.8"/>
-            <rect x="26" y="18" width="2" height="2" fill="#FFD700" opacity="0.8"/>
-            <rect x="10" y="22" width="2" height="2" fill="#FF6347" opacity="0.7"/>
-            <rect x="28" y="26" width="2" height="2" fill="#FF6347" opacity="0.7"/>
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <linearGradient id="blazeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#DAA520;stop-opacity:1" />
+                    <stop offset="30%" style="stop-color:#FF8C00;stop-opacity:1" />
+                    <stop offset="60%" style="stop-color:#FF4500;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+                </linearGradient>
+                <radialGradient id="blazeCore" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FFFF00;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#FF6347;stop-opacity:0.9" />
+                    <stop offset="100%" style="stop-color:#8B0000;stop-opacity:0.7" />
+                </radialGradient>
+                <filter id="blazeGlow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Rod base -->
+            <rect x="27" y="6" width="6" height="48" fill="#8B4513" stroke="#654321" stroke-width="1" rx="3"/>
+            <!-- Fire layers -->
+            <rect x="24" y="9" width="12" height="42" fill="url(#blazeGradient)" rx="6" opacity="0.8">
+                <animate attributeName="width" values="12;15;12" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="x" values="24;22.5;24" dur="2s" repeatCount="indefinite"/>
+            </rect>
+            <rect x="26" y="12" width="8" height="36" fill="url(#blazeCore)" rx="4">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+            </rect>
+            <!-- Floating fire particles -->
+            <circle cx="18" cy="21" r="2" fill="#FFD700" opacity="0.8" filter="url(#blazeGlow)">
+                <animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cx" values="18;15;18" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="21;18;21" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="42" cy="27" r="1.5" fill="#FF6347" opacity="0.7" filter="url(#blazeGlow)">
+                <animate attributeName="opacity" values="0.2;0.9;0.2" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cx" values="42;45;42" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="27;24;27" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="15" cy="33" r="1" fill="#FFFF00" opacity="0.9" filter="url(#blazeGlow)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+                <animate attributeName="cx" values="15;12;15" dur="1s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="33;30;33" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="45" cy="39" r="1.2" fill="#FF4500" opacity="0.8" filter="url(#blazeGlow)">
+                <animate attributeName="opacity" values="0.1;0.8;0.1" dur="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="cx" values="45;48;45" dur="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="39;36;39" dur="1.4s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     stevesLavaChicken: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <radialGradient id="lavaChickenGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FFFF00;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#FF6347;stop-opacity:1" />
+                    <stop offset="80%" style="stop-color:#FF4500;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+                </radialGradient>
+                <linearGradient id="goldChickenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+                </linearGradient>
+                <filter id="lavaChickenGlow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
             <!-- Lava Chicken Body -->
-            <rect x="10" y="15" width="20" height="15" fill="#FF4500"/>
-            <rect x="8" y="17" width="24" height="11" fill="#FF6347"/>
+            <ellipse cx="30" cy="32" rx="15" ry="11" fill="url(#lavaChickenGradient)" stroke="#B22222" stroke-width="2"/>
+            <ellipse cx="30" cy="34" rx="18" ry="8" fill="#FF6347" opacity="0.8">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
             <!-- Chicken Head -->
-            <rect x="14" y="8" width="12" height="10" fill="#FFD700"/>
-            <rect x="12" y="10" width="16" height="6" fill="#FFA500"/>
+            <ellipse cx="30" cy="18" rx="9" ry="7" fill="url(#goldChickenGradient)" stroke="#FF8C00" stroke-width="1"/>
+            <ellipse cx="30" cy="20" rx="12" ry="4" fill="#FFA500" opacity="0.7"/>
             <!-- Lava Eyes -->
-            <rect x="16" y="11" width="2" height="2" fill="#FF0000"/>
-            <rect x="22" y="11" width="2" height="2" fill="#FF0000"/>
+            <circle cx="26" cy="17" r="2" fill="#FF0000" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="34" cy="17" r="2" fill="#FF0000" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
             <!-- Molten Beak -->
-            <rect x="10" y="12" width="4" height="3" fill="#FF8C00"/>
+            <polygon points="21,19 15,21 21,23" fill="#FF8C00" stroke="#FF4500" stroke-width="1">
+                <animate attributeName="fill" values="#FF8C00;#FFFF00;#FF8C00" dur="2s" repeatCount="indefinite"/>
+            </polygon>
             <!-- Lava Comb -->
-            <rect x="16" y="4" width="2" height="6" fill="#DC143C"/>
-            <rect x="18" y="2" width="2" height="8" fill="#DC143C"/>
-            <rect x="20" y="4" width="2" height="6" fill="#DC143C"/>
+            <rect x="24" y="6" width="3" height="9" fill="#DC143C" rx="1.5">
+                <animate attributeName="height" values="9;11;9" dur="2.5s" repeatCount="indefinite"/>
+            </rect>
+            <rect x="27" y="3" width="3" height="12" fill="#B22222" rx="1.5">
+                <animate attributeName="height" values="12;14;12" dur="2.8s" repeatCount="indefinite"/>
+            </rect>
+            <rect x="30" y="6" width="3" height="9" fill="#DC143C" rx="1.5">
+                <animate attributeName="height" values="9;11;9" dur="2.2s" repeatCount="indefinite"/>
+            </rect>
             <!-- Molten Wings -->
-            <rect x="6" y="18" width="6" height="8" fill="#FF8C00"/>
-            <rect x="28" y="18" width="6" height="8" fill="#FF8C00"/>
+            <ellipse cx="18" cy="30" rx="6" ry="8" fill="#FF8C00" opacity="0.8" transform="rotate(-15 18 30)">
+                <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.8s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="42" cy="30" rx="6" ry="8" fill="#FF8C00" opacity="0.8" transform="rotate(15 42 30)">
+                <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.8s" repeatCount="indefinite"/>
+            </ellipse>
             <!-- Lava Tail -->
-            <rect x="30" y="15" width="8" height="10" fill="#FF4500"/>
-            <rect x="32" y="12" width="6" height="8" fill="#FFD700"/>
+            <ellipse cx="45" cy="28" rx="6" ry="8" fill="#FF4500" transform="rotate(30 45 28)">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="2.2s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="48" cy="25" rx="4" ry="6" fill="#FFD700" transform="rotate(30 48 25)">
+                <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+            </ellipse>
             <!-- Lava Legs -->
-            <rect x="15" y="30" width="3" height="6" fill="#8B4513"/>
-            <rect x="22" y="30" width="3" height="6" fill="#8B4513"/>
+            <rect x="24" y="45" width="4" height="9" fill="#8B4513" rx="2"/>
+            <rect x="32" y="45" width="4" height="9" fill="#8B4513" rx="2"/>
             <!-- Lava Feet -->
-            <rect x="13" y="35" width="7" height="2" fill="#FF8C00"/>
-            <rect x="20" y="35" width="7" height="2" fill="#FF8C00"/>
-            <!-- Lava Particles -->
-            <rect x="5" y="8" width="1" height="1" fill="#FF0000" opacity="0.8"/>
-            <rect x="34" y="10" width="1" height="1" fill="#FF0000" opacity="0.8"/>
-            <rect x="8" y="25" width="1" height="1" fill="#FFD700" opacity="0.7"/>
-            <rect x="31" y="28" width="1" height="1" fill="#FFD700" opacity="0.7"/>
+            <ellipse cx="26" cy="55" rx="5" ry="2" fill="#FF8C00"/>
+            <ellipse cx="34" cy="55" rx="5" ry="2" fill="#FF8C00"/>
+            <!-- Floating lava particles -->
+            <circle cx="8" cy="18" r="1" fill="#FF0000" opacity="0.8" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="18;13;18" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="52" cy="20" r="1" fill="#FFD700" opacity="0.7" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0.2;0.9;0.2" dur="1.6s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="20;15;20" dur="1.6s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="12" cy="40" r="1" fill="#FF6347" opacity="0.6" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0.1;0.8;0.1" dur="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="40;35;40" dur="1.4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="48" cy="45" r="1" fill="#FFFF00" opacity="0.7" filter="url(#lavaChickenGlow)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="45;40;45" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     tractorBeam: `
@@ -623,19 +977,63 @@ const sprites = {
         </svg>
     `,
     shield: `
-        <svg width="40" height="40" viewBox="0 0 40 40">
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <defs>
+                <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#5BA0F2;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#4A90E2;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2C5A80;stop-opacity:1" />
+                </linearGradient>
+                <radialGradient id="gemGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FFFF00;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+                </radialGradient>
+                <filter id="shieldGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
             <!-- Shield Base -->
-            <path d="M20 2 L30 10 L30 25 L20 38 L10 25 L10 10 Z" fill="#4A90E2" stroke="#2C5A80" stroke-width="2"/>
+            <path d="M30 3 L45 15 L45 37 L30 57 L15 37 L15 15 Z" fill="url(#shieldGradient)" stroke="#2C5A80" stroke-width="3"/>
             <!-- Shield Highlight -->
-            <path d="M20 4 L28 11 L28 24 L20 35 L12 24 L12 11 Z" fill="#5BA0F2" opacity="0.8"/>
+            <path d="M30 6 L42 16 L42 36 L30 52 L18 36 L18 16 Z" fill="#87CEEB" opacity="0.6">
+                <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+            </path>
             <!-- Shield Center Gem -->
-            <circle cx="20" cy="18" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="1"/>
+            <circle cx="30" cy="27" r="6" fill="url(#gemGradient)" stroke="#B8860B" stroke-width="2" filter="url(#shieldGlow)">
+                <animate attributeName="r" values="6;7;6" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Inner gem glow -->
+            <circle cx="30" cy="27" r="3" fill="#FFFFFF" opacity="0.8">
+                <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
             <!-- Shield Decorative Lines -->
-            <line x1="15" y1="12" x2="25" y2="12" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
-            <line x1="14" y1="16" x2="26" y2="16" stroke="#FFFFFF" stroke-width="1" opacity="0.4"/>
-            <line x1="14" y1="24" x2="26" y2="24" stroke="#FFFFFF" stroke-width="1" opacity="0.4"/>
-            <!-- Shield Glow Effect -->
-            <path d="M20 2 L30 10 L30 25 L20 38 L10 25 L10 10 Z" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.7"/>
+            <line x1="22" y1="18" x2="38" y2="18" stroke="#FFFFFF" stroke-width="2" opacity="0.7">
+                <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.5s" repeatCount="indefinite"/>
+            </line>
+            <line x1="21" y1="24" x2="39" y2="24" stroke="#FFFFFF" stroke-width="2" opacity="0.5">
+                <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.8s" repeatCount="indefinite"/>
+            </line>
+            <line x1="21" y1="36" x2="39" y2="36" stroke="#FFFFFF" stroke-width="2" opacity="0.5">
+                <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.2s" repeatCount="indefinite"/>
+            </line>
+            <!-- Shield Outer Glow -->
+            <path d="M30 3 L45 15 L45 37 L30 57 L15 37 L15 15 Z" fill="none" stroke="#87CEEB" stroke-width="2" opacity="0.8" filter="url(#shieldGlow)">
+                <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+            </path>
+            <!-- Energy particles around shield -->
+            <circle cx="18" cy="30" r="1" fill="#87CEEB" opacity="0.8">
+                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="30;25;30" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="42" cy="32" r="1.2" fill="#5BA0F2" opacity="0.7">
+                <animate attributeName="opacity" values="0.2;0.9;0.2" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="cy" values="32;27;32" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
         </svg>
     `,
     windCharge: `
@@ -3753,18 +4151,18 @@ const sprites = {
             <!-- Black pupils -->
             <circle cx="20" cy="22" r="2" fill="#000000"/>
             <circle cx="40" cy="22" r="2" fill="#000000"/>
-            <!-- Sharp teeth top row -->
-            <polygon points="17,30 20,25 23,30" fill="#ffffff"/>
-            <polygon points="23,30 26,25 29,30" fill="#ffffff"/>
-            <polygon points="29,30 32,25 35,30" fill="#ffffff"/>
-            <polygon points="35,30 38,25 41,30" fill="#ffffff"/>
-            <polygon points="41,30 44,25 47,30" fill="#ffffff"/>
-            <!-- Sharp teeth bottom row -->
-            <polygon points="17,40 20,45 23,40" fill="#ffffff"/>
-            <polygon points="23,40 26,45 29,40" fill="#ffffff"/>
-            <polygon points="29,40 32,45 35,40" fill="#ffffff"/>
-            <polygon points="35,40 38,45 41,40" fill="#ffffff"/>
-            <polygon points="41,40 44,45 47,40" fill="#ffffff"/>
+            <!-- Sharp teeth top row (pointing inward) -->
+            <polygon points="17,25 20,30 23,25" fill="#ffffff"/>
+            <polygon points="23,25 26,30 29,25" fill="#ffffff"/>
+            <polygon points="29,25 32,30 35,25" fill="#ffffff"/>
+            <polygon points="35,25 38,30 41,25" fill="#ffffff"/>
+            <polygon points="41,25 44,30 47,25" fill="#ffffff"/>
+            <!-- Sharp teeth bottom row (pointing inward) -->
+            <polygon points="17,45 20,40 23,45" fill="#ffffff"/>
+            <polygon points="23,45 26,40 29,45" fill="#ffffff"/>
+            <polygon points="29,45 32,40 35,45" fill="#ffffff"/>
+            <polygon points="35,45 38,40 41,45" fill="#ffffff"/>
+            <polygon points="41,45 44,40 47,45" fill="#ffffff"/>
             <!-- Hungry mouth animation -->
             <rect x="18" y="32" width="24" height="6" fill="#000000">
                 <animate attributeName="height" values="6;8;6" dur="0.5s" repeatCount="indefinite"/>
