@@ -194,7 +194,8 @@ function initSkinSprites() {
     // Add sprites to skin selection screen
     const skinSprites = {
         'chickenSprite': 'chicken',
-        'wargenSprite': 'wargen'
+        'wargenSprite': 'wargen',
+        'violetSprite': 'violet'
     };
 
     Object.entries(skinSprites).forEach(([elementId, spriteType]) => {

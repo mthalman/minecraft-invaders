@@ -196,6 +196,8 @@ function shoot() {
             // Set projectile sprite based on selected skin
             if (game.selectedSkin === 'wargen') {
                 projectile.element.innerHTML = sprites.arrow;
+            } else if (game.selectedSkin === 'violet') {
+                projectile.element.innerHTML = sprites.pinkLaser;
             } else {
                 projectile.element.innerHTML = sprites.egg;
             }
@@ -216,6 +218,8 @@ function shoot() {
             // Set dual projectile sprite based on selected skin
             if (game.selectedSkin === 'wargen') {
                 dualProjectile.element.innerHTML = sprites.arrow;
+            } else if (game.selectedSkin === 'violet') {
+                dualProjectile.element.innerHTML = sprites.pinkLaser;
             } else {
                 dualProjectile.element.innerHTML = sprites.egg;
             }
