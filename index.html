@@ -113,10 +113,20 @@
             <div class="game-title">COMPLETE INVENTORY</div>
             <div class="back-button" id="backButton">← Back to Home</div>
         </div>
-        
+
+        <!-- Navigation Menu -->
+        <div class="inventory-nav">
+            <button class="nav-button active" data-section="overworld">Overworld</button>
+            <button class="nav-button" data-section="nether">Nether</button>
+            <button class="nav-button" data-section="end">The End</button>
+            <button class="nav-button" data-section="galaxy">Galaxy</button>
+            <button class="nav-button" data-section="powerups">Power-ups</button>
+            <button class="nav-button" data-section="skins">Skins</button>
+        </div>
+
         <div class="inventory-container">
             <!-- Overworld Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="overworld">
                 <h2 class="dimension-header">OVERWORLD</h2>
                 
                 <div class="sub-dimension-inventory">
@@ -169,7 +179,7 @@
             </div>
             
             <!-- Nether Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="nether">
                 <h2 class="dimension-header nether-header">NETHER</h2>
                 
                 <div class="sub-dimension-inventory">
@@ -198,7 +208,7 @@
             </div>
             
             <!-- End Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="end">
                 <h2 class="dimension-header end-header">THE END</h2>
                 
                 <div class="sub-dimension-inventory">
@@ -227,7 +237,7 @@
             </div>
             
             <!-- Galaxy Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="galaxy">
                 <h2 class="dimension-header galaxy-header">GALAXY</h2>
 
                 <div class="entity-section">
@@ -241,7 +251,7 @@
             </div>
 
             <!-- Power-ups Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="powerups">
                 <h2 class="dimension-header powerups-header">POWER-UPS</h2>
 
                 <div class="entity-section">
@@ -259,7 +269,7 @@
             </div>
 
             <!-- Skins Section -->
-            <div class="dimension-inventory">
+            <div class="dimension-inventory" data-section="skins">
                 <h2 class="dimension-header skins-header">CHARACTER SKINS</h2>
 
                 <div class="entity-section">

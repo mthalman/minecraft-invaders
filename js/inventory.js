@@ -680,14 +680,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function showInventory() {
     const startScreen = document.getElementById('startScreen');
     const inventoryScreen = document.getElementById('inventoryScreen');
-    
+
     startScreen.style.display = 'none';
     inventoryScreen.style.display = 'block';
-    
+
     // Populate inventory if not already done
     if (!document.getElementById('overworldNormalEnemies').hasChildNodes()) {
         populateInventory();
     }
+
+    // Initialize navigation menu
+    initNavigationMenu();
 }
 
 function hideInventory() {
@@ -698,16 +701,91 @@ function hideInventory() {
     inventoryScreen.style.display = 'none';
 }
 
+// Navigation menu functionality
+function initNavigationMenu() {
+    const navButtons = document.querySelectorAll('.nav-button');
+    const sections = document.querySelectorAll('.dimension-inventory');
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetSection = button.getAttribute('data-section');
+
+            // Update active button
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Hide all sections first
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the target section
+            const targetElement = document.querySelector(`.dimension-inventory[data-section="${targetSection}"]`);
+            if (targetElement) {
+                targetElement.style.display = 'block';
+            }
+        });
+    });
+
+    // Initially show only the first section (Overworld)
+    sections.forEach((section, index) => {
+        if (index === 0) {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+
+    // Add collapsible functionality to dimension headers
+    initCollapsibleSections();
+}
+
+// Collapsible sections functionality
+function initCollapsibleSections() {
+    const dimensionHeaders = document.querySelectorAll('.dimension-header');
+
+    dimensionHeaders.forEach(header => {
+        // Make header clickable
+        header.style.cursor = 'pointer';
+        header.style.userSelect = 'none';
+
+        // Add click event
+        header.addEventListener('click', () => {
+            const dimensionInventory = header.parentElement;
+            const subSections = dimensionInventory.querySelectorAll('.sub-dimension-inventory, .entity-section');
+
+            // Toggle visibility
+            const isCollapsed = subSections[0].style.display === 'none';
+
+            subSections.forEach(section => {
+                section.style.display = isCollapsed ? 'block' : 'none';
+            });
+
+            // Add visual indicator
+            if (isCollapsed) {
+                header.classList.remove('collapsed');
+            } else {
+                header.classList.add('collapsed');
+            }
+        });
+    });
+}
+
 // Add event listeners for navigation
 window.addEventListener('load', () => {
     const inventoryButton = document.getElementById('inventoryButton');
     const backButton = document.getElementById('backButton');
-    
+
     if (inventoryButton) {
         inventoryButton.addEventListener('click', showInventory);
     }
-    
+
     if (backButton) {
         backButton.addEventListener('click', hideInventory);
+    }
+
+    // Initialize navigation menu when inventory is shown
+    if (document.querySelector('.inventory-nav')) {
+        initNavigationMenu();
     }
 });
