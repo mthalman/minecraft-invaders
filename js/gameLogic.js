@@ -97,6 +97,7 @@ function restartGame() {
     game.lightningBolts = [];
     game.electricSparks = [];
     game.harpArrows = [];
+    game.sunsGraceFireballs = [];
     game.tinyHorrors = [];
     game.score = 0;
     game.lives = 3;
@@ -177,6 +178,7 @@ function gameLoop() {
         moveLightningBolts();
         updateElectricSparks();
         moveHarpArrows();
+        moveSunsGraceFireballs();
         moveTinyHorrors();
         enemyShoot();
         

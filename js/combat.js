@@ -183,6 +183,51 @@ function shoot() {
                 game.harpArrows.push(arrow);
                 game.canvas.appendChild(arrow.element);
             }
+        } else if (powerUps.active.sunsGrace && powerUps.active.sunsGrace > now) {
+            // Sun's Grace - fire fireballs in 120-degree upward arc (with cooldown)
+            const sunsGraceCooldown = 800; // 800ms cooldown between fireball bursts
+
+            if (!game.lastSunsGraceShot || now - game.lastSunsGraceShot > sunsGraceCooldown) {
+                sounds.shoot();
+
+                const numFireballs = 8; // Increased coverage with object pooling
+                const fireballSpeed = 6;
+
+                // 120-degree range upwards: from -150° to -30° (or from -5π/6 to -π/6)
+                const startAngle = -5 * Math.PI / 6; // -150 degrees
+                const endAngle = -Math.PI / 6; // -30 degrees
+                const angleRange = endAngle - startAngle; // 120 degrees in radians
+
+                // Create fireballs in upward 120-degree arc using object pool
+                for (let i = 0; i < numFireballs; i++) {
+                    const angle = startAngle + (i / (numFireballs - 1)) * angleRange;
+
+                    // Get fireball from pool
+                    const fireball = fireballPool.getFireball();
+
+                    // Set fireball properties
+                    fireball.x = game.player.x + 42;
+                    fireball.y = game.player.y;
+                    fireball.vx = Math.cos(angle) * fireballSpeed;
+                    fireball.vy = Math.sin(angle) * fireballSpeed;
+                    fireball.life = 200; // frames to live (reasonable range)
+                    fireball.maxLife = 200;
+
+                    // Position the element
+                    fireball.element.style.left = fireball.x + 'px';
+                    fireball.element.style.top = fireball.y + 'px';
+
+                    if (!game.sunsGraceFireballs) game.sunsGraceFireballs = [];
+                    game.sunsGraceFireballs.push(fireball);
+
+                    // Only append if not already in DOM
+                    if (!fireball.element.parentNode) {
+                        game.canvas.appendChild(fireball.element);
+                    }
+                }
+
+                game.lastSunsGraceShot = now; // Update last shot time
+            }
         } else {
             // Normal projectile
             const projectile = {

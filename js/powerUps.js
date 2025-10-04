@@ -1,3 +1,85 @@
+// Object pool for Sun's Grace fireballs
+const fireballPool = {
+    available: [],
+    inUse: [],
+
+    getFireball: function() {
+        let fireball;
+        if (this.available.length > 0) {
+            // Reuse existing fireball
+            fireball = this.available.pop();
+            fireball.element.style.display = 'block';
+        } else {
+            // Create new fireball
+            fireball = {
+                element: createSprite('suns-grace-fireball', 0, 0),
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0,
+                life: 0,
+                maxLife: 0,
+                damage: 3,
+                width: 30,
+                height: 30
+            };
+            fireball.element.style.zIndex = '100';
+        }
+
+        // Always ensure correct sprite is set with unique IDs (in case element was reused)
+        const uniqueId = Date.now() + Math.random();
+        fireball.element.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <defs>
+                    <radialGradient id="fireballGradient${uniqueId}" cx="50%" cy="50%">
+                        <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                        <stop offset="30%" style="stop-color:#FFFF00;stop-opacity:1" />
+                        <stop offset="60%" style="stop-color:#FF6347;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+                    </radialGradient>
+                    <filter id="fireballGlow${uniqueId}">
+                        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <!-- Main fireball -->
+                <circle cx="8" cy="8" r="6" fill="url(#fireballGradient${uniqueId})" filter="url(#fireballGlow${uniqueId})">
+                    <animate attributeName="r" values="6;7;6" dur="0.8s" repeatCount="indefinite"/>
+                </circle>
+                <!-- Inner core -->
+                <circle cx="8" cy="8" r="3" fill="#FFFFFF" opacity="0.8">
+                    <animate attributeName="opacity" values="0.6;1;0.6" dur="0.6s" repeatCount="indefinite"/>
+                </circle>
+                <!-- Trailing particles -->
+                <circle cx="5" cy="8" r="1" fill="#FF6347" opacity="0.7">
+                    <animate attributeName="opacity" values="0.3;0.9;0.3" dur="0.4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="11" cy="8" r="1" fill="#FFD700" opacity="0.6">
+                    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="0.5s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        `;
+
+        this.inUse.push(fireball);
+        return fireball;
+    },
+
+    returnFireball: function(fireball) {
+        // Remove from in-use array
+        const index = this.inUse.indexOf(fireball);
+        if (index > -1) {
+            this.inUse.splice(index, 1);
+        }
+
+        // Hide and return to available pool
+        fireball.element.style.display = 'none';
+        this.available.push(fireball);
+    }
+};
+
 // Power-up system
 const powerUps = {
     active: {},
@@ -18,7 +100,8 @@ const powerUps = {
         swiftness: { name: 'Swiftness Potion', duration: 15000, effect: 'swiftness' },
         harpCrossbow: { name: 'Harp Crossbow', duration: 20000, effect: 'harpCrossbow' },
         hungryHorror: { name: 'Hungry Horror', duration: 30000, effect: 'hungryHorror' },
-        nightmaresBite: { name: "Nightmare's Bite", duration: 5000, effect: 'nightmaresBite' }
+        nightmaresBite: { name: "Nightmare's Bite", duration: 5000, effect: 'nightmaresBite' },
+        sunsGrace: { name: "Sun's Grace", duration: 10000, effect: 'sunsGrace' }
     }
 };
 
@@ -76,6 +159,9 @@ function activatePowerUp(type) {
             break;
         case 'nightmaresBite':
             powerUps.active.nightmaresBite = Date.now() + powerUp.duration;
+            break;
+        case 'sunsGrace':
+            powerUps.active.sunsGrace = Date.now() + powerUp.duration;
             break;
     }
     
@@ -633,6 +719,7 @@ function launchRicochetEgg() {
     sounds.shoot();
 }
 
+
 function moveRicochetEggs() {
     const canvasSize = getCanvasDimensions();
 
@@ -1102,6 +1189,104 @@ function moveHarpArrows() {
                 sounds.shoot(); // Collection sound
 
                 break; // Only collect one power-up per arrow
+            }
+        }
+    }
+}
+
+function moveSunsGraceFireballs() {
+    if (!game.sunsGraceFireballs) return;
+
+    const canvasSize = getCanvasDimensions();
+
+    for (let index = game.sunsGraceFireballs.length - 1; index >= 0; index--) {
+        const fireball = game.sunsGraceFireballs[index];
+        if (!fireball || !fireball.element) continue;
+
+        fireball.life--;
+
+        // Check if fireball has expired or gone off screen
+        if (fireball.life <= 0 ||
+            fireball.x < -30 || fireball.x > canvasSize.width + 30 ||
+            fireball.y < -30 || fireball.y > canvasSize.height + 30) {
+            // Return fireball to pool instead of destroying it
+            fireballPool.returnFireball(fireball);
+            game.sunsGraceFireballs.splice(index, 1);
+            continue;
+        }
+
+        // Move fireball
+        fireball.x += fireball.vx;
+        fireball.y += fireball.vy;
+
+        // Update position
+        fireball.element.style.left = fireball.x + 'px';
+        fireball.element.style.top = fireball.y + 'px';
+
+        // Collision detection with enemies
+        for (let enemyIndex = game.enemies.length - 1; enemyIndex >= 0; enemyIndex--) {
+            const enemy = game.enemies[enemyIndex];
+            if (!enemy || !enemy.element) continue;
+
+            const enemyDimensions = getEnemyDimensions(enemy);
+
+            // Check collision
+            if (fireball.x < enemy.x + enemyDimensions.width &&
+                fireball.x + fireball.width > enemy.x &&
+                fireball.y < enemy.y + enemyDimensions.height &&
+                fireball.y + fireball.height > enemy.y) {
+
+                // Return fireball to pool instead of destroying it
+                fireballPool.returnFireball(fireball);
+                game.sunsGraceFireballs.splice(index, 1);
+
+                // Handle collision using common handler
+                handleProjectileEnemyCollision(enemy, enemyIndex, fireball.damage, 1.5, 'sunsGrace');
+
+                break; // Only hit one enemy per fireball
+            }
+        }
+
+        // Collision detection with power-ups
+        for (let powerUpIndex = powerUps.items.length - 1; powerUpIndex >= 0; powerUpIndex--) {
+            const powerUp = powerUps.items[powerUpIndex];
+            if (!powerUp || !powerUp.element) continue;
+
+            const powerUpRect = {
+                x: powerUp.x,
+                y: powerUp.y,
+                width: 60,
+                height: 60
+            };
+
+            const fireballRect = {
+                x: fireball.x,
+                y: fireball.y,
+                width: fireball.width,
+                height: fireball.height
+            };
+
+            // Check collision
+            if (fireballRect.x < powerUpRect.x + powerUpRect.width &&
+                fireballRect.x + fireballRect.width > powerUpRect.x &&
+                fireballRect.y < powerUpRect.y + powerUpRect.height &&
+                fireballRect.y + fireballRect.height > powerUpRect.y) {
+
+                // Return fireball to pool instead of destroying it
+                fireballPool.returnFireball(fireball);
+                game.sunsGraceFireballs.splice(index, 1);
+
+                // Collect the power-up
+                if (powerUp.element && powerUp.element.parentNode) {
+                    game.canvas.removeChild(powerUp.element);
+                }
+                powerUps.items.splice(powerUpIndex, 1);
+
+                // Activate the power-up
+                activatePowerUp(powerUp.type);
+                sounds.shoot(); // Collection sound
+
+                break; // Only collect one power-up per fireball
             }
         }
     }

@@ -134,7 +134,8 @@ const powerUpsData = {
         { name: 'Ricochet Egg', sprite: 'ricochetEgg', duration: 'Instant', effect: 'Launches bouncing egg that ricochets off walls for 15s' },
         { name: 'Corrupted Beacon', sprite: 'corruptedBeacon', duration: 'Instant', effect: 'Sweeping laser beam that rotates for 5s' },
         { name: 'Hungry Horror', sprite: 'hungryHorror', duration: '30s', effect: 'Spawns tiny horrors when hit by enemy projectiles' },
-        { name: "Nightmare's Bite", sprite: 'nightmaresBite', duration: '5s', effect: 'Shoots seeking bats that hunt enemies for 20s each' }
+        { name: "Nightmare's Bite", sprite: 'nightmaresBite', duration: '5s', effect: 'Shoots seeking bats that hunt enemies for 20s each' },
+        { name: "Sun's Grace", sprite: 'sunsGrace', duration: 'Instant', effect: 'Sends a barrage of fireballs outward in all directions' }
     ],
     defensive: [
         { name: 'Golden Apple', sprite: 'goldenApple', duration: '5s', effect: 'Complete invincibility to all damage' },
