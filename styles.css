@@ -837,6 +837,30 @@
     margin-top: 2px;
 }
 
+.skin-card {
+    background: rgba(148, 0, 211, 0.1);
+    border: 1px solid rgba(148, 0, 211, 0.3);
+}
+
+.skin-card:hover {
+    background: rgba(148, 0, 211, 0.2);
+    box-shadow: 0 0 15px rgba(148, 0, 211, 0.3);
+}
+
+.skin-card .skin-weapon {
+    font-size: 10px;
+    color: #ff69b4;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.skins-header {
+    background: linear-gradient(135deg, #9b59b6, #e91e63);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
 .sub-dimension-inventory {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;

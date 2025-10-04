@@ -117,6 +117,13 @@ const inventoryData = {
 };
 
 // Power-ups data organized by category
+// Skins data
+const skinsData = [
+    { name: 'Chicken', sprite: 'chicken', weapon: 'Eggs', description: 'Classic feathered fighter' },
+    { name: 'Wargen', sprite: 'wargen', weapon: 'Arrows', description: 'Dark warrior with precise aim' },
+    { name: 'Violet', sprite: 'violet', weapon: 'Pink Lasers', description: 'Mysterious warrior with energy weapons' }
+];
+
 const powerUpsData = {
     offensive: [
         { name: 'Fire Potion', sprite: 'firePotion', duration: '20s', effect: 'Rapid fire shooting (3x faster)' },
@@ -256,6 +263,50 @@ function createEntityCard(entity, isEnemy = true, dimension = '', subDimension =
 }
 
 // Function to create a power-up card
+function createSkinCard(skin) {
+    const card = document.createElement('div');
+    card.className = 'entity-card skin-card';
+    card.style.cursor = 'pointer';
+
+    const spriteContainer = document.createElement('div');
+    spriteContainer.className = 'entity-sprite';
+
+    // Fix SVG gradient/filter ID conflicts by making them unique
+    let spriteHTML = sprites[skin.sprite] || '<div>?</div>';
+    if (spriteHTML.includes('id="')) {
+        // Generate a unique suffix for this instance
+        const uniqueSuffix = '_inv_' + Math.random().toString(36).substr(2, 9);
+
+        // Replace all id="xxx" with id="xxx_inv_[random]"
+        spriteHTML = spriteHTML.replace(/id="([^"]*)"/g, `id="$1${uniqueSuffix}"`);
+
+        // Replace all references to those IDs (url(#xxx) and filter="url(#xxx)")
+        spriteHTML = spriteHTML.replace(/url\(#([^)]*)\)/g, `url(#$1${uniqueSuffix})`);
+        spriteHTML = spriteHTML.replace(/filter="url\(#([^)]*)\)"/g, `filter="url(#$1${uniqueSuffix})"`);
+    }
+
+    spriteContainer.innerHTML = spriteHTML;
+
+    const name = document.createElement('div');
+    name.className = 'entity-name';
+    name.textContent = skin.name;
+
+    const weapon = document.createElement('div');
+    weapon.className = 'skin-weapon';
+    weapon.textContent = `Weapon: ${skin.weapon}`;
+
+    card.appendChild(spriteContainer);
+    card.appendChild(name);
+    card.appendChild(weapon);
+
+    // Add click handler for skin details
+    card.addEventListener('click', () => {
+        showSkinDetails(skin);
+    });
+
+    return card;
+}
+
 function createPowerUpCard(powerup) {
     const card = document.createElement('div');
     card.className = 'entity-card powerup-card';
@@ -357,6 +408,59 @@ function showEntityModal(entity, isEnemy, dimension, subDimension) {
     modalClose.onclick = closeModal;
     modalOverlay.onclick = closeModal;
     
+    // Close on escape key
+    const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+    document.addEventListener('keydown', escapeHandler);
+}
+
+// Function to show skin details modal
+function showSkinDetails(skin) {
+    const modal = document.getElementById('entityModal');
+    const modalSprite = document.getElementById('modalSprite');
+    const modalName = document.getElementById('modalName');
+    const modalType = document.getElementById('modalType');
+    const modalHealth = document.getElementById('modalHealth');
+    const modalDimension = document.getElementById('modalDimension');
+    const modalDescription = document.getElementById('modalDescription');
+
+    // Set sprite
+    modalSprite.innerHTML = sprites[skin.sprite] || '<div style="font-size: 48px; color: #fff;">?</div>';
+
+    // Set name
+    modalName.textContent = skin.name;
+
+    // Set type
+    modalType.textContent = 'Character Skin';
+
+    // Set weapon instead of health
+    modalHealth.textContent = `Weapon: ${skin.weapon}`;
+    modalHealth.style.display = 'block';
+
+    // Hide dimension field for skins
+    modalDimension.style.display = 'none';
+
+    // Set description
+    modalDescription.textContent = skin.description;
+
+    // Show modal
+    modal.style.display = 'block';
+
+    // Add close handlers
+    const modalClose = document.getElementById('modalClose');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+    };
+
+    modalClose.onclick = closeModal;
+    modalOverlay.onclick = closeModal;
+
     // Close on escape key
     const escapeHandler = (e) => {
         if (e.key === 'Escape') {
@@ -550,6 +654,14 @@ function populateInventory() {
 
         powerUpsData.utility.forEach(powerup => {
             utilityPowerups.appendChild(createPowerUpCard(powerup));
+        });
+    }
+
+    // Populate skins
+    const availableSkins = document.getElementById('availableSkins');
+    if (availableSkins && !availableSkins.hasChildNodes()) {
+        skinsData.forEach(skin => {
+            availableSkins.appendChild(createSkinCard(skin));
         });
     }
 }
