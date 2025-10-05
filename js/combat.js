@@ -218,6 +218,8 @@ function shoot() {
                 projectile.element.innerHTML = sprites.arrow;
             } else if (game.selectedSkin === 'violet') {
                 projectile.element.innerHTML = sprites.pinkLaser;
+            } else if (game.selectedSkin === 'voidVoyager') {
+                projectile.element.innerHTML = sprites.crossbowBolt;
             } else {
                 projectile.element.innerHTML = sprites.egg;
             }
@@ -240,6 +242,8 @@ function shoot() {
                 dualProjectile.element.innerHTML = sprites.arrow;
             } else if (game.selectedSkin === 'violet') {
                 dualProjectile.element.innerHTML = sprites.pinkLaser;
+            } else if (game.selectedSkin === 'voidVoyager') {
+                dualProjectile.element.innerHTML = sprites.crossbowBolt;
             } else {
                 dualProjectile.element.innerHTML = sprites.egg;
             }

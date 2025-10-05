@@ -121,7 +121,8 @@ const inventoryData = {
 const skinsData = [
     { name: 'Chicken', sprite: 'chicken', weapon: 'Eggs', description: 'Classic feathered fighter' },
     { name: 'Wargen', sprite: 'wargen', weapon: 'Arrows', description: 'Dark warrior with precise aim' },
-    { name: 'Violet', sprite: 'violet', weapon: 'Pink Lasers', description: 'Mysterious warrior with energy weapons' }
+    { name: 'Violet', sprite: 'violet', weapon: 'Pink Lasers', description: 'Mysterious warrior with energy weapons' },
+    { name: 'Void Voyager', sprite: 'voidVoyager', weapon: 'Crossbow Bolts', description: 'Purple-hooded mystic with enchanted bolts' }
 ];
 
 const powerUpsData = {

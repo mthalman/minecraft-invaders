@@ -195,7 +195,8 @@ function initSkinSprites() {
     const skinSprites = {
         'chickenSprite': 'chicken',
         'wargenSprite': 'wargen',
-        'violetSprite': 'violet'
+        'violetSprite': 'violet',
+        'voidVoyagerSprite': 'voidVoyager'
     };
 
     Object.entries(skinSprites).forEach(([elementId, spriteType]) => {
