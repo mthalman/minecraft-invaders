@@ -4327,6 +4327,90 @@ const sprites = {
                 <animate attributeName="height" values="2;3;2" dur="0.3s" repeatCount="indefinite"/>
             </rect>
         </svg>
+    `,
+    lightningBolt: `
+        <svg width="20" height="30" viewBox="0 0 20 30">
+            <defs>
+                <filter id="electricGlow">
+                    <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <path d="M 8,0 L 12,0 L 6,15 L 14,15 L 2,30 L 10,15 L 4,15 Z"
+                  fill="#60a5fa" stroke="#3b82f6" stroke-width="1" filter="url(#electricGlow)">
+                <animate attributeName="fill" values="#60a5fa;#fbbf24;#60a5fa" dur="0.1s" repeatCount="indefinite"/>
+            </path>
+        </svg>
+    `,
+    harpArrow: `
+        <svg width="15" height="25" viewBox="0 0 15 25">
+            <defs>
+                <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8b4513;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#a0522d;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect x="6" y="5" width="3" height="15" fill="url(#arrowGradient)"/>
+            <path d="M 7.5,0 L 12,5 L 7.5,5 L 3,5 Z" fill="#c0c0c0" stroke="#a0a0a0" stroke-width="1"/>
+            <path d="M 4,20 L 7.5,18 L 11,20 L 7.5,25 Z" fill="#228b22" stroke="#006400" stroke-width="0.5"/>
+        </svg>
+    `,
+    nightmareBat: `
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <defs>
+                <filter id="greenGlow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+                <radialGradient id="batGlow" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#00FF00;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#00FF00;stop-opacity:0" />
+                </radialGradient>
+            </defs>
+            <ellipse cx="12" cy="12" rx="11" ry="8" fill="url(#batGlow)" opacity="0.6"/>
+            <ellipse cx="12" cy="12" rx="8" ry="6" fill="#2D2D2D"/>
+            <ellipse cx="12" cy="12" rx="6" ry="4" fill="#1A1A1A"/>
+            <circle cx="10" cy="10" r="1" fill="#00FF00" filter="url(#greenGlow)"/>
+            <circle cx="14" cy="10" r="1" fill="#00FF00" filter="url(#greenGlow)"/>
+        </svg>
+    `,
+    sunsGraceFireball: `
+        <svg width="16" height="16" viewBox="0 0 16 16">
+            <defs>
+                <radialGradient id="fireballGradient" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                    <stop offset="30%" style="stop-color:#FFFF00;stop-opacity:1" />
+                    <stop offset="60%" style="stop-color:#FF6347;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+                </radialGradient>
+                <filter id="fireballGlow">
+                    <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <circle cx="8" cy="8" r="6" fill="url(#fireballGradient)" filter="url(#fireballGlow)">
+                <animate attributeName="r" values="6;7;6" dur="0.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="8" cy="8" r="3" fill="#FFFFFF" opacity="0.8">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="0.6s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="5" cy="8" r="1" fill="#FF6347" opacity="0.7">
+                <animate attributeName="opacity" values="0.3;0.9;0.3" dur="0.4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="11" cy="8" r="1" fill="#FFD700" opacity="0.6">
+                <animate attributeName="opacity" values="0.2;0.8;0.2" dur="0.5s" repeatCount="indefinite"/>
+            </circle>
+        </svg>
     `
     };
 

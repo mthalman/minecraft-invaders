@@ -86,102 +86,77 @@ function shoot() {
     if (now - game.lastShot > fireRate) {
         // Check if Stormlander is active
         if (powerUps.active.stormlander && powerUps.active.stormlander > now) {
-            // Create lightning bolt instead of normal projectile
-            const lightningBolt = {
-                element: createSprite('lightning-bolt', game.player.x + 42, game.player.y),
-                x: game.player.x + 42,
-                y: game.player.y,
-                speed: 8,
-                zigzagPhase: 0,
-                zigzagAmplitude: 30,
-                zigzagFrequency: 0.2,
-                damage: 10,
-                life: 300 // frames to live
-            };
+            // Get lightning bolt from pool
+            const lightningBolt = lightningBoltPool.get();
+            if (!lightningBolt) return; // Pool exhausted, skip this shot
 
-            // Create lightning bolt SVG
-            lightningBolt.element.innerHTML = `
-                <svg width="20" height="30" viewBox="0 0 20 30">
-                    <defs>
-                        <filter id="electricGlow">
-                            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                            <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
-                    </defs>
-                    <path d="M 8,0 L 12,0 L 6,15 L 14,15 L 2,30 L 10,15 L 4,15 Z"
-                          fill="#60a5fa" stroke="#3b82f6" stroke-width="1" filter="url(#electricGlow)">
-                        <animate attributeName="fill" values="#60a5fa;#fbbf24;#60a5fa" dur="0.1s" repeatCount="indefinite"/>
-                    </path>
-                </svg>
-            `;
+            // Set position and properties
+            lightningBolt.x = game.player.x + 42;
+            lightningBolt.y = game.player.y;
+            lightningBolt.zigzagPhase = 0;
+            lightningBolt.life = 300;
 
-            lightningBolt.element.style.zIndex = '80';
+            // Position the element
+            lightningBolt.element.style.left = lightningBolt.x + 'px';
+            lightningBolt.element.style.top = lightningBolt.y + 'px';
+
             game.lightningBolts.push(lightningBolt);
-            game.canvas.appendChild(lightningBolt.element);
+
+            // Only append if not already in DOM
+            if (!lightningBolt.element.parentNode) {
+                game.canvas.appendChild(lightningBolt.element);
+            }
         } else if (powerUps.active.nightmaresBite && powerUps.active.nightmaresBite > now) {
             // Nightmare's Bite - spawn bats
             sounds.shoot();
 
-            // Create bat that seeks enemies
-            const bat = {
-                element: createSprite('bat', game.player.x + 42, game.player.y),
-                x: game.player.x + 42,
-                y: game.player.y,
-                speed: 4,
-                damage: 2,
-                life: 1200, // 20 seconds at 60 FPS
-                target: null,
-                lastTargetUpdate: 0
-            };
+            // Get bat from pool
+            const bat = nightmareBatPool.get();
+            if (!bat) return; // Pool exhausted, skip this shot
 
-            bat.element.innerHTML = sprites.bat;
-            bat.element.style.zIndex = '80';
+            // Set position and properties
+            bat.x = game.player.x + 42;
+            bat.y = game.player.y;
+            bat.life = 1200; // 20 seconds at 60 FPS
+            bat.target = null;
+            bat.lastTargetUpdate = 0;
+
+            // Position the element
+            bat.element.style.left = bat.x + 'px';
+            bat.element.style.top = bat.y + 'px';
+
             game.nightmareBats.push(bat);
-            game.canvas.appendChild(bat.element);
+
+            // Only append if not already in DOM
+            if (!bat.element.parentNode) {
+                game.canvas.appendChild(bat.element);
+            }
         } else if (powerUps.active.harpCrossbow && powerUps.active.harpCrossbow > now) {
             // Harp Crossbow - fire 3 arrows at once
             sounds.harpCrossbow();
 
-            // Create 3 arrows with slight spread
+            // Create 3 arrows with slight spread using pool
             for (let i = 0; i < 3; i++) {
-                const arrow = {
-                    element: createSprite('arrow', game.player.x + 42, game.player.y),
-                    x: game.player.x + 42,
-                    y: game.player.y,
-                    speed: 12,
-                    damage: 15,
-                    // Spread arrows: center, left, right
-                    xOffset: (i - 1) * 1.5, // -1.5, 0, 1.5 pixels per frame
-                    life: 400 // frames to live
-                };
+                // Get arrow from pool
+                const arrow = harpArrowPool.get();
 
-                // Create arrow SVG
-                arrow.element.innerHTML = `
-                    <svg width="15" height="25" viewBox="0 0 15 25">
-                        <defs>
-                            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#8b4513;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#a0522d;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Arrow shaft -->
-                        <rect x="6" y="5" width="3" height="15" fill="url(#arrowGradient)"/>
-                        <!-- Arrow head -->
-                        <path d="M 7.5,0 L 12,5 L 7.5,5 L 3,5 Z" fill="#c0c0c0" stroke="#a0a0a0" stroke-width="1"/>
-                        <!-- Arrow fletching -->
-                        <path d="M 4,20 L 7.5,18 L 11,20 L 7.5,25 Z" fill="#228b22" stroke="#006400" stroke-width="0.5"/>
-                    </svg>
-                `;
+                // Set position and properties
+                arrow.x = game.player.x + 42;
+                arrow.y = game.player.y;
+                arrow.xOffset = (i - 1) * 1.5; // -1.5, 0, 1.5 pixels per frame
+                arrow.life = 400; // frames to live
 
-                arrow.element.style.zIndex = '70';
+                // Position the element
+                arrow.element.style.left = arrow.x + 'px';
+                arrow.element.style.top = arrow.y + 'px';
 
                 if (!game.harpArrows) game.harpArrows = [];
                 game.harpArrows.push(arrow);
-                game.canvas.appendChild(arrow.element);
+
+                // Only append if not already in DOM
+                if (!arrow.element.parentNode) {
+                    game.canvas.appendChild(arrow.element);
+                }
             }
         } else if (powerUps.active.sunsGrace && powerUps.active.sunsGrace > now) {
             // Sun's Grace - fire fireballs in 120-degree upward arc (with cooldown)
@@ -203,7 +178,7 @@ function shoot() {
                     const angle = startAngle + (i / (numFireballs - 1)) * angleRange;
 
                     // Get fireball from pool
-                    const fireball = fireballPool.getFireball();
+                    const fireball = fireballPool.get();
 
                     // Set fireball properties
                     fireball.x = game.player.x + 42;

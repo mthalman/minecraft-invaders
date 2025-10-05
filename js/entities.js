@@ -1152,9 +1152,8 @@ function moveNightmareBats() {
 
         // Remove bats that have expired
         if (bat.life <= 0) {
-            if (bat.element && bat.element.parentNode) {
-                game.canvas.removeChild(bat.element);
-            }
+            // Return bat to pool instead of destroying it
+            nightmareBatPool.return(bat);
             game.nightmareBats.splice(index, 1);
             return;
         }
@@ -1213,9 +1212,8 @@ function moveNightmareBats() {
         if (bat.x < -50 || bat.x > canvasSize.width + 50 ||
             bat.y < -50 || bat.y > canvasSize.height + 50) {
 
-            if (bat.element && bat.element.parentNode) {
-                game.canvas.removeChild(bat.element);
-            }
+            // Return bat to pool instead of destroying it
+            nightmareBatPool.return(bat);
             game.nightmareBats.splice(index, 1);
         }
     });

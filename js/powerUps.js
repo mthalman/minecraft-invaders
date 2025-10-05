@@ -1,84 +1,9 @@
-// Object pool for Sun's Grace fireballs
-const fireballPool = {
-    available: [],
-    inUse: [],
-
-    getFireball: function() {
-        let fireball;
-        if (this.available.length > 0) {
-            // Reuse existing fireball
-            fireball = this.available.pop();
-            fireball.element.style.display = 'block';
-        } else {
-            // Create new fireball
-            fireball = {
-                element: createSprite('suns-grace-fireball', 0, 0),
-                x: 0,
-                y: 0,
-                vx: 0,
-                vy: 0,
-                life: 0,
-                maxLife: 0,
-                damage: 3,
-                width: 30,
-                height: 30
-            };
-            fireball.element.style.zIndex = '100';
-        }
-
-        // Always ensure correct sprite is set with unique IDs (in case element was reused)
-        const uniqueId = Date.now() + Math.random();
-        fireball.element.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 16 16">
-                <defs>
-                    <radialGradient id="fireballGradient${uniqueId}" cx="50%" cy="50%">
-                        <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
-                        <stop offset="30%" style="stop-color:#FFFF00;stop-opacity:1" />
-                        <stop offset="60%" style="stop-color:#FF6347;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
-                    </radialGradient>
-                    <filter id="fireballGlow${uniqueId}">
-                        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                </defs>
-                <!-- Main fireball -->
-                <circle cx="8" cy="8" r="6" fill="url(#fireballGradient${uniqueId})" filter="url(#fireballGlow${uniqueId})">
-                    <animate attributeName="r" values="6;7;6" dur="0.8s" repeatCount="indefinite"/>
-                </circle>
-                <!-- Inner core -->
-                <circle cx="8" cy="8" r="3" fill="#FFFFFF" opacity="0.8">
-                    <animate attributeName="opacity" values="0.6;1;0.6" dur="0.6s" repeatCount="indefinite"/>
-                </circle>
-                <!-- Trailing particles -->
-                <circle cx="5" cy="8" r="1" fill="#FF6347" opacity="0.7">
-                    <animate attributeName="opacity" values="0.3;0.9;0.3" dur="0.4s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="11" cy="8" r="1" fill="#FFD700" opacity="0.6">
-                    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="0.5s" repeatCount="indefinite"/>
-                </circle>
-            </svg>
-        `;
-
-        this.inUse.push(fireball);
-        return fireball;
-    },
-
-    returnFireball: function(fireball) {
-        // Remove from in-use array
-        const index = this.inUse.indexOf(fireball);
-        if (index > -1) {
-            this.inUse.splice(index, 1);
-        }
-
-        // Hide and return to available pool
-        fireball.element.style.display = 'none';
-        this.available.push(fireball);
-    }
-};
+// Initialize projectile pools using the new design
+const pools = createProjectilePools();
+const lightningBoltPool = pools.lightningBoltPool;
+const harpArrowPool = pools.harpArrowPool;
+const nightmareBatPool = pools.nightmareBatPool;
+const fireballPool = pools.fireballPool;
 
 // Power-up system
 const powerUps = {
@@ -912,9 +837,8 @@ function moveLightningBolts() {
 
         // Check if bolt has expired or gone off screen
         if (bolt.life <= 0 || bolt.y < -50) {
-            if (bolt.element && bolt.element.parentNode) {
-                game.canvas.removeChild(bolt.element);
-            }
+            // Return bolt to pool instead of destroying it
+            lightningBoltPool.return(bolt);
             game.lightningBolts.splice(index, 1);
             continue;
         }
@@ -946,10 +870,8 @@ function moveLightningBolts() {
                 bolt.y < enemy.y + enemyDimensions.height &&
                 bolt.y + 30 > enemy.y) {
 
-                // Remove lightning bolt
-                if (bolt.element && bolt.element.parentNode) {
-                    game.canvas.removeChild(bolt.element);
-                }
+                // Return lightning bolt to pool instead of destroying it
+                lightningBoltPool.return(bolt);
                 game.lightningBolts.splice(index, 1);
 
                 // Handle collision using common handler
@@ -986,10 +908,8 @@ function moveLightningBolts() {
                 boltRect.y < powerUpRect.y + powerUpRect.height &&
                 boltRect.y + boltRect.height > powerUpRect.y) {
 
-                // Remove lightning bolt
-                if (bolt.element && bolt.element.parentNode) {
-                    game.canvas.removeChild(bolt.element);
-                }
+                // Return lightning bolt to pool instead of destroying it
+                lightningBoltPool.return(bolt);
                 game.lightningBolts.splice(index, 1);
 
                 // Collect the power-up
@@ -1090,9 +1010,8 @@ function moveHarpArrows() {
 
         // Check if arrow has expired or gone off screen
         if (arrow.life <= 0 || arrow.y < -30) {
-            if (arrow.element && arrow.element.parentNode) {
-                game.canvas.removeChild(arrow.element);
-            }
+            // Return arrow to pool instead of destroying it
+            harpArrowPool.return(arrow);
             game.harpArrows.splice(index, 1);
             continue;
         }
@@ -1134,10 +1053,8 @@ function moveHarpArrows() {
                 arrowRect.y < enemyRect.y + enemyRect.height &&
                 arrowRect.y + arrowRect.height > enemyRect.y) {
 
-                // Remove arrow
-                if (arrow.element && arrow.element.parentNode) {
-                    game.canvas.removeChild(arrow.element);
-                }
+                // Return arrow to pool instead of destroying it
+                harpArrowPool.return(arrow);
                 game.harpArrows.splice(index, 1);
 
                 // Handle collision using common handler
@@ -1172,10 +1089,8 @@ function moveHarpArrows() {
                 arrowRect.y < powerUpRect.y + powerUpRect.height &&
                 arrowRect.y + arrowRect.height > powerUpRect.y) {
 
-                // Remove arrow
-                if (arrow.element && arrow.element.parentNode) {
-                    game.canvas.removeChild(arrow.element);
-                }
+                // Return arrow to pool instead of destroying it
+                harpArrowPool.return(arrow);
                 game.harpArrows.splice(index, 1);
 
                 // Collect the power-up
@@ -1210,7 +1125,7 @@ function moveSunsGraceFireballs() {
             fireball.x < -30 || fireball.x > canvasSize.width + 30 ||
             fireball.y < -30 || fireball.y > canvasSize.height + 30) {
             // Return fireball to pool instead of destroying it
-            fireballPool.returnFireball(fireball);
+            fireballPool.return(fireball);
             game.sunsGraceFireballs.splice(index, 1);
             continue;
         }
@@ -1237,7 +1152,7 @@ function moveSunsGraceFireballs() {
                 fireball.y + fireball.height > enemy.y) {
 
                 // Return fireball to pool instead of destroying it
-                fireballPool.returnFireball(fireball);
+                fireballPool.return(fireball);
                 game.sunsGraceFireballs.splice(index, 1);
 
                 // Handle collision using common handler
@@ -1273,7 +1188,7 @@ function moveSunsGraceFireballs() {
                 fireballRect.y + fireballRect.height > powerUpRect.y) {
 
                 // Return fireball to pool instead of destroying it
-                fireballPool.returnFireball(fireball);
+                fireballPool.return(fireball);
                 game.sunsGraceFireballs.splice(index, 1);
 
                 // Collect the power-up
