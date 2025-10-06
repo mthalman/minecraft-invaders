@@ -1151,7 +1151,10 @@ function moveNightmareBats() {
             let nearestEnemy = null;
             let nearestDistance = Infinity;
 
-            game.enemies.forEach(enemy => {
+            // Use spatial grid to only check nearby enemies instead of all enemies
+            const nearbyEnemies = enemyGrid ? enemyGrid.getNearby(bat.x, bat.y, 60, 60) : game.enemies;
+
+            nearbyEnemies.forEach(enemy => {
                 const dx = enemy.x - bat.x;
                 const dy = enemy.y - bat.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
