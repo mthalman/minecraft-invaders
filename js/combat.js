@@ -50,7 +50,7 @@ function defeatEnemy(enemy, enemyIndex, pointMultiplier = 1, source = 'normal') 
     }
 
     // Update score display
-    document.getElementById('score').textContent = game.score;
+    dom.score.textContent = game.score;
     updateHighScore();
 
     // Play sound effect
@@ -69,7 +69,7 @@ function damageBoss(enemy, damage) {
     // Award small points for hitting boss
     const hitPoints = 50;
     game.score += hitPoints;
-    document.getElementById('score').textContent = game.score;
+    dom.score.textContent = game.score;
     updateHighScore();
 
     sounds.enemyHit();
@@ -97,8 +97,7 @@ function shoot() {
             lightningBolt.life = 300;
 
             // Position the element
-            lightningBolt.element.style.left = lightningBolt.x + 'px';
-            lightningBolt.element.style.top = lightningBolt.y + 'px';
+            updateSpritePosition(lightningBolt.element, lightningBolt.x, lightningBolt.y);
 
             game.lightningBolts.push(lightningBolt);
 
@@ -122,8 +121,7 @@ function shoot() {
             bat.lastTargetUpdate = 0;
 
             // Position the element
-            bat.element.style.left = bat.x + 'px';
-            bat.element.style.top = bat.y + 'px';
+            updateSpritePosition(bat.element, bat.x, bat.y);
 
             game.nightmareBats.push(bat);
 
@@ -147,8 +145,7 @@ function shoot() {
                 arrow.life = 400; // frames to live
 
                 // Position the element
-                arrow.element.style.left = arrow.x + 'px';
-                arrow.element.style.top = arrow.y + 'px';
+                updateSpritePosition(arrow.element, arrow.x, arrow.y);
 
                 if (!game.harpArrows) game.harpArrows = [];
                 game.harpArrows.push(arrow);
@@ -189,8 +186,7 @@ function shoot() {
                     fireball.maxLife = 200;
 
                     // Position the element
-                    fireball.element.style.left = fireball.x + 'px';
-                    fireball.element.style.top = fireball.y + 'px';
+                    updateSpritePosition(fireball.element, fireball.x, fireball.y);
 
                     if (!game.sunsGraceFireballs) game.sunsGraceFireballs = [];
                     game.sunsGraceFireballs.push(fireball);
@@ -1255,7 +1251,7 @@ function moveProjectiles() {
         if (!projectile || !projectile.element) continue;
         
         projectile.y -= projectile.speed;
-        projectile.element.style.top = projectile.y + 'px';
+        updateSpritePosition(projectile.element, projectile.x, projectile.y);
         
         if (projectile.y < 0) {
             if (projectile.element && projectile.element.parentNode) {
@@ -1273,7 +1269,7 @@ function moveProjectiles() {
         if (projectile.isTornado) {
             // Tornado moves horizontally across the bottom
             projectile.x += projectile.speed * projectile.direction;
-            projectile.element.style.left = projectile.x + 'px';
+            updateSpritePosition(projectile.element, projectile.x, projectile.y);
             
             // Check tornado lifetime
             const now = Date.now();
@@ -1292,12 +1288,11 @@ function moveProjectiles() {
             // Spin the debris
             projectile.rotation += projectile.rotationSpeed;
             projectile.element.style.transform = `rotate(${projectile.rotation}deg)`;
-            projectile.element.style.left = projectile.x + 'px';
-            projectile.element.style.top = projectile.y + 'px';
+            updateSpritePosition(projectile.element, projectile.x, projectile.y);
         } else if (projectile.isBeam) {
             // Beam moves downward and check lifetime
             projectile.y += projectile.speed;
-            projectile.element.style.top = projectile.y + 'px';
+            updateSpritePosition(projectile.element, projectile.x, projectile.y);
             
             const now = Date.now();
             const canvasSize = getCanvasDimensions();
@@ -1314,16 +1309,14 @@ function moveProjectiles() {
             // Powerful beam with angle movement
             projectile.x += projectile.velocityX;
             projectile.y += projectile.velocityY;
-            projectile.element.style.left = projectile.x + 'px';
-            projectile.element.style.top = projectile.y + 'px';
+            updateSpritePosition(projectile.element, projectile.x, projectile.y);
         } else {
             // Normal projectile movement
             projectile.y += projectile.speed;
             if (projectile.vx) {
                 projectile.x += projectile.vx; // Handle spread projectiles
             }
-            projectile.element.style.top = projectile.y + 'px';
-            projectile.element.style.left = projectile.x + 'px';
+            updateSpritePosition(projectile.element, projectile.x, projectile.y);
         }
         
         // Check for shield reflection
@@ -1408,19 +1401,28 @@ function moveProjectiles() {
 
 // Collision detection
 function checkCollisions() {
+    // Rebuild spatial grids for optimized collision detection
+    rebuildSpatialGrids();
+
     // Debug: Check if we have power-ups and player
     if (powerUps.items.length > 0 && game.player) {
         // console.log('Checking collisions with', powerUps.items.length, 'power-ups');
     }
-    
+
     // Player projectiles vs enemies - iterate backwards to avoid index issues
     for (let pIndex = game.projectiles.length - 1; pIndex >= 0; pIndex--) {
         const projectile = game.projectiles[pIndex];
         if (!projectile || !projectile.element) continue;
-        
-        for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
-            const enemy = game.enemies[eIndex];
+
+        // Use spatial grid to get nearby enemies instead of checking all
+        const nearbyEnemies = enemyGrid.getNearby(projectile.x, projectile.y, 16, 24);
+
+        for (const enemy of nearbyEnemies) {
             if (!enemy || !enemy.element) continue;
+
+            // Find actual index in game.enemies array for splicing
+            const eIndex = game.enemies.indexOf(enemy);
+            if (eIndex === -1) continue;
             
             const enemyDimensions = getEnemyDimensions(enemy);
             if (projectile.x < enemy.x + enemyDimensions.width &&
@@ -1436,7 +1438,7 @@ function checkCollisions() {
                         // Only steal from bosses with more than 1 health
                         enemy.health -= 1;
                         game.lives += 1;
-                        document.getElementById('lives').textContent = game.lives;
+                        dom.lives.textContent = game.lives;
 
                         // Create visual effect for stolen health
                         createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -1449,7 +1451,7 @@ function checkCollisions() {
                     } else if (!enemy.isBoss) {
                         // For normal enemies, steal 1 health before they die
                         game.lives += 1;
-                        document.getElementById('lives').textContent = game.lives;
+                        dom.lives.textContent = game.lives;
 
                         // Create visual effect for stolen health
                         createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -1512,7 +1514,7 @@ function checkCollisions() {
                                     // Boss damaged by explosion
                                     let points = 50;
                                     game.score += points;
-                                    document.getElementById('score').textContent = game.score;
+                                    dom.score.textContent = game.score;
                                     updateHighScore();
                                 }
                             } else {
@@ -1621,7 +1623,7 @@ function checkCollisions() {
                             // Boss still alive, just damaged
                             let points = 50; // Small points for hitting boss
                             game.score += points;
-                            document.getElementById('score').textContent = game.score;
+                            dom.score.textContent = game.score;
                             updateHighScore();
                         }
                     } else {
@@ -1691,7 +1693,7 @@ function checkCollisions() {
                 game.projectiles.splice(pIndex, 1);
                 
                 sounds.enemyHit();
-                document.getElementById('score').textContent = game.score;
+                dom.score.textContent = game.score;
                 updateHighScore();
                 
                 break; // Exit inner loop since projectile is destroyed
@@ -1753,7 +1755,7 @@ function checkCollisions() {
             // Handle projectile damage (witch snowballs cause 2 damage)
             const damage = projectile.damage || 1;
             game.lives -= damage;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
 
             if (game.lives <= 0) {
                 gameOver();
@@ -1915,7 +1917,7 @@ function checkCollisions() {
                         // Boss damaged by pet
                         let points = 25;
                         game.score += points;
-                        document.getElementById('score').textContent = game.score;
+                        dom.score.textContent = game.score;
                         updateHighScore();
                     }
                 } else {
@@ -1951,7 +1953,7 @@ function checkCollisions() {
                         
                         let points = 10;
                         game.score += points;
-                        document.getElementById('score').textContent = game.score;
+                        dom.score.textContent = game.score;
                         updateHighScore();
                     }
                 }
@@ -2081,7 +2083,7 @@ function checkCollisions() {
             // Enemy hit player directly
             sounds.hit();
             game.lives--;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
             
             // Remove the enemy that hit the player
             if (enemy.element && enemy.element.parentNode) {
@@ -2128,8 +2130,7 @@ function createEndersentTeleportAttack(enemy, now) {
     // Clamp to screen bounds
     enemy.x = Math.max(50, Math.min(canvasSize.width - 150, newX));
     enemy.y = Math.max(canvasSize.height * 0.1, Math.min(canvasSize.height * 0.5, newY));
-    enemy.element.style.left = enemy.x + 'px';
-    enemy.element.style.top = enemy.y + 'px';
+    updateSpritePosition(enemy.element, enemy.x, enemy.y);
     
     // Update formation position to new location
     enemy.formationX = enemy.x;
@@ -2505,7 +2506,7 @@ function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultipli
             // Only steal from bosses with more than 1 health
             enemy.health -= 1;
             game.lives += 1;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
             createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -2518,7 +2519,7 @@ function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultipli
         } else if (!enemy.isBoss) {
             // For normal enemies, steal 1 health before they die
             game.lives += 1;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
             createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -2543,7 +2544,7 @@ function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultipli
         // Award small points for hitting boss
         const hitPoints = 50;
         game.score += hitPoints;
-        document.getElementById('score').textContent = game.score;
+        dom.score.textContent = game.score;
         updateHighScore();
 
         sounds.enemyHit();
@@ -2564,7 +2565,7 @@ function applyHeartstealerEffect(enemy, enemyDimensions) {
             // Only steal from bosses with more than 1 health
             enemy.health -= 1;
             game.lives += 1;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
             createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -2577,7 +2578,7 @@ function applyHeartstealerEffect(enemy, enemyDimensions) {
         } else if (!enemy.isBoss) {
             // For normal enemies, steal 1 health before they die
             game.lives += 1;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
             createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
@@ -2670,8 +2671,7 @@ function moveTinyHorrors() {
                 horror.x = Math.max(0, Math.min(horror.x, canvasSize.width - horror.width));
                 horror.y = Math.max(0, Math.min(horror.y, canvasSize.height - horror.height));
 
-                horror.element.style.left = horror.x + 'px';
-                horror.element.style.top = horror.y + 'px';
+                updateSpritePosition(horror.element, horror.x, horror.y);
             }
 
             // Attack if close enough
@@ -2715,8 +2715,7 @@ function moveTinyHorrors() {
                     horror.x += (dx / distance) * horror.speed * 0.5;
                     horror.y += (dy / distance) * horror.speed * 0.5;
 
-                    horror.element.style.left = horror.x + 'px';
-                    horror.element.style.top = horror.y + 'px';
+                    updateSpritePosition(horror.element, horror.x, horror.y);
                 }
             }
         }

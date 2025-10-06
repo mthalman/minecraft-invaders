@@ -9,12 +9,12 @@ function levelComplete() {
     game.levelCompleting = false;
     
     game.level++;
-    document.getElementById('level').textContent = game.level;
+    dom.level.textContent = game.level;
     game.enemySpeed += 0.3;
     
     // Bonus life for completing level
     game.lives++;
-    document.getElementById('lives').textContent = game.lives;
+    dom.lives.textContent = game.lives;
     
     // Pet gains 1 health and has max health increased
     if (game.pet) {
@@ -35,7 +35,7 @@ function levelComplete() {
     // Bonus points for completing level
     const levelBonus = game.level * 500;
     game.score += levelBonus;
-    document.getElementById('score').textContent = game.score;
+    dom.score.textContent = game.score;
     updateHighScore();
     
     createEnemies();
@@ -48,7 +48,7 @@ function playerWins() {
     game.levelCompleting = true;
     
     gameStats.wins++;
-    document.getElementById('wins').textContent = gameStats.wins;
+    dom.wins.textContent = gameStats.wins;
     saveStats();
     levelComplete();
 }
@@ -56,11 +56,11 @@ function playerWins() {
 // Game over
 function gameOver() {
     game.gameRunning = false;
-    document.getElementById('gameOver').style.display = 'block';
+    dom.gameOver.style.display = 'block';
     sounds.gameOver();
     
     gameStats.losses++;
-    document.getElementById('losses').textContent = gameStats.losses;
+    dom.losses.textContent = gameStats.losses;
     updateHighScore();
     saveStats();
 }
@@ -115,13 +115,13 @@ function restartGame() {
     game.formationComplete = false;
     
     // Update UI displays
-    document.getElementById('score').textContent = game.score;
-    document.getElementById('lives').textContent = game.lives;
-    document.getElementById('level').textContent = game.level;
-    document.getElementById('gameOver').style.display = 'none';
+    dom.score.textContent = game.score;
+    dom.lives.textContent = game.lives;
+    dom.level.textContent = game.level;
+    dom.gameOver.style.display = 'none';
     
     // Clean up pause overlay if it exists
-    const pauseOverlay = document.getElementById('pauseOverlay');
+    const pauseOverlay = dom.pauseOverlay;
     if (pauseOverlay) {
         pauseOverlay.remove();
     }
@@ -146,11 +146,11 @@ function startGame() {
     hideBossHealth();
     
     // Hide start screen and pet selection screen
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('petSelection').style.display = 'none';
+    dom.startScreen.classList.add('hidden');
+    dom.petSelection.style.display = 'none';
     
     // Stop start music
-    const startMusic = document.getElementById('startMusic');
+    const startMusic = dom.startMusic;
     startMusic.pause();
     
     // Initialize game
@@ -212,7 +212,7 @@ function togglePause() {
     
     game.gamePaused = !game.gamePaused;
     
-    const pauseOverlay = document.getElementById('pauseOverlay');
+    const pauseOverlay = dom.pauseOverlay;
     if (game.gamePaused) {
         // Show pause overlay
         if (!pauseOverlay) {
@@ -222,7 +222,7 @@ function togglePause() {
         }
         
         // Pause music if playing
-        const gameMusic = document.getElementById('gameMusic');
+        const gameMusic = dom.gameMusic;
         if (gameMusic && !gameMusic.paused) {
             gameMusic.pause();
         }
@@ -233,7 +233,7 @@ function togglePause() {
         }
         
         // Resume music if it was playing
-        const gameMusic = document.getElementById('gameMusic');
+        const gameMusic = dom.gameMusic;
         if (gameMusic && gameMusic.paused && game.gameRunning) {
             gameMusic.play().catch(() => {});
         }

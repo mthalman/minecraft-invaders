@@ -36,15 +36,13 @@ function movePlayer() {
         game.player.y += currentSpeed;
     }
 
-    game.player.element.style.left = game.player.x + 'px';
-    game.player.element.style.top = game.player.y + 'px';
-    
+    updateSpritePosition(game.player.element, game.player.x, game.player.y);
+
     // Move dual ship if it exists
     if (game.player.dualShip) {
         game.player.dualShip.x = game.player.x - 60;
         game.player.dualShip.y = game.player.y;
-        game.player.dualShip.element.style.left = game.player.dualShip.x + 'px';
-        game.player.dualShip.element.style.top = game.player.dualShip.y + 'px';
+        updateSpritePosition(game.player.dualShip.element, game.player.dualShip.x, game.player.dualShip.y);
     }
 }
 
@@ -165,7 +163,7 @@ function createBossLevel(canvasSize) {
         health: getBossHealth(bossType)
     };
     
-    boss.element.innerHTML = sprites[bossType];
+    setSpriteContent(boss.element, bossType);
     
     // Show boss health bar
     showBossHealth(boss.type, boss.health, boss.maxHealth);
@@ -550,7 +548,7 @@ function spawnEnemies() {
         health: spawnData.isBoss ? getBossHealth(spawnData.type) : getRegularEnemyHealth(spawnData.type)
     };
     
-    enemy.element.innerHTML = sprites[spawnData.type];
+    setSpriteContent(enemy.element, spawnData.type);
     
     // Show boss health bar for bosses
     if (enemy.isBoss) {
@@ -673,8 +671,7 @@ function moveEnemies() {
         if (enemy.capturedPlayer) {
             enemy.capturedPlayer.x = enemy.x;
             enemy.capturedPlayer.y = enemy.y - 50;
-            enemy.capturedPlayer.element.style.left = enemy.capturedPlayer.x + 'px';
-            enemy.capturedPlayer.element.style.top = enemy.capturedPlayer.y + 'px';
+            updateSpritePosition(enemy.capturedPlayer.element, enemy.capturedPlayer.x, enemy.capturedPlayer.y);
         }
     });
 }
@@ -689,15 +686,13 @@ function moveToFormation(enemy, speedMultiplier) {
     if (distance > 5) {
         enemy.x += (dx / distance) * speed;
         enemy.y += (dy / distance) * speed;
-        enemy.element.style.left = enemy.x + 'px';
-        enemy.element.style.top = enemy.y + 'px';
+        updateSpritePosition(enemy.element, enemy.x, enemy.y);
     } else {
         // Reached formation
         enemy.state = 'formation';
         enemy.x = enemy.formationX;
         enemy.y = enemy.formationY;
-        enemy.element.style.left = enemy.x + 'px';
-        enemy.element.style.top = enemy.y + 'px';
+        updateSpritePosition(enemy.element, enemy.x, enemy.y);
     }
 }
 
@@ -737,8 +732,7 @@ function performDiveAttack(enemy, speedMultiplier) {
             // Move towards target
             enemy.x += (dx / distance) * speed;
             enemy.y += (dy / distance) * speed;
-            enemy.element.style.left = enemy.x + 'px';
-            enemy.element.style.top = enemy.y + 'px';
+            updateSpritePosition(enemy.element, enemy.x, enemy.y);
         } else {
             // Reached bottom, start flying back up
             enemy.diveTarget = null;
@@ -753,7 +747,7 @@ function flyBackUp(enemy, speedMultiplier) {
     
     // Fly straight up and off screen
     enemy.y -= speed;
-    enemy.element.style.top = enemy.y + 'px';
+    updateSpritePosition(enemy.element, enemy.x, enemy.y);
     
     // Remove enemy when it goes off screen
     if (enemy.y < -60) {
@@ -781,15 +775,13 @@ function returnToFormation(enemy, speedMultiplier) {
     if (distance > 5) {
         enemy.x += (dx / distance) * speed;
         enemy.y += (dy / distance) * speed;
-        enemy.element.style.left = enemy.x + 'px';
-        enemy.element.style.top = enemy.y + 'px';
+        updateSpritePosition(enemy.element, enemy.x, enemy.y);
     } else {
         // Back in formation
         enemy.state = 'formation';
         enemy.x = enemy.formationX;
         enemy.y = enemy.formationY;
-        enemy.element.style.left = enemy.x + 'px';
-        enemy.element.style.top = enemy.y + 'px';
+        updateSpritePosition(enemy.element, enemy.x, enemy.y);
     }
 }
 
@@ -805,8 +797,7 @@ function performCaptureAttack(enemy, speedMultiplier) {
         if (distance > 50) {
             enemy.x += (dx / distance) * speed;
             enemy.y += (dy / distance) * speed;
-            enemy.element.style.left = enemy.x + 'px';
-            enemy.element.style.top = enemy.y + 'px';
+            updateSpritePosition(enemy.element, enemy.x, enemy.y);
         } else {
             // Capture player
             capturePlayer(enemy);
@@ -855,8 +846,7 @@ function moveBossRandomly(enemy, speedMultiplier, now) {
         enemy.x = Math.max(50, Math.min(canvasSize.width - 150, enemy.x));
         enemy.y = Math.max(canvasSize.height * 0.05, Math.min(canvasSize.height * 0.45, enemy.y));
         
-        enemy.element.style.left = enemy.x + 'px';
-        enemy.element.style.top = enemy.y + 'px';
+        updateSpritePosition(enemy.element, enemy.x, enemy.y);
     }
 }
 
@@ -941,7 +931,7 @@ function createPet() {
         }
     };
     
-    game.pet.element.innerHTML = sprites[game.selectedPet];
+    setSpriteContent(game.pet.element, game.selectedPet);
     game.canvas.appendChild(game.pet.element);
 }
 
@@ -1029,8 +1019,7 @@ function movePet() {
     game.pet.y = Math.max(minY, Math.min(canvasSize.height - 60, game.pet.y));
     
     // Update pet element position
-    game.pet.element.style.left = game.pet.x + 'px';
-    game.pet.element.style.top = game.pet.y + 'px';
+    updateSpritePosition(game.pet.element, game.pet.x, game.pet.y);
     
     // Pet shooting
     petShoot();
@@ -1128,8 +1117,7 @@ function movePetProjectiles() {
         projectile.x += projectile.velocityX;
         projectile.y += projectile.velocityY;
         
-        projectile.element.style.left = projectile.x + 'px';
-        projectile.element.style.top = projectile.y + 'px';
+        updateSpritePosition(projectile.element, projectile.x, projectile.y);
         
         // Remove projectiles that go off screen
         if (projectile.x < -20 || projectile.x > canvasSize.width + 20 || 
@@ -1205,8 +1193,7 @@ function moveNightmareBats() {
         }
 
         // Update bat position
-        bat.element.style.left = bat.x + 'px';
-        bat.element.style.top = bat.y + 'px';
+        updateSpritePosition(bat.element, bat.x, bat.y);
 
         // Remove bats that go off screen
         if (bat.x < -50 || bat.x > canvasSize.width + 50 ||

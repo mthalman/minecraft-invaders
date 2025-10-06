@@ -9,9 +9,9 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         
         // Check which screen we're on
-        const startScreen = document.getElementById('startScreen');
-        const skinSelection = document.getElementById('skinSelection');
-        const petSelection = document.getElementById('petSelection');
+        const startScreen = dom.startScreen;
+        const skinSelection = dom.skinSelection;
+        const petSelection = dom.petSelection;
 
         if (!startScreen.classList.contains('hidden')) {
             // Move from dimension selection to skin selection
@@ -151,9 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
         instruction.addEventListener('click', () => {
             if (!game.gameStarted) {
                 // Check which screen we're on
-                const startScreen = document.getElementById('startScreen');
-                const skinSelection = document.getElementById('skinSelection');
-                const petSelection = document.getElementById('petSelection');
+                const startScreen = dom.startScreen;
+                const skinSelection = dom.skinSelection;
+                const petSelection = dom.petSelection;
 
                 if (!startScreen.classList.contains('hidden')) {
                     // Move from dimension selection to skin selection
@@ -183,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Skin selection screen functions
 function showSkinSelection() {
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('skinSelection').style.display = 'flex';
+    dom.startScreen.classList.add('hidden');
+    dom.skinSelection.style.display = 'flex';
 
     // Initialize skin sprites in the selection screen
     initSkinSprites();
@@ -209,8 +209,8 @@ function initSkinSprites() {
 
 // Pet selection screen functions
 function showPetSelection() {
-    document.getElementById('skinSelection').style.display = 'none';
-    document.getElementById('petSelection').style.display = 'flex';
+    dom.skinSelection.style.display = 'none';
+    dom.petSelection.style.display = 'flex';
 
     // Initialize pet sprites in the selection screen
     initPetSprites();

@@ -43,7 +43,7 @@ function activatePowerUp(type) {
             break;
         case 'extraLife':
             game.lives++;
-            document.getElementById('lives').textContent = game.lives;
+            dom.lives.textContent = game.lives;
             break;
         case 'slowEnemies':
             powerUps.active.slowEnemies = Date.now() + powerUp.duration;
@@ -147,7 +147,7 @@ function spawnPowerUp() {
             speed: 2
         };
         
-        powerUp.element.innerHTML = sprites[randomType];
+        setSpriteContent(powerUp.element, randomType);
         powerUps.items.push(powerUp);
         game.canvas.appendChild(powerUp.element);
         game.lastPowerUpSpawn = now;
@@ -208,7 +208,7 @@ function triggerVerticalBlast() {
     }
     
     // Update score display
-    document.getElementById('score').textContent = game.score;
+    dom.score.textContent = game.score;
     updateHighScore();
     
     // Remove blast effect after duration
@@ -259,8 +259,7 @@ function moveFireSpreadEffects() {
         // Fade out over time
         const opacity = fire.life / fire.maxLife;
         fire.element.style.opacity = opacity;
-        fire.element.style.left = fire.x + 'px';
-        fire.element.style.top = fire.y + 'px';
+        updateSpritePosition(fire.element, fire.x, fire.y);
         
         // Check collision with enemies
         for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
@@ -342,8 +341,7 @@ function updateShieldEffect() {
     if (existingShield && game.player) {
         const shieldX = game.player.x - 30; // Center the shield around player
         const shieldY = game.player.y - 40;
-        existingShield.style.left = shieldX + 'px';
-        existingShield.style.top = shieldY + 'px';
+        updateSpritePosition(existingShield, shieldX, shieldY);
     }
 }
 
@@ -366,8 +364,7 @@ function updateFreezeEffect() {
             freezeEffect.style.height = '60px';
             freezeEffect.style.pointerEvents = 'none';
             freezeEffect.style.zIndex = '60';
-            freezeEffect.style.left = enemy.x + 'px';
-            freezeEffect.style.top = enemy.y + 'px';
+            updateSpritePosition(freezeEffect, enemy.x, enemy.y);
 
             // Create ice overlay effect
             freezeEffect.innerHTML = `
@@ -401,8 +398,7 @@ function updateFreezeEffect() {
             existingFreeze.remove();
         } else if (isFrozen && existingFreeze) {
             // Update freeze effect position
-            existingFreeze.style.left = enemy.x + 'px';
-            existingFreeze.style.top = enemy.y + 'px';
+            updateSpritePosition(existingFreeze, enemy.x, enemy.y);
         }
     });
 
@@ -483,8 +479,7 @@ function triggerCorruptedBeaconLaser() {
     laserEffect.element.style.zIndex = '150';
     laserEffect.element.style.transformOrigin = `30px ${maxLaserLength}px`; // Pivot from laser start point (now at bottom)
     laserEffect.element.style.position = 'absolute';
-    laserEffect.element.style.left = (startX - 30) + 'px'; // Center the laser on player
-    laserEffect.element.style.top = (startY - maxLaserLength) + 'px'; // Position so bottom is at player
+    updateSpritePosition(laserEffect.element, startX - 30, startY - maxLaserLength); // Center and position laser
 
     game.canvas.appendChild(laserEffect.element);
     game.corruptedBeaconLaser = laserEffect;
@@ -528,13 +523,13 @@ function updateCorruptedBeaconLaser() {
         const maxLaserLength = Math.sqrt(canvasSize.width * canvasSize.width + canvasSize.height * canvasSize.height);
         laser.startX = currentPlayerX;
         laser.startY = currentPlayerY;
-        laser.element.style.left = (currentPlayerX - 30) + 'px'; // Center the laser on player
-        laser.element.style.top = (currentPlayerY - maxLaserLength) + 'px'; // Position so bottom is at player
+        // Update position and rotation together
+        laser.element.style.transform = `translate(${currentPlayerX - 30}px, ${currentPlayerY - maxLaserLength}px) rotate(${currentAngle}deg)`;
+    } else {
+        // Apply rotation only if position hasn't changed
+        const totalAngle = currentAngle;
+        laser.element.style.transform = `translate(${laser.startX - 30}px, ${laser.startY - maxLaserLength}px) rotate(${totalAngle}deg)`;
     }
-
-    // Apply rotation (start pointing up, then add oscillation)
-    const totalAngle = 0 + currentAngle; // 0 to point up initially, then add oscillation
-    laser.element.style.transform = `rotate(${totalAngle}deg)`;
 
     // Check collision with enemies (vertical laser with rotation, starting from player)
     const canvasSize = getCanvasDimensions();
@@ -596,7 +591,7 @@ function movePowerUps() {
         if (!powerUp || !powerUp.element) continue;
         
         powerUp.y += powerUp.speed;
-        powerUp.element.style.top = powerUp.y + 'px';
+        updateSpritePosition(powerUp.element, powerUp.x, powerUp.y);
         
         const canvasSize = getCanvasDimensions();
         if (powerUp.y > canvasSize.height) {
@@ -715,8 +710,7 @@ function moveRicochetEggs() {
         }
 
         // Update position
-        egg.element.style.left = egg.x + 'px';
-        egg.element.style.top = egg.y + 'px';
+        updateSpritePosition(egg.element, egg.x, egg.y);
 
         // Check collision with enemies
         for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
@@ -807,8 +801,7 @@ function updateStolenHeartEffects() {
         effect.y = effect.startY + (effect.targetY - effect.startY) * easeProgress;
 
         // Update position
-        effect.element.style.left = effect.x + 'px';
-        effect.element.style.top = effect.y + 'px';
+        updateSpritePosition(effect.element, effect.x, effect.y);
 
         // Fade out near the end
         if (effect.life < 15) {
@@ -854,8 +847,7 @@ function moveLightningBolts() {
         const currentX = bolt.x + zigzagOffset;
 
         // Update position
-        bolt.element.style.left = currentX + 'px';
-        bolt.element.style.top = bolt.y + 'px';
+        updateSpritePosition(bolt.element, currentX, bolt.y);
 
         // Check collision with enemies
         for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
@@ -1025,8 +1017,7 @@ function moveHarpArrows() {
             arrow.xOffset *= -0.5; // Bounce back with reduced spread
         }
 
-        arrow.element.style.left = arrow.x + 'px';
-        arrow.element.style.top = arrow.y + 'px';
+        updateSpritePosition(arrow.element, arrow.x, arrow.y);
 
         // Collision detection with enemies
         for (let enemyIndex = game.enemies.length - 1; enemyIndex >= 0; enemyIndex--) {
@@ -1135,8 +1126,7 @@ function moveSunsGraceFireballs() {
         fireball.y += fireball.vy;
 
         // Update position
-        fireball.element.style.left = fireball.x + 'px';
-        fireball.element.style.top = fireball.y + 'px';
+        updateSpritePosition(fireball.element, fireball.x, fireball.y);
 
         // Collision detection with enemies
         for (let enemyIndex = game.enemies.length - 1; enemyIndex >= 0; enemyIndex--) {

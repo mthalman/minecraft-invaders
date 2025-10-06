@@ -1,3 +1,66 @@
+// DOM element cache - initialized once to avoid repeated getElementById calls
+const dom = {
+    // Game canvas
+    canvas: null,
+    gameCanvas: null,
+
+    // UI displays
+    score: null,
+    lives: null,
+    level: null,
+    highScore: null,
+    wins: null,
+    losses: null,
+    snowballValue: null,
+
+    // Screens and overlays
+    startScreen: null,
+    gameOver: null,
+    pauseOverlay: null,
+    skinSelection: null,
+    dimensionSelection: null,
+    petSelection: null,
+
+    // Boss health
+    bossHealth: null,
+    bossName: null,
+    healthBarFill: null,
+    healthText: null,
+
+    // Controls
+    snowballSlider: null,
+
+    // Music
+    startMusic: null,
+    gameMusic: null
+};
+
+// Initialize DOM cache
+function initDOMCache() {
+    dom.canvas = document.getElementById('gameCanvas');
+    dom.gameCanvas = dom.canvas;
+    dom.score = document.getElementById('score');
+    dom.lives = document.getElementById('lives');
+    dom.level = document.getElementById('level');
+    dom.highScore = document.getElementById('highScore');
+    dom.wins = document.getElementById('wins');
+    dom.losses = document.getElementById('losses');
+    dom.snowballValue = document.getElementById('snowballValue');
+    dom.startScreen = document.getElementById('startScreen');
+    dom.gameOver = document.getElementById('gameOver');
+    dom.pauseOverlay = document.getElementById('pauseOverlay');
+    dom.skinSelection = document.getElementById('skinSelection');
+    dom.dimensionSelection = document.getElementById('dimensionSelection');
+    dom.petSelection = document.getElementById('petSelection');
+    dom.bossHealth = document.getElementById('bossHealth');
+    dom.bossName = document.getElementById('bossName');
+    dom.healthBarFill = document.getElementById('healthBarFill');
+    dom.healthText = document.getElementById('healthText');
+    dom.snowballSlider = document.getElementById('snowballSlider');
+    dom.startMusic = document.getElementById('startMusic');
+    dom.gameMusic = document.getElementById('gameMusic');
+}
+
 // Game statistics
 let gameStats = {
     highScore: parseInt(localStorage.getItem('minecraftInvadersHighScore')) || 0,
@@ -7,7 +70,7 @@ let gameStats = {
 
 // Game state
 const game = {
-    canvas: document.getElementById('gameCanvas'),
+    get canvas() { return dom.gameCanvas; },
     player: null,
     capturedPlayer: null,
     enemies: [],
@@ -49,16 +112,18 @@ const game = {
 
 // Initialize UI
 function initUI() {
-    document.getElementById('highScore').textContent = gameStats.highScore;
-    document.getElementById('wins').textContent = gameStats.wins;
-    document.getElementById('losses').textContent = gameStats.losses;
-    document.getElementById('level').textContent = game.level;
-    
+    // Initialize DOM cache first
+    initDOMCache();
+
+    dom.highScore.textContent = gameStats.highScore;
+    dom.wins.textContent = gameStats.wins;
+    dom.losses.textContent = gameStats.losses;
+    dom.level.textContent = game.level;
+
     // Snowball slider event
-    const slider = document.getElementById('snowballSlider');
-    slider.addEventListener('input', (e) => {
+    dom.snowballSlider.addEventListener('input', (e) => {
         game.snowballFrequency = parseFloat(e.target.value);
-        document.getElementById('snowballValue').textContent = game.snowballFrequency.toFixed(1) + 'x';
+        dom.snowballValue.textContent = game.snowballFrequency.toFixed(1) + 'x';
     });
 }
 
@@ -73,20 +138,15 @@ function saveStats() {
 function updateHighScore() {
     if (game.score > gameStats.highScore) {
         gameStats.highScore = game.score;
-        document.getElementById('highScore').textContent = gameStats.highScore;
+        dom.highScore.textContent = gameStats.highScore;
         saveStats();
     }
 }
 
 function showBossHealth(bossType, currentHealth, maxHealth) {
-    const bossHealthEl = document.getElementById('bossHealth');
-    const bossNameEl = document.getElementById('bossName');
-    const healthBarFill = document.getElementById('healthBarFill');
-    const healthText = document.getElementById('healthText');
-    
     const bossNames = {
         'witch': 'Witch',
-        'evoker': 'Evoker', 
+        'evoker': 'Evoker',
         'ravager': 'Ravager',
         'warden': 'Warden',
         'breeze': 'Breeze',
@@ -98,28 +158,25 @@ function showBossHealth(bossType, currentHealth, maxHealth) {
         'shulker': 'Shulker',
         'enderdragon': 'Ender Dragon'
     };
-    
-    bossNameEl.textContent = bossNames[bossType] || 'Boss';
-    healthText.textContent = `${currentHealth}/${maxHealth}`;
-    
+
+    dom.bossName.textContent = bossNames[bossType] || 'Boss';
+    dom.healthText.textContent = `${currentHealth}/${maxHealth}`;
+
     const healthPercent = (currentHealth / maxHealth) * 100;
-    healthBarFill.style.width = healthPercent + '%';
-    
-    bossHealthEl.style.display = 'block';
+    dom.healthBarFill.style.width = healthPercent + '%';
+
+    dom.bossHealth.style.display = 'block';
 }
 
 function updateBossHealth(currentHealth, maxHealth) {
-    const healthBarFill = document.getElementById('healthBarFill');
-    const healthText = document.getElementById('healthText');
-    
-    healthText.textContent = `${currentHealth}/${maxHealth}`;
-    
+    dom.healthText.textContent = `${currentHealth}/${maxHealth}`;
+
     const healthPercent = (currentHealth / maxHealth) * 100;
-    healthBarFill.style.width = healthPercent + '%';
+    dom.healthBarFill.style.width = healthPercent + '%';
 }
 
 function hideBossHealth() {
-    document.getElementById('bossHealth').style.display = 'none';
+    dom.bossHealth.style.display = 'none';
 }
 
 // Switch dimension function  
