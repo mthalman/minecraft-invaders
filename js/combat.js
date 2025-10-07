@@ -77,24 +77,30 @@ function damageBoss(enemy, damage) {
 }
 
 // Player shooting functions
-function shoot() {
-    if (!game.player || game.capturedPlayer) return;
-    
+function shoot(player) {
+    if (!player) return;
+
+    // Get player-specific power-ups and state
+    const playerPowerUps = getPlayerPowerUps(player);
+    const timing = game.getPlayerTimingState(player);
+    const flags = game.getPlayerFlags(player);
+
     const now = Date.now();
-    const fireRate = powerUps.active.rapidFire && powerUps.active.rapidFire > now ? 66 : 200; // 3x faster with rapid fire
-    
-    if (now - game.lastShot > fireRate) {
+    const fireRate = playerPowerUps.active.rapidFire && playerPowerUps.active.rapidFire > now ? 66 : 200; // 3x faster with rapid fire
+
+    if (now - timing.lastShot > fireRate) {
         // Check if Stormlander is active
-        if (powerUps.active.stormlander && powerUps.active.stormlander > now) {
+        if (playerPowerUps.active.stormlander && playerPowerUps.active.stormlander > now) {
             // Get lightning bolt from pool
             const lightningBolt = lightningBoltPool.get();
             if (!lightningBolt) return; // Pool exhausted, skip this shot
 
             // Set position and properties
-            lightningBolt.x = game.player.x + 42;
-            lightningBolt.y = game.player.y;
+            lightningBolt.x = player.x + 42;
+            lightningBolt.y = player.y;
             lightningBolt.zigzagPhase = 0;
             lightningBolt.life = 300;
+            lightningBolt.owner = player; // Track owner for power-up collection
 
             // Position the element
             updateSpritePosition(lightningBolt.element, lightningBolt.x, lightningBolt.y);
@@ -105,7 +111,7 @@ function shoot() {
             if (!lightningBolt.element.parentNode) {
                 game.canvas.appendChild(lightningBolt.element);
             }
-        } else if (powerUps.active.nightmaresBite && powerUps.active.nightmaresBite > now) {
+        } else if (playerPowerUps.active.nightmaresBite && playerPowerUps.active.nightmaresBite > now) {
             // Nightmare's Bite - spawn bats
             sounds.shoot();
 
@@ -114,11 +120,12 @@ function shoot() {
             if (!bat) return; // Pool exhausted, skip this shot
 
             // Set position and properties
-            bat.x = game.player.x + 42;
-            bat.y = game.player.y;
+            bat.x = player.x + 42;
+            bat.y = player.y;
             bat.life = 1200; // 20 seconds at 60 FPS
             bat.target = null;
             bat.lastTargetUpdate = 0;
+            bat.owner = player; // Track owner for power-up collection
 
             // Position the element
             updateSpritePosition(bat.element, bat.x, bat.y);
@@ -129,7 +136,7 @@ function shoot() {
             if (!bat.element.parentNode) {
                 game.canvas.appendChild(bat.element);
             }
-        } else if (powerUps.active.harpCrossbow && powerUps.active.harpCrossbow > now) {
+        } else if (playerPowerUps.active.harpCrossbow && playerPowerUps.active.harpCrossbow > now) {
             // Harp Crossbow - fire 3 arrows at once
             sounds.harpCrossbow();
 
@@ -139,10 +146,11 @@ function shoot() {
                 const arrow = harpArrowPool.get();
 
                 // Set position and properties
-                arrow.x = game.player.x + 42;
-                arrow.y = game.player.y;
+                arrow.x = player.x + 42;
+                arrow.y = player.y;
                 arrow.xOffset = (i - 1) * 1.5; // -1.5, 0, 1.5 pixels per frame
                 arrow.life = 400; // frames to live
+                arrow.owner = player; // Track owner for power-up collection
 
                 // Position the element
                 updateSpritePosition(arrow.element, arrow.x, arrow.y);
@@ -155,11 +163,11 @@ function shoot() {
                     game.canvas.appendChild(arrow.element);
                 }
             }
-        } else if (powerUps.active.sunsGrace && powerUps.active.sunsGrace > now) {
+        } else if (playerPowerUps.active.sunsGrace && playerPowerUps.active.sunsGrace > now) {
             // Sun's Grace - fire fireballs in 120-degree upward arc (with cooldown)
             const sunsGraceCooldown = 800; // 800ms cooldown between fireball bursts
 
-            if (!game.lastSunsGraceShot || now - game.lastSunsGraceShot > sunsGraceCooldown) {
+            if (now - timing.lastSunsGraceShot > sunsGraceCooldown) {
                 sounds.shoot();
 
                 const numFireballs = 8; // Increased coverage with object pooling
@@ -178,12 +186,13 @@ function shoot() {
                     const fireball = fireballPool.get();
 
                     // Set fireball properties
-                    fireball.x = game.player.x + 42;
-                    fireball.y = game.player.y;
+                    fireball.x = player.x + 42;
+                    fireball.y = player.y;
                     fireball.vx = Math.cos(angle) * fireballSpeed;
                     fireball.vy = Math.sin(angle) * fireballSpeed;
                     fireball.life = 200; // frames to live (reasonable range)
                     fireball.maxLife = 200;
+                    fireball.owner = player; // Track owner for power-up collection
 
                     // Position the element
                     updateSpritePosition(fireball.element, fireball.x, fireball.y);
@@ -197,16 +206,25 @@ function shoot() {
                     }
                 }
 
-                game.lastSunsGraceShot = now; // Update last shot time
+                timing.lastSunsGraceShot = now; // Update last shot time
             }
         } else {
-            // Normal projectile
+            // Normal projectile - temporarily set selected skin for projectile creation
+            const previousSkin = game.selectedSkin;
+            if (player && player.skin) {
+                game.selectedSkin = player.skin;
+            }
+
+            // Get player-specific explosive shot flag
+            const isExplosive = flags.nextExplosiveShot;
+
             const projectile = {
-                element: createSprite('projectile', game.player.x + 42, game.player.y),
-                x: game.player.x + 42,
-                y: game.player.y,
+                element: createSprite('projectile', player.x + 42, player.y),
+                x: player.x + 42,
+                y: player.y,
                 speed: 10,
-                explosive: game.nextExplosiveShot
+                explosive: isExplosive,
+                owner: player // Track projectile owner for collision detection
             };
 
             // Set projectile sprite based on selected skin
@@ -221,18 +239,28 @@ function shoot() {
             }
             game.projectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
+
+            // Restore previous skin
+            game.selectedSkin = previousSkin;
         }
-        
-        // Dual ship projectile if available
-        if (game.player.dualShip) {
+
+        // Dual ship projectile if available for this player
+        if (player.dualShip) {
+            // Temporarily set skin for dual projectile
+            const previousSkin = game.selectedSkin;
+            if (player && player.skin) {
+                game.selectedSkin = player.skin;
+            }
+
             const dualProjectile = {
-                element: createSprite('projectile', game.player.dualShip.x + 42, game.player.dualShip.y),
-                x: game.player.dualShip.x + 42,
-                y: game.player.dualShip.y,
+                element: createSprite('projectile', player.dualShip.x + 42, player.dualShip.y),
+                x: player.dualShip.x + 42,
+                y: player.dualShip.y,
                 speed: 10,
-                explosive: false
+                explosive: false,
+                owner: player // Track projectile owner for collision detection
             };
-            
+
             // Set dual projectile sprite based on selected skin
             if (game.selectedSkin === 'wargen') {
                 dualProjectile.element.innerHTML = sprites.arrow;
@@ -245,40 +273,48 @@ function shoot() {
             }
             game.projectiles.push(dualProjectile);
             game.canvas.appendChild(dualProjectile.element);
+
+            // Restore previous skin
+            game.selectedSkin = previousSkin;
         }
-        
-        if (game.nextExplosiveShot) {
-            game.nextExplosiveShot = false;
-            updatePowerUpDisplay();
+
+        // Clear explosive shot flag for this player
+        if (flags.nextExplosiveShot) {
+            flags.nextExplosiveShot = false;
         }
 
         // Check for corrupted beacon effect
-        if (game.nextCorruptedBeaconShot) {
-            triggerCorruptedBeaconLaser();
+        if (flags.nextCorruptedBeaconShot) {
+            triggerCorruptedBeaconLaser(player);
             sounds.corruptedBeacon(); // Use unique corrupted beacon sound
-            game.lastShot = now;
+            flags.nextCorruptedBeaconShot = false; // Clear flag after use
+            timing.lastShot = now;
             return; // Don't fire normal projectile
         }
 
         // Check for lava chicken effect
-        if (powerUps.active.lavaChicken && powerUps.active.lavaChicken > now) {
-            triggerVerticalBlast();
+        if (playerPowerUps.active.lavaChicken && playerPowerUps.active.lavaChicken > now) {
+            triggerVerticalBlast(player);
             sounds.chicken();
         } else {
             sounds.shoot();
         }
-        
-        game.lastShot = now;
+
+        timing.lastShot = now;
     }
 }
 
 // Enemy shooting functions
 function enemyShoot() {
     const now = Date.now();
-    
-    // Don't shoot if enemies are frozen
-    if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
-        return;
+
+    // Don't shoot if any player has freeze active
+    const activePlayers = game.getActivePlayers();
+    for (const player of activePlayers) {
+        const playerPowerUps = getPlayerPowerUps(player);
+        if (playerPowerUps.active.freezeEnemies && playerPowerUps.active.freezeEnemies > now) {
+            return;
+        }
     }
     
     const levelMultiplier = 1 + (game.level * 0.2); // More aggressive shooting at higher levels
@@ -1223,7 +1259,7 @@ function spawnPinkSquareEnemy(boss, now) {
         isSpawned: true, // Mark as spawned enemy
         isDiving: true,
         diveTarget: {
-            x: game.player.x + Math.random() * 100 - 50,
+            x: (game.player1?.x || canvasSize.width / 2) + Math.random() * 100 - 50,
             y: canvasSize.height - 80
         }
     };
@@ -1319,41 +1355,46 @@ function moveProjectiles() {
             updateSpritePosition(projectile.element, projectile.x, projectile.y);
         }
         
-        // Check for shield reflection
+        // Check for shield reflection against all active players
         const now = Date.now();
-        if (powerUps.active.shield && powerUps.active.shield > now && game.player && !projectile.reflected) {
-            const playerCenterX = game.player.x + 50;
-            const playerCenterY = game.player.y + 40;
-            const projCenterX = projectile.x + 10;
-            const projCenterY = projectile.y + 10;
-            
-            // Check if projectile is within shield radius (80px)
-            const distance = Math.sqrt(
-                Math.pow(projCenterX - playerCenterX, 2) + 
-                Math.pow(projCenterY - playerCenterY, 2)
-            );
-            
-            if (distance <= 80) {
-                // Reflect the projectile
-                projectile.speed = -Math.abs(projectile.speed); // Reverse direction
-                if (projectile.vx) projectile.vx = -projectile.vx; // Reverse horizontal velocity
-                projectile.reflected = true; // Mark as reflected to prevent multiple reflections
-                
-                // Convert to player projectile for hitting enemies
-                const reflectedProjectile = {
-                    element: projectile.element,
-                    x: projectile.x,
-                    y: projectile.y,
-                    speed: 8, // Set upward speed
-                    explosive: false
-                };
-                
-                // Remove from enemy projectiles and add to player projectiles
-                game.enemyProjectiles.splice(index, 1);
-                game.projectiles.push(reflectedProjectile);
-                continue; // Skip rest of processing for this projectile
+        const activePlayers = game.getActivePlayers();
+        for (const player of activePlayers) {
+            const playerPowerUps = getPlayerPowerUps(player);
+            if (playerPowerUps.active.shield && playerPowerUps.active.shield > now && !projectile.reflected) {
+                const playerCenterX = player.x + 50;
+                const playerCenterY = player.y + 40;
+                const projCenterX = projectile.x + 10;
+                const projCenterY = projectile.y + 10;
+
+                // Check if projectile is within shield radius (80px)
+                const distance = Math.sqrt(
+                    Math.pow(projCenterX - playerCenterX, 2) +
+                    Math.pow(projCenterY - playerCenterY, 2)
+                );
+
+                if (distance <= 80) {
+                    // Reflect the projectile
+                    projectile.speed = -Math.abs(projectile.speed); // Reverse direction
+                    if (projectile.vx) projectile.vx = -projectile.vx; // Reverse horizontal velocity
+                    projectile.reflected = true; // Mark as reflected to prevent multiple reflections
+
+                    // Convert to player projectile for hitting enemies
+                    const reflectedProjectile = {
+                        element: projectile.element,
+                        x: projectile.x,
+                        y: projectile.y,
+                        speed: 8, // Set upward speed
+                        explosive: false
+                    };
+
+                    // Remove from enemy projectiles and add to player projectiles
+                    game.enemyProjectiles.splice(index, 1);
+                    game.projectiles.push(reflectedProjectile);
+                    break; // Exit player loop, continue to next projectile
+                }
             }
         }
+        if (projectile.reflected) continue; // Skip rest of processing for reflected projectile
         
         const canvasSize = getCanvasDimensions();
         if (projectile.isTornado) {
@@ -1404,10 +1445,8 @@ function checkCollisions() {
     // Rebuild spatial grids for optimized collision detection
     rebuildSpatialGrids();
 
-    // Debug: Check if we have power-ups and player
-    if (powerUps.items.length > 0 && game.player) {
-        // console.log('Checking collisions with', powerUps.items.length, 'power-ups');
-    }
+    // Check for power-up collection by any active player
+    const activePlayers = game.getActivePlayers();
 
     // Player projectiles vs enemies - iterate backwards to avoid index issues
     for (let pIndex = game.projectiles.length - 1; pIndex >= 0; pIndex--) {
@@ -1432,32 +1471,33 @@ function checkCollisions() {
 
                 // Apply heartstealer effect and handle damage (will be processed by the damage logic below)
                 const now = Date.now();
-                if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
-                    // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
-                    if (enemy.isBoss && enemy.health > 1) {
-                        // Only steal from bosses with more than 1 health
-                        enemy.health -= 1;
-                        game.lives += 1;
-                        dom.lives.textContent = game.lives;
+                if (projectile.owner) {
+                    const shooterPowerUps = getPlayerPowerUps(projectile.owner);
+                    if (shooterPowerUps.active.heartstealerEgg && shooterPowerUps.active.heartstealerEgg > now) {
+                        // Steal health from enemy (reduce enemy health by 1, increase shooter's lives by 1)
+                        if (enemy.isBoss && enemy.health > 1) {
+                            // Only steal from bosses with more than 1 health
+                            enemy.health -= 1;
+                            projectile.owner.lives += 1;
 
-                        // Create visual effect for stolen health
-                        createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+                            // Create visual effect for stolen health
+                            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, projectile.owner);
 
-                        // Update boss health display
-                        updateBossHealth(enemy.health, enemy.maxHealth);
+                            // Update boss health display
+                            updateBossHealth(enemy.health, enemy.maxHealth);
 
-                        // Play special sound
-                        playSound(800, 0.2, 'sine');
-                    } else if (!enemy.isBoss) {
-                        // For normal enemies, steal 1 health before they die
-                        game.lives += 1;
-                        dom.lives.textContent = game.lives;
+                            // Play special sound
+                            playSound(800, 0.2, 'sine');
+                        } else if (!enemy.isBoss) {
+                            // For normal enemies, steal 1 health before they die
+                            projectile.owner.lives += 1;
 
-                        // Create visual effect for stolen health
-                        createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+                            // Create visual effect for stolen health
+                            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, projectile.owner);
 
-                        // Play special sound
-                        playSound(800, 0.2, 'sine');
+                            // Play special sound
+                            playSound(800, 0.2, 'sine');
+                        }
                     }
                 }
 
@@ -1679,10 +1719,13 @@ function checkCollisions() {
                         game.enemies.splice(eIndex, 1);
                     }
                     
-                    // Spreading fire effect (but not for bosses)
-                    if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > Date.now() && !enemy.isBoss) {
-                        // Create visual fire spreading effect
-                        createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
+                    // Spreading fire effect (but not for bosses) - check projectile owner's powerups
+                    if (projectile.owner && !enemy.isBoss) {
+                        const shooterPowerUps = getPlayerPowerUps(projectile.owner);
+                        if (shooterPowerUps.active.spreadingFire && shooterPowerUps.active.spreadingFire > Date.now()) {
+                            // Create visual fire spreading effect
+                            createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
+                        }
                     }
                 }
                 
@@ -1701,32 +1744,46 @@ function checkCollisions() {
         }
     }
     
-    // Enemy projectiles vs player - iterate backwards
+    // Enemy projectiles vs players - iterate backwards
     for (let index = game.enemyProjectiles.length - 1; index >= 0; index--) {
         const projectile = game.enemyProjectiles[index];
         if (!projectile || !projectile.element) continue;
-        
-        // Handle beam collision differently due to its size
-        let collision = false;
-        if (projectile.isBeam) {
-            // Beam collision - check if player intersects with the beam area
-            collision = (game.player.x < projectile.x + projectile.width &&
-                        game.player.x + 100 > projectile.x &&
-                        game.player.y < projectile.y + projectile.height &&
-                        game.player.y + 80 > projectile.y);
-        } else {
-            // Normal projectile collision
-            collision = (projectile.x < game.player.x + 100 &&
-                        projectile.x + 20 > game.player.x &&
-                        projectile.y < game.player.y + 80 &&
-                        projectile.y + 20 > game.player.y);
+
+        // Check collision against all active players
+        const players = game.getActivePlayers();
+        let hitPlayer = null;
+
+        for (const player of players) {
+
+            // Handle beam collision differently due to its size
+            let collision = false;
+            if (projectile.isBeam) {
+                // Beam collision - check if player intersects with the beam area
+                collision = (player.x < projectile.x + projectile.width &&
+                            player.x + 100 > projectile.x &&
+                            player.y < projectile.y + projectile.height &&
+                            player.y + 80 > projectile.y);
+            } else {
+                // Normal projectile collision
+                collision = (projectile.x < player.x + 100 &&
+                            projectile.x + 20 > player.x &&
+                            projectile.y < player.y + 80 &&
+                            projectile.y + 20 > player.y);
+            }
+
+            if (collision) {
+                hitPlayer = player;
+                break;
+            }
         }
-        
-        if (collision) {
-            
+
+        if (hitPlayer) {
+            // Get player-specific power-ups
+            const playerPowerUps = hitPlayer.playerNum ? getPlayerPowerUps(hitPlayer) : powerUps;
+
             // Check for invincibility (Golden Apple)
             const now = Date.now();
-            if (powerUps.active.invincibility && powerUps.active.invincibility > now) {
+            if (playerPowerUps.active.invincibility && playerPowerUps.active.invincibility > now) {
                 // Remove projectile but no damage
                 if (projectile.element && projectile.element.parentNode) {
                     game.canvas.removeChild(projectile.element);
@@ -1734,7 +1791,7 @@ function checkCollisions() {
                 game.enemyProjectiles.splice(index, 1);
                 continue;
             }
-            
+
             // Beams don't get removed on collision (they last their full duration)
             if (!projectile.isBeam) {
                 // Safe removal with existence check
@@ -1743,21 +1800,56 @@ function checkCollisions() {
                 }
                 game.enemyProjectiles.splice(index, 1);
             }
-            
+
             sounds.hit();
 
             // Check for Hungry Horror power-up
-            if (powerUps.active.hungryHorror && powerUps.active.hungryHorror > now) {
+            if (playerPowerUps.active.hungryHorror && playerPowerUps.active.hungryHorror > now) {
                 // Spawn a tiny horror to help fight
-                spawnTinyHorror(game.player.x + 50, game.player.y);
+                spawnTinyHorror(hitPlayer.x + 50, hitPlayer.y);
             }
 
             // Handle projectile damage (witch snowballs cause 2 damage)
             const damage = projectile.damage || 1;
-            game.lives -= damage;
-            dom.lives.textContent = game.lives;
 
-            if (game.lives <= 0) {
+            // Update player lives
+            hitPlayer.lives -= damage;
+
+            // Update lives display immediately
+            if (hitPlayer === game.player1) {
+                const p1Lives = document.getElementById('p1Lives');
+                if (p1Lives) p1Lives.textContent = hitPlayer.lives;
+            } else if (hitPlayer === game.player2) {
+                const p2Lives = document.getElementById('p2Lives');
+                if (p2Lives) p2Lives.textContent = hitPlayer.lives;
+            }
+
+            // Remove player if they died
+            if (hitPlayer.lives <= 0) {
+                if (hitPlayer.element && hitPlayer.element.parentNode) {
+                    game.canvas.removeChild(hitPlayer.element);
+                }
+
+                // Remove player's pet as well
+                if (hitPlayer === game.player1) {
+                    if (game.pet1 && game.pet1.element && game.pet1.element.parentNode) {
+                        game.canvas.removeChild(game.pet1.element);
+                    }
+                    game.pet1 = null;
+                    game.pet = null; // Legacy
+                    game.player1 = null;
+                } else if (hitPlayer === game.player2) {
+                    if (game.pet2 && game.pet2.element && game.pet2.element.parentNode) {
+                        game.canvas.removeChild(game.pet2.element);
+                    }
+                    game.pet2 = null;
+                    game.player2 = null;
+                }
+            }
+
+            // Check if all players are dead
+            const livingPlayers = game.getLivingPlayers();
+            if (livingPlayers.length === 0) {
                 gameOver();
             }
         }
@@ -1767,54 +1859,69 @@ function checkCollisions() {
     for (let index = powerUps.items.length - 1; index >= 0; index--) {
         const powerUp = powerUps.items[index];
         if (!powerUp || !powerUp.element) continue;
-        
-        // Debug: Log positions
-        // console.log('PowerUp:', powerUp.x, powerUp.y, 'Player:', game.player.x, game.player.y);
-        
-        // Simple overlap detection
-        const playerCenterX = game.player.x + 50; // Player width is 100
-        const playerCenterY = game.player.y + 40; // Player height is 80
-        const powerUpCenterX = powerUp.x + 20; // PowerUp width is 40
-        const powerUpCenterY = powerUp.y + 20; // PowerUp height is 40
-        
-        const distance = Math.sqrt(
-            Math.pow(playerCenterX - powerUpCenterX, 2) + 
-            Math.pow(playerCenterY - powerUpCenterY, 2)
-        );
-        
-        if (distance < 60) { // Collection radius
-            console.log('PowerUp collected!', powerUp.type);
-            
+
+        // Check collision with all active players
+        const players = game.getActivePlayers();
+        let collected = false;
+        let collectingPlayer = null;
+
+        for (const player of players) {
+            if (!player) continue;
+
+            // Simple overlap detection
+            const playerCenterX = player.x + 50; // Player width is 100
+            const playerCenterY = player.y + 40; // Player height is 80
+            const powerUpCenterX = powerUp.x + 20; // PowerUp width is 40
+            const powerUpCenterY = powerUp.y + 20; // PowerUp height is 40
+
+            const distance = Math.sqrt(
+                Math.pow(playerCenterX - powerUpCenterX, 2) +
+                Math.pow(playerCenterY - powerUpCenterY, 2)
+            );
+
+            if (distance < 60) { // Collection radius
+                collected = true;
+                collectingPlayer = player;
+                break;
+            }
+        }
+
+        if (collected) {
+            console.log('PowerUp collected!', powerUp.type, 'by player', collectingPlayer.playerNum);
+
             // Collect power-up
             if (powerUp.element && powerUp.element.parentNode) {
                 game.canvas.removeChild(powerUp.element);
             }
             powerUps.items.splice(index, 1);
-            
-            activatePowerUp(powerUp.type);
+
+            activatePowerUp(powerUp.type, collectingPlayer);
             sounds.shoot(); // Collection sound
             break; // Exit loop after collecting one power-up
         }
     }
     
-    // Pet vs power-ups - check collision
-    if (game.pet) {
+    // Pet vs power-ups - check collision for all active pets
+    const activePets = game.getActivePets();
+    for (const pet of activePets) {
+        if (!pet || !pet.owner) continue;
+
         for (let index = powerUps.items.length - 1; index >= 0; index--) {
             const powerUp = powerUps.items[index];
-            if (!powerUp || !powerUp.element || !game.pet) continue;
-            
-            if (game.pet.x < powerUp.x + 40 &&
-                game.pet.x + 50 > powerUp.x &&
-                game.pet.y < powerUp.y + 40 &&
-                game.pet.y + 40 > powerUp.y) {
-                
-                // Collect power-up
+            if (!powerUp || !powerUp.element) continue;
+
+            if (pet.x < powerUp.x + 40 &&
+                pet.x + 50 > powerUp.x &&
+                pet.y < powerUp.y + 40 &&
+                pet.y + 40 > powerUp.y) {
+
+                // Collect power-up for pet's owner
                 if (powerUp.element && powerUp.element.parentNode) {
                     game.canvas.removeChild(powerUp.element);
                 }
                 powerUps.items.splice(index, 1);
-                
-                activatePowerUp(powerUp.type);
+
+                activatePowerUp(powerUp.type, pet.owner);
                 sounds.shoot(); // Collection sound
                 break; // Exit loop after collecting one power-up
             }
@@ -1845,14 +1952,46 @@ function checkCollisions() {
                 
                 powerUps.items.splice(index, 1);
                 game.projectiles.splice(pIndex, 1);
-                
-                activatePowerUp(powerUp.type);
+
+                activatePowerUp(powerUp.type, projectile.owner);
                 sounds.shoot(); // Collection sound
                 break;
             }
         }
     }
-    
+
+    // Pet projectiles vs power-ups (collection method)
+    for (let pIndex = game.petProjectiles.length - 1; pIndex >= 0; pIndex--) {
+        const projectile = game.petProjectiles[pIndex];
+        if (!projectile || !projectile.element || !projectile.owner) continue;
+
+        for (let index = powerUps.items.length - 1; index >= 0; index--) {
+            const powerUp = powerUps.items[index];
+            if (!powerUp || !powerUp.element) continue;
+
+            if (projectile.x < powerUp.x + 40 &&
+                projectile.x + 16 > powerUp.x &&
+                projectile.y < powerUp.y + 40 &&
+                projectile.y + 24 > powerUp.y) {
+
+                // Collect power-up for pet owner
+                if (powerUp.element && powerUp.element.parentNode) {
+                    game.canvas.removeChild(powerUp.element);
+                }
+                if (projectile.element && projectile.element.parentNode) {
+                    game.canvas.removeChild(projectile.element);
+                }
+
+                powerUps.items.splice(index, 1);
+                game.petProjectiles.splice(pIndex, 1);
+
+                activatePowerUp(powerUp.type, projectile.owner);
+                sounds.shoot(); // Collection sound
+                break;
+            }
+        }
+    }
+
     // Pet projectiles vs enemies
     for (let pIndex = game.petProjectiles.length - 1; pIndex >= 0; pIndex--) {
         const projectile = game.petProjectiles[pIndex];
@@ -2073,29 +2212,70 @@ function checkCollisions() {
     }
     
     // Direct enemy-player collision for life loss
+    // activePlayers already declared at top of checkCollisions()
     game.enemies.forEach(enemy => {
         const enemyDimensions = getEnemyDimensions(enemy);
-        if (enemy.x < game.player.x + 100 &&
-            enemy.x + enemyDimensions.width > game.player.x &&
-            enemy.y < game.player.y + 80 &&
-            enemy.y + enemyDimensions.height > game.player.y) {
-            
-            // Enemy hit player directly
-            sounds.hit();
-            game.lives--;
-            dom.lives.textContent = game.lives;
-            
-            // Remove the enemy that hit the player
-            if (enemy.element && enemy.element.parentNode) {
-                game.canvas.removeChild(enemy.element);
-            }
-            const index = game.enemies.indexOf(enemy);
-            if (index > -1) {
-                game.enemies.splice(index, 1);
-            }
-            
-            if (game.lives <= 0) {
-                gameOver();
+
+        // Check collision with all active players
+        for (const player of activePlayers) {
+            if (enemy.x < player.x + 100 &&
+                enemy.x + enemyDimensions.width > player.x &&
+                enemy.y < player.y + 80 &&
+                enemy.y + enemyDimensions.height > player.y) {
+
+                // Enemy hit player directly
+                sounds.hit();
+
+                player.lives--;
+
+                // Update lives display immediately
+                if (player === game.player1) {
+                    const p1Lives = document.getElementById('p1Lives');
+                    if (p1Lives) p1Lives.textContent = player.lives;
+                } else if (player === game.player2) {
+                    const p2Lives = document.getElementById('p2Lives');
+                    if (p2Lives) p2Lives.textContent = player.lives;
+                }
+
+                // Remove player if they died
+                if (player.lives <= 0) {
+                    if (player.element && player.element.parentNode) {
+                        game.canvas.removeChild(player.element);
+                    }
+
+                    // Remove player's pet as well
+                    if (player === game.player1) {
+                        if (game.pet1 && game.pet1.element && game.pet1.element.parentNode) {
+                            game.canvas.removeChild(game.pet1.element);
+                        }
+                        game.pet1 = null;
+                        game.pet = null; // Legacy
+                        game.player1 = null;
+                    } else if (player === game.player2) {
+                        if (game.pet2 && game.pet2.element && game.pet2.element.parentNode) {
+                            game.canvas.removeChild(game.pet2.element);
+                        }
+                        game.pet2 = null;
+                        game.player2 = null;
+                    }
+                }
+
+                // Check if all players are dead
+                const livingPlayers = game.getLivingPlayers();
+                if (livingPlayers.length === 0) {
+                    gameOver();
+                }
+
+                // Remove the enemy that hit the player
+                if (enemy.element && enemy.element.parentNode) {
+                    game.canvas.removeChild(enemy.element);
+                }
+                const index = game.enemies.indexOf(enemy);
+                if (index > -1) {
+                    game.enemies.splice(index, 1);
+                }
+
+                break; // Only collide with one player per enemy
             }
         }
     });
@@ -2123,9 +2303,10 @@ function createEndersentTeleportAttack(enemy, now) {
         game.canvas.appendChild(particle.element);
     }
     
-    // Teleport to new position near player
-    const newX = game.player.x + (Math.random() - 0.5) * 400;
-    const newY = game.player.y - 150 + (Math.random() - 0.5) * 200;
+    // Teleport to new position near a random living player
+    const targetPlayer = getRandomLivingPlayer();
+    const newX = targetPlayer ? targetPlayer.x + (Math.random() - 0.5) * 400 : canvasSize.width / 2;
+    const newY = targetPlayer ? targetPlayer.y - 150 + (Math.random() - 0.5) * 200 : canvasSize.height * 0.3;
     
     // Clamp to screen bounds
     enemy.x = Math.max(50, Math.min(canvasSize.width - 150, newX));
@@ -2498,36 +2679,8 @@ function createSlimeProjectile(enemy, now) {
 function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier = 1, source = 'normal') {
     const enemyDimensions = getEnemyDimensions(enemy);
 
-    // Apply Heartstealer Egg effect first (before damage)
-    const now = Date.now();
-    if (powerUps.active.heartstealerEgg && powerUps.active.heartstealerEgg > now) {
-        // Steal health from enemy (reduce enemy health by 1, increase player lives by 1)
-        if (enemy.isBoss && enemy.health > 1) {
-            // Only steal from bosses with more than 1 health
-            enemy.health -= 1;
-            game.lives += 1;
-            dom.lives.textContent = game.lives;
-
-            // Create visual effect for stolen health
-            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
-
-            // Update boss health display
-            updateBossHealth(enemy.health, enemy.maxHealth);
-
-            // Play special sound
-            playSound(800, 0.2, 'sine');
-        } else if (!enemy.isBoss) {
-            // For normal enemies, steal 1 health before they die
-            game.lives += 1;
-            dom.lives.textContent = game.lives;
-
-            // Create visual effect for stolen health
-            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
-
-            // Play special sound
-            playSound(800, 0.2, 'sine');
-        }
-    }
+    // Note: Heartstealer Egg effect is handled in the main projectile collision code
+    // Tiny horrors don't get the heartstealerEgg benefit
 
     // Apply damage
     enemy.health -= damage;
@@ -2568,7 +2721,7 @@ function applyHeartstealerEffect(enemy, enemyDimensions) {
             dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
-            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, projectile.owner);
 
             // Update boss health display
             updateBossHealth(enemy.health, enemy.maxHealth);
@@ -2581,7 +2734,7 @@ function applyHeartstealerEffect(enemy, enemyDimensions) {
             dom.lives.textContent = game.lives;
 
             // Create visual effect for stolen health
-            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y);
+            createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, projectile.owner);
 
             // Play special sound
             playSound(800, 0.2, 'sine');
@@ -2702,10 +2855,10 @@ function moveTinyHorrors() {
                 }
             }
         } else {
-            // No enemies, hover near player
-            if (game.player) {
-                const targetX = game.player.x + 50 + (Math.sin(Date.now() / 500) * 60);
-                const targetY = game.player.y - 20;
+            // No enemies, hover near player1 (main player)
+            if (game.player1) {
+                const targetX = game.player1.x + 50 + (Math.sin(Date.now() / 500) * 60);
+                const targetY = game.player1.y - 20;
 
                 const dx = targetX - horror.x;
                 const dy = targetY - horror.y;

@@ -7,7 +7,34 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="start-screen" id="startScreen">
+    <!-- Mode Selection Screen -->
+    <div class="mode-selection" id="modeSelection">
+        <div class="game-title">MINECRAFT INVADERS</div>
+        <div class="mode-subtitle">Choose Player Mode</div>
+
+        <div class="mode-options">
+            <div class="mode-option selected" data-mode="single">
+                <div class="mode-icon">👤</div>
+                <div class="mode-title">1 PLAYER</div>
+                <div class="mode-description">Solo adventure</div>
+                <div class="mode-controls">Arrow Keys + Space</div>
+            </div>
+
+            <div class="mode-option" data-mode="multiplayer">
+                <div class="mode-icon">👥</div>
+                <div class="mode-title">2 PLAYERS</div>
+                <div class="mode-description">Co-op mode</div>
+                <div class="mode-controls">
+                    <div>P1: WASD + F</div>
+                    <div>P2: Arrows + Enter</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="start-instruction">Press ENTER to Continue</div>
+    </div>
+
+    <div class="start-screen hidden" id="startScreen">
         <div class="game-title">MINECRAFT INVADERS</div>
         <div class="start-subtitle">Choose Your Dimension</div>
         
@@ -331,54 +358,200 @@
         <div class="start-instruction">Press ENTER to Continue</div>
     </div>
 
+    <!-- Multiplayer Skin Selection Screen -->
+    <div class="multiplayer-skin-selection" id="multiplayerSkinSelection" style="display: none;">
+        <div class="game-title">MINECRAFT INVADERS</div>
+        <div class="skin-subtitle">Choose Your Skins</div>
+
+        <div class="dual-skin-container">
+            <!-- Player 1 Skin Selection -->
+            <div class="player-skin-section">
+                <div class="player-label">Player 1</div>
+                <div class="player-controls-hint">WASD + F</div>
+                <div class="skin-options-grid">
+                    <div class="skin-option selected" data-skin="chicken" data-player="1">
+                        <div class="skin-sprite" id="p1ChickenSprite"></div>
+                        <div class="skin-name">Chicken</div>
+                    </div>
+                    <div class="skin-option" data-skin="wargen" data-player="1">
+                        <div class="skin-sprite" id="p1WargenSprite"></div>
+                        <div class="skin-name">Wargen</div>
+                    </div>
+                    <div class="skin-option" data-skin="violet" data-player="1">
+                        <div class="skin-sprite" id="p1VioletSprite"></div>
+                        <div class="skin-name">Violet</div>
+                    </div>
+                    <div class="skin-option" data-skin="voidVoyager" data-player="1">
+                        <div class="skin-sprite" id="p1VoidVoyagerSprite"></div>
+                        <div class="skin-name">Void Voyager</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="skin-divider"></div>
+
+            <!-- Player 2 Skin Selection -->
+            <div class="player-skin-section">
+                <div class="player-label">Player 2</div>
+                <div class="player-controls-hint">Arrows + Enter</div>
+                <div class="skin-options-grid">
+                    <div class="skin-option" data-skin="chicken" data-player="2">
+                        <div class="skin-sprite" id="p2ChickenSprite"></div>
+                        <div class="skin-name">Chicken</div>
+                    </div>
+                    <div class="skin-option" data-skin="wargen" data-player="2">
+                        <div class="skin-sprite" id="p2WargenSprite"></div>
+                        <div class="skin-name">Wargen</div>
+                    </div>
+                    <div class="skin-option selected" data-skin="violet" data-player="2">
+                        <div class="skin-sprite" id="p2VioletSprite"></div>
+                        <div class="skin-name">Violet</div>
+                    </div>
+                    <div class="skin-option" data-skin="voidVoyager" data-player="2">
+                        <div class="skin-sprite" id="p2VoidVoyagerSprite"></div>
+                        <div class="skin-name">Void Voyager</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="start-instruction">Press ENTER to Continue</div>
+    </div>
+
     <div class="pet-selection" id="petSelection" style="display: none;">
         <div class="game-title">CHOOSE YOUR PET</div>
         <div class="pet-subtitle">Your pet will assist you in battle</div>
-        
+
         <div class="pet-grid">
             <div class="pet-option wolf selected" data-pet="wolf">
                 <div class="pet-sprite" id="wolfSprite"></div>
                 <div class="pet-name">Wolf</div>
                 <div class="pet-description">Loyal companion with moderate damage</div>
             </div>
-            
+
             <div class="pet-option snow-fox" data-pet="snow_fox">
                 <div class="pet-sprite" id="snowFoxSprite"></div>
                 <div class="pet-name">Snow Fox</div>
                 <div class="pet-description">Quick and agile with fast shots</div>
             </div>
-            
+
             <div class="pet-option baby-ghast" data-pet="baby_ghast">
                 <div class="pet-sprite" id="babyGhastSprite"></div>
                 <div class="pet-name">Baby Ghast</div>
                 <div class="pet-description">Floating fighter with explosive shots</div>
             </div>
-            
+
             <div class="pet-option endermite" data-pet="endermite">
                 <div class="pet-sprite" id="endermiteSprite"></div>
                 <div class="pet-name">Endermite</div>
                 <div class="pet-description">Small but fast with teleport ability</div>
             </div>
-            
+
             <div class="pet-option polar-bear" data-pet="polar_bear">
                 <div class="pet-sprite" id="polarBearSprite"></div>
                 <div class="pet-name">Polar Bear</div>
                 <div class="pet-description">Strong and tough with powerful shots</div>
             </div>
-            
+
             <div class="pet-option iron-golem" data-pet="iron_golem">
                 <div class="pet-sprite" id="ironGolemSprite"></div>
                 <div class="pet-name">Iron Golem</div>
                 <div class="pet-description">Mechanical guardian with 3 damage hits</div>
             </div>
-            
+
             <div class="pet-option baby-warden" data-pet="baby_warden">
                 <div class="pet-sprite" id="babyWardenSprite"></div>
                 <div class="pet-name">Baby Warden</div>
                 <div class="pet-description">Shoots 3 blue ender pearls at once</div>
             </div>
         </div>
-        
+
+        <div class="start-instruction">Press ENTER to Start Game</div>
+    </div>
+
+    <!-- Multiplayer Pet Selection Screen -->
+    <div class="multiplayer-pet-selection" id="multiplayerPetSelection" style="display: none;">
+        <div class="game-title">MINECRAFT INVADERS</div>
+        <div class="pet-subtitle">Choose Your Pets</div>
+
+        <div class="dual-pet-container">
+            <!-- Player 1 Pet Selection -->
+            <div class="player-pet-section">
+                <div class="player-label">Player 1</div>
+                <div class="player-controls-hint">WASD + F</div>
+                <div class="pet-options-grid">
+                    <div class="pet-option selected" data-pet="wolf" data-player="1">
+                        <div class="pet-sprite" id="p1WolfSprite"></div>
+                        <div class="pet-name">Wolf</div>
+                    </div>
+                    <div class="pet-option" data-pet="snow_fox" data-player="1">
+                        <div class="pet-sprite" id="p1SnowFoxSprite"></div>
+                        <div class="pet-name">Snow Fox</div>
+                    </div>
+                    <div class="pet-option" data-pet="baby_ghast" data-player="1">
+                        <div class="pet-sprite" id="p1BabyGhastSprite"></div>
+                        <div class="pet-name">Baby Ghast</div>
+                    </div>
+                    <div class="pet-option" data-pet="endermite" data-player="1">
+                        <div class="pet-sprite" id="p1EndermiteSprite"></div>
+                        <div class="pet-name">Endermite</div>
+                    </div>
+                    <div class="pet-option" data-pet="polar_bear" data-player="1">
+                        <div class="pet-sprite" id="p1PolarBearSprite"></div>
+                        <div class="pet-name">Polar Bear</div>
+                    </div>
+                    <div class="pet-option" data-pet="iron_golem" data-player="1">
+                        <div class="pet-sprite" id="p1IronGolemSprite"></div>
+                        <div class="pet-name">Iron Golem</div>
+                    </div>
+                    <div class="pet-option" data-pet="baby_warden" data-player="1">
+                        <div class="pet-sprite" id="p1BabyWardenSprite"></div>
+                        <div class="pet-name">Baby Warden</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="pet-divider"></div>
+
+            <!-- Player 2 Pet Selection -->
+            <div class="player-pet-section">
+                <div class="player-label">Player 2</div>
+                <div class="player-controls-hint">Arrows + Enter</div>
+                <div class="pet-options-grid">
+                    <div class="pet-option" data-pet="wolf" data-player="2">
+                        <div class="pet-sprite" id="p2WolfSprite"></div>
+                        <div class="pet-name">Wolf</div>
+                    </div>
+                    <div class="pet-option selected" data-pet="snow_fox" data-player="2">
+                        <div class="pet-sprite" id="p2SnowFoxSprite"></div>
+                        <div class="pet-name">Snow Fox</div>
+                    </div>
+                    <div class="pet-option" data-pet="baby_ghast" data-player="2">
+                        <div class="pet-sprite" id="p2BabyGhastSprite"></div>
+                        <div class="pet-name">Baby Ghast</div>
+                    </div>
+                    <div class="pet-option" data-pet="endermite" data-player="2">
+                        <div class="pet-sprite" id="p2EndermiteSprite"></div>
+                        <div class="pet-name">Endermite</div>
+                    </div>
+                    <div class="pet-option" data-pet="polar_bear" data-player="2">
+                        <div class="pet-sprite" id="p2PolarBearSprite"></div>
+                        <div class="pet-name">Polar Bear</div>
+                    </div>
+                    <div class="pet-option" data-pet="iron_golem" data-player="2">
+                        <div class="pet-sprite" id="p2IronGolemSprite"></div>
+                        <div class="pet-name">Iron Golem</div>
+                    </div>
+                    <div class="pet-option" data-pet="baby_warden" data-player="2">
+                        <div class="pet-sprite" id="p2BabyWardenSprite"></div>
+                        <div class="pet-name">Baby Warden</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="start-instruction">Press ENTER to Start Game</div>
     </div>
     
@@ -402,16 +575,26 @@
                         <span id="healthText">10/10</span>
                     </div>
                 </div>
-                
-                <div class="powerup-indicator" id="powerupIndicator" style="display: none;">
-                    Active: <span id="activePowerup"></span>
+
+                <!-- Multiplayer HUD -->
+                <div class="multiplayer-hud" id="multiplayerHud" style="display: none;">
+                    <div class="player-hud p1-hud">
+                        <div class="player-label">P1</div>
+                        <div class="player-lives">Lives: <span id="p1Lives">3</span></div>
+                        <div class="player-powerup" id="p1Powerup"></div>
+                    </div>
+                    <div class="player-hud p2-hud">
+                        <div class="player-label">P2</div>
+                        <div class="player-lives">Lives: <span id="p2Lives">3</span></div>
+                        <div class="player-powerup" id="p2Powerup"></div>
+                    </div>
                 </div>
-                
+
                 <div class="game-over" id="gameOver">
                     <div>GAME OVER</div>
                     <div style="font-size: 18px; margin-top: 10px;">Press R to restart</div>
                 </div>
-                <div class="instructions">
+                <div class="instructions" id="instructions">
                     Use arrow keys to move • Spacebar to shoot • Defeat all hostile mobs!
                 </div>
             </div>
@@ -464,6 +647,7 @@
     <script src="js/objectPool.js"></script>
     <script src="js/spatialGrid.js"></script>
     <script src="js/powerUps.js"></script>
+    <script src="js/inputSystem.js"></script>
     <script src="js/entities.js"></script>
     <script src="js/combat.js"></script>
     <script src="js/gameLogic.js"></script>

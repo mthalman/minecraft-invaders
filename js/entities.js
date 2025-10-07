@@ -2,47 +2,101 @@
 // Contains all player and enemy related functions
 
 // Player functions
-function initPlayer() {
-    const canvasSize = getCanvasDimensions();
-    game.player = {
-        element: createSprite('player', (canvasSize.width - 100) / 2, canvasSize.height - 120),
-        x: (canvasSize.width - 100) / 2,
-        y: canvasSize.height - 120,
-        speed: 6
+function createPlayer(playerNum, skinType, x, y) {
+    // Temporarily set selectedSkin for createSprite
+    const prevSkin = game.selectedSkin;
+    game.selectedSkin = skinType;
+
+    const player = {
+        element: createSprite('player', x, y),
+        x: x,
+        y: y,
+        speed: 6,
+        lives: 3,
+        playerNum: playerNum,
+        skin: skinType,
+        input: new PlayerInput(inputHandler, playerNum)
     };
-    game.canvas.appendChild(game.player.element);
+
+    // Restore previous skin
+    game.selectedSkin = prevSkin;
+
+    game.canvas.appendChild(player.element);
+    return player;
 }
 
-function movePlayer() {
-    if (!game.player || game.capturedPlayer) return;
+function initPlayer() {
+    const canvasSize = getCanvasDimensions();
+
+    if (game.mode === 'single') {
+        // Single player mode
+        game.player1 = createPlayer(
+            1,
+            game.selectedSkin1,
+            (canvasSize.width - 100) / 2,
+            canvasSize.height - 120
+        );
+    } else {
+        // Multiplayer mode - position players side by side
+        const spacing = 150;
+        const centerX = canvasSize.width / 2;
+
+        game.player1 = createPlayer(
+            1,
+            game.selectedSkin1,
+            centerX - spacing,
+            canvasSize.height - 120
+        );
+
+        game.player2 = createPlayer(
+            2,
+            game.selectedSkin2,
+            centerX + spacing - 100,
+            canvasSize.height - 120
+        );
+    }
+}
+
+function moveSinglePlayer(player, powerUpState) {
+    if (!player || game.capturedPlayer === player) return;
 
     const canvasSize = getCanvasDimensions();
     const minY = canvasSize.height * 0.6; // Player can only move in bottom 40% of screen
 
     // Calculate movement speed with swiftness boost
-    const baseSpeed = game.player.speed;
-    const currentSpeed = powerUps.active.swiftness ? baseSpeed * 2.5 : baseSpeed;
+    const baseSpeed = player.speed;
+    const currentSpeed = powerUpState.active.swiftness ? baseSpeed * 2.5 : baseSpeed;
 
-    if (game.keys['ArrowLeft'] && game.player.x > 0) {
-        game.player.x -= currentSpeed;
+    if (player.input.left && player.x > 0) {
+        player.x -= currentSpeed;
     }
-    if (game.keys['ArrowRight'] && game.player.x < canvasSize.width - 100) {
-        game.player.x += currentSpeed;
+    if (player.input.right && player.x < canvasSize.width - 100) {
+        player.x += currentSpeed;
     }
-    if (game.keys['ArrowUp'] && game.player.y > minY) {
-        game.player.y -= currentSpeed;
+    if (player.input.up && player.y > minY) {
+        player.y -= currentSpeed;
     }
-    if (game.keys['ArrowDown'] && game.player.y < canvasSize.height - 80) {
-        game.player.y += currentSpeed;
+    if (player.input.down && player.y < canvasSize.height - 80) {
+        player.y += currentSpeed;
     }
 
-    updateSpritePosition(game.player.element, game.player.x, game.player.y);
+    updateSpritePosition(player.element, player.x, player.y);
 
     // Move dual ship if it exists
-    if (game.player.dualShip) {
-        game.player.dualShip.x = game.player.x - 60;
-        game.player.dualShip.y = game.player.y;
-        updateSpritePosition(game.player.dualShip.element, game.player.dualShip.x, game.player.dualShip.y);
+    if (player.dualShip) {
+        player.dualShip.x = player.x - 60;
+        player.dualShip.y = player.y;
+        updateSpritePosition(player.dualShip.element, player.dualShip.x, player.dualShip.y);
+    }
+}
+
+function movePlayer() {
+    // Move player(s) based on mode
+    if (game.player1) {
+        moveSinglePlayer(game.player1, game.player1PowerUps);
+    }
+    if (game.player2) {
+        moveSinglePlayer(game.player2, game.player2PowerUps);
     }
 }
 
@@ -629,12 +683,28 @@ function getEnemyDimensions(enemy) {
 // Enemy movement and AI functions
 function moveEnemies() {
     const now = Date.now();
-    
-    // Check for freeze effect first, then slow effect
+
+    // Check if any player has freeze or slow powerup active
     let speedMultiplier = 1;
-    if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
+    let hasFreeze = false;
+    let hasSlow = false;
+
+    // Check all active players for freeze/slow effects
+    const activePlayers = game.getActivePlayers();
+    for (const player of activePlayers) {
+        const playerPowerUps = getPlayerPowerUps(player);
+        if (playerPowerUps.active.freezeEnemies && playerPowerUps.active.freezeEnemies > now) {
+            hasFreeze = true;
+            break;
+        }
+        if (playerPowerUps.active.slowEnemies && playerPowerUps.active.slowEnemies > now) {
+            hasSlow = true;
+        }
+    }
+
+    if (hasFreeze) {
         speedMultiplier = 0; // Completely freeze enemies
-    } else if (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) {
+    } else if (hasSlow) {
         speedMultiplier = 0.3; // Slow enemies
     }
     
@@ -705,16 +775,32 @@ function startDiveAttack(specificEnemy) {
         if (formationEnemies.length === 0) return;
         enemy = formationEnemies[Math.floor(Math.random() * formationEnemies.length)];
     }
-    
+
     enemy.state = 'diving';
     enemy.diveProgress = 0;
-    
-    // Set dive target near player
+
+    // Set dive target near a random living player
     const canvasSize = getCanvasDimensions();
-    enemy.diveTarget = {
-        x: game.player.x + Math.random() * 200 - 100,
-        y: canvasSize.height - 100
-    };
+    const targetPlayer = getRandomLivingPlayer();
+    if (targetPlayer) {
+        enemy.diveTarget = {
+            x: targetPlayer.x + Math.random() * 200 - 100,
+            y: canvasSize.height - 100
+        };
+    } else {
+        // Fallback if no players
+        enemy.diveTarget = {
+            x: canvasSize.width / 2,
+            y: canvasSize.height - 100
+        };
+    }
+}
+
+// Helper function to get a random living player
+function getRandomLivingPlayer() {
+    const livingPlayers = game.getLivingPlayers();
+    if (livingPlayers.length === 0) return null;
+    return livingPlayers[Math.floor(Math.random() * livingPlayers.length)];
 }
 
 function performDiveAttack(enemy, speedMultiplier) {
@@ -787,20 +873,26 @@ function returnToFormation(enemy, speedMultiplier) {
 
 function performCaptureAttack(enemy, speedMultiplier) {
     const speed = 3 * speedMultiplier;
-    
+
     if (!enemy.capturedPlayer) {
-        // Move towards player for capture
-        const dx = game.player.x - enemy.x;
-        const dy = game.player.y - enemy.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance > 50) {
-            enemy.x += (dx / distance) * speed;
-            enemy.y += (dy / distance) * speed;
-            updateSpritePosition(enemy.element, enemy.x, enemy.y);
+        // Move towards a random living player for capture
+        const targetPlayer = getRandomLivingPlayer();
+        if (targetPlayer) {
+            const dx = targetPlayer.x - enemy.x;
+            const dy = targetPlayer.y - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 50) {
+                enemy.x += (dx / distance) * speed;
+                enemy.y += (dy / distance) * speed;
+                updateSpritePosition(enemy.element, enemy.x, enemy.y);
+            } else {
+                // Capture player
+                capturePlayer(enemy, targetPlayer);
+            }
         } else {
-            // Capture player
-            capturePlayer(enemy);
+            // No players available, abort capture
+            enemy.state = 'returning';
         }
     } else {
         // Return to formation with captured player
@@ -851,88 +943,114 @@ function moveBossRandomly(enemy, speedMultiplier, now) {
 }
 
 // Capture/rescue player functions
-function capturePlayer(enemy) {
-    if (game.capturedPlayer || !game.player) return;
-    
+function capturePlayer(enemy, player) {
+    // Check if this specific player is already captured
+    if (!player || player.captured) return;
+
     // Create captured player sprite
-    game.capturedPlayer = {
+    const capturedPlayer = {
         element: createSprite('player', enemy.x, enemy.y - 50),
         x: enemy.x,
         y: enemy.y - 50,
-        capturingEnemy: enemy
+        capturingEnemy: enemy,
+        originalPlayer: player
     };
-    
+
     // Hide original player temporarily
-    game.player.element.style.display = 'none';
-    
-    enemy.capturedPlayer = game.capturedPlayer;
+    player.element.style.display = 'none';
+    player.captured = true;
+
+    enemy.capturedPlayer = capturedPlayer;
     enemy.state = 'returning';
-    
-    game.canvas.appendChild(game.capturedPlayer.element);
+
+    game.canvas.appendChild(capturedPlayer.element);
 }
 
 function rescuePlayer(enemy) {
     if (!enemy.capturedPlayer) return;
-    
-    // Create dual ship mode
-    const rescuedShip = {
-        element: createSprite('player', game.player.x - 60, game.player.y),
-        x: game.player.x - 60,
-        y: game.player.y,
-        isDual: true
-    };
-    
-    game.canvas.appendChild(rescuedShip.element);
-    
-    // Clean up captured player
-    if (enemy.capturedPlayer.element && enemy.capturedPlayer.element.parentNode) {
-        game.canvas.removeChild(enemy.capturedPlayer.element);
+
+    const capturedPlayer = enemy.capturedPlayer;
+    const originalPlayer = capturedPlayer.originalPlayer;
+
+    if (originalPlayer) {
+        // Create dual ship mode for the rescued player
+        const rescuedShip = {
+            element: createSprite('player', originalPlayer.x - 60, originalPlayer.y),
+            x: originalPlayer.x - 60,
+            y: originalPlayer.y,
+            isDual: true
+        };
+
+        game.canvas.appendChild(rescuedShip.element);
+
+        // Clean up captured player
+        if (capturedPlayer.element && capturedPlayer.element.parentNode) {
+            game.canvas.removeChild(capturedPlayer.element);
+        }
+
+        // Restore original player
+        originalPlayer.element.style.display = 'block';
+        originalPlayer.captured = false;
+        originalPlayer.dualShip = rescuedShip;
     }
-    
+
     enemy.capturedPlayer = null;
-    game.capturedPlayer = null;
-    game.player.element.style.display = 'block';
-    game.player.dualShip = rescuedShip;
 }
 
 function startCaptureAttack() {
     const capableEnemies = game.enemies.filter(e => e.canCapture && e.state === 'formation');
-    if (capableEnemies.length === 0 || game.capturedPlayer) return;
-    
+    // Check if any living player is not captured
+    const uncapturedPlayers = game.getLivingPlayers().filter(p => !p.captured);
+    if (capableEnemies.length === 0 || uncapturedPlayers.length === 0) return;
+
     const enemy = capableEnemies[Math.floor(Math.random() * capableEnemies.length)];
     enemy.state = 'capturing';
 }
 
 // Pet functions
 function createPet() {
-    if (!game.selectedPet) return;
-    
-    const canvasSize = getCanvasDimensions();
-    const petStats = getPetStats(game.selectedPet);
-    
-    game.pet = {
-        element: createSprite('pet', game.player.x - 80, game.player.y + 20),
-        x: game.player.x - 80,
-        y: game.player.y + 20,
-        type: game.selectedPet,
+    // Create pet for player 1 if they exist
+    if (game.player1 && game.selectedPet1) {
+        const petStats = getPetStats(game.selectedPet1);
+        game.pet1 = createPetForPlayer(game.player1, game.selectedPet1, petStats);
+    }
+
+    // Create pet for player 2 if they exist
+    if (game.player2 && game.selectedPet2) {
+        const petStats = getPetStats(game.selectedPet2);
+        game.pet2 = createPetForPlayer(game.player2, game.selectedPet2, petStats);
+    }
+
+    // Legacy compatibility
+    game.pet = game.pet1;
+}
+
+function createPetForPlayer(player, petType, petStats) {
+    const pet = {
+        element: createSprite('pet', player.x - 80, player.y + 20),
+        x: player.x - 80,
+        y: player.y + 20,
+        owner: player,
+        type: petType,
         speed: petStats.speed,
-        health: 50 + (game.level - 1), // 50 base health + 1 per level completed
+        health: 50 + (game.level - 1),
         maxHealth: 50 + (game.level - 1),
         damage: petStats.damage,
         shootCooldown: petStats.shootCooldown,
         tripleShot: petStats.tripleShot || false,
         lastShot: 0,
-        targetX: game.player.x - 80,
-        targetY: game.player.y + 20,
+        targetX: player.x - 80,
+        targetY: player.y + 20,
         randomMovement: {
             lastDirectionChange: Date.now(),
             directionX: Math.random() * 2 - 1,
             directionY: Math.random() * 2 - 1
         }
     };
-    
-    setSpriteContent(game.pet.element, game.selectedPet);
-    game.canvas.appendChild(game.pet.element);
+
+    setSpriteContent(pet.element, petType);
+    game.canvas.appendChild(pet.element);
+    return pet;
 }
 
 function getPetStats(petType) {
@@ -950,95 +1068,124 @@ function getPetStats(petType) {
 }
 
 function movePet() {
-    if (!game.pet || !game.player) return;
-    
+    const pets = game.getActivePets();
+    pets.forEach(pet => moveSinglePet(pet));
+}
+
+function moveSinglePet(pet) {
+    if (!pet || !pet.owner) return;
+
     const now = Date.now();
     const canvasSize = getCanvasDimensions();
-    
-    // Check for freeze effect
+
+    // Check if any player has freeze or slow powerup active (affects pet speed slightly)
     let speedMultiplier = 1;
-    if (powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now) {
+    let hasFreeze = false;
+    let hasSlow = false;
+
+    const activePlayers = game.getActivePlayers();
+    for (const player of activePlayers) {
+        const playerPowerUps = getPlayerPowerUps(player);
+        if (playerPowerUps.active.freezeEnemies && playerPowerUps.active.freezeEnemies > now) {
+            hasFreeze = true;
+            break;
+        }
+        if (playerPowerUps.active.slowEnemies && playerPowerUps.active.slowEnemies > now) {
+            hasSlow = true;
+        }
+    }
+
+    if (hasFreeze) {
         speedMultiplier = 0.8; // Pets slow down slightly but not as much as enemies
-    } else if (powerUps.active.slowEnemies && powerUps.active.slowEnemies > now) {
+    } else if (hasSlow) {
         speedMultiplier = 0.9; // Pets barely affected
     }
-    
+
     // Random movement behavior with some player following
-    const timeSinceDirectionChange = now - game.pet.randomMovement.lastDirectionChange;
-    
+    const timeSinceDirectionChange = now - pet.randomMovement.lastDirectionChange;
+
     if (timeSinceDirectionChange > 2000 + Math.random() * 3000) {
         // Change direction every 2-5 seconds
-        game.pet.randomMovement.directionX = Math.random() * 2 - 1;
-        game.pet.randomMovement.directionY = Math.random() * 2 - 1;
-        game.pet.randomMovement.lastDirectionChange = now;
+        pet.randomMovement.directionX = Math.random() * 2 - 1;
+        pet.randomMovement.directionY = Math.random() * 2 - 1;
+        pet.randomMovement.lastDirectionChange = now;
     }
-    
-    // Move randomly but stay near player
-    const playerCenterX = game.player.x + 50;
-    const playerCenterY = game.player.y + 40;
-    const petCenterX = game.pet.x + 25;
-    const petCenterY = game.pet.y + 20;
+
+    // Move randomly but stay near owner
+    const playerCenterX = pet.owner.x + 50;
+    const playerCenterY = pet.owner.y + 40;
+    const petCenterX = pet.x + 25;
+    const petCenterY = pet.y + 20;
     
     // Calculate distance to player
     const distanceToPlayer = Math.sqrt(
-        Math.pow(playerCenterX - petCenterX, 2) + 
+        Math.pow(playerCenterX - petCenterX, 2) +
         Math.pow(playerCenterY - petCenterY, 2)
     );
-    
+
+    // Initialize movement mode if not set
+    if (!pet.movementMode) {
+        pet.movementMode = 'random';
+    }
+
     let moveX = 0, moveY = 0;
-    
-    if (distanceToPlayer > 200) {
-        // Too far from player, move towards player
+
+    // Use hysteresis to prevent jittery switching between modes
+    if (distanceToPlayer > 220 || (pet.movementMode === 'approach' && distanceToPlayer > 180)) {
+        // Too far from player, move towards player (with hysteresis)
+        pet.movementMode = 'approach';
         const dx = playerCenterX - petCenterX;
         const dy = playerCenterY - petCenterY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        moveX = (dx / distance) * game.pet.speed * speedMultiplier;
-        moveY = (dy / distance) * game.pet.speed * speedMultiplier;
-    } else if (distanceToPlayer < 50) {
-        // Too close to player, move away slightly
+        moveX = (dx / distance) * pet.speed * speedMultiplier;
+        moveY = (dy / distance) * pet.speed * speedMultiplier;
+    } else if (distanceToPlayer < 40 || (pet.movementMode === 'retreat' && distanceToPlayer < 60)) {
+        // Too close to player, move away slightly (with hysteresis)
+        pet.movementMode = 'retreat';
         const dx = petCenterX - playerCenterX;
         const dy = petCenterY - playerCenterY;
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance > 0) {
-            moveX = (dx / distance) * game.pet.speed * 0.5 * speedMultiplier;
-            moveY = (dy / distance) * game.pet.speed * 0.5 * speedMultiplier;
+            moveX = (dx / distance) * pet.speed * 0.5 * speedMultiplier;
+            moveY = (dy / distance) * pet.speed * 0.5 * speedMultiplier;
         }
     } else {
         // Move randomly around the player
-        moveX = game.pet.randomMovement.directionX * game.pet.speed * 0.7 * speedMultiplier;
-        moveY = game.pet.randomMovement.directionY * game.pet.speed * 0.7 * speedMultiplier;
+        pet.movementMode = 'random';
+        moveX = pet.randomMovement.directionX * pet.speed * 0.7 * speedMultiplier;
+        moveY = pet.randomMovement.directionY * pet.speed * 0.7 * speedMultiplier;
     }
-    
+
     // Apply movement with bounds checking
-    game.pet.x += moveX;
-    game.pet.y += moveY;
-    
+    pet.x += moveX;
+    pet.y += moveY;
+
     // Keep pet on screen and away from top enemies
     const minY = canvasSize.height * 0.5; // Pet stays in bottom half
-    game.pet.x = Math.max(10, Math.min(canvasSize.width - 60, game.pet.x));
-    game.pet.y = Math.max(minY, Math.min(canvasSize.height - 60, game.pet.y));
-    
+    pet.x = Math.max(10, Math.min(canvasSize.width - 60, pet.x));
+    pet.y = Math.max(minY, Math.min(canvasSize.height - 60, pet.y));
+
     // Update pet element position
-    updateSpritePosition(game.pet.element, game.pet.x, game.pet.y);
-    
+    updateSpritePosition(pet.element, pet.x, pet.y);
+
     // Pet shooting
-    petShoot();
+    petShoot(pet);
 }
 
-function petShoot() {
-    if (!game.pet || !game.gameRunning) return;
-    
+function petShoot(pet) {
+    if (!pet || !game.gameRunning) return;
+
     const now = Date.now();
-    
-    if (now - game.pet.lastShot < game.pet.shootCooldown) return;
-    
+
+    if (now - pet.lastShot < pet.shootCooldown) return;
+
     // Find nearest enemy to shoot at
     let nearestEnemy = null;
     let nearestDistance = Infinity;
-    
+
     game.enemies.forEach(enemy => {
-        const dx = enemy.x - game.pet.x;
-        const dy = enemy.y - game.pet.y;
+        const dx = enemy.x - pet.x;
+        const dy = enemy.y - pet.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
         // Only shoot at enemies that are in reasonable range and not too close to player
@@ -1050,63 +1197,65 @@ function petShoot() {
     
     if (nearestEnemy) {
         // Calculate direction to enemy
-        const dx = nearestEnemy.x - game.pet.x;
-        const dy = nearestEnemy.y - game.pet.y;
+        const dx = nearestEnemy.x - pet.x;
+        const dy = nearestEnemy.y - pet.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        
+
         // Check if this pet has triple shot ability
-        if (game.pet.tripleShot && game.pet.type === 'baby_warden') {
+        if (pet.tripleShot && pet.type === 'baby_warden') {
             // Create three projectiles for Baby Warden
             const angles = [-0.3, 0, 0.3]; // Spread angles in radians
-            
+
             angles.forEach(angleOffset => {
                 // Calculate adjusted direction with spread
                 const adjustedAngle = Math.atan2(dy, dx) + angleOffset;
                 const adjustedVx = Math.cos(adjustedAngle) * 8;
                 const adjustedVy = Math.sin(adjustedAngle) * 8;
-                
+
                 const projectile = {
-                    element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
-                    x: game.pet.x + 25,
-                    y: game.pet.y + 10,
+                    element: createSprite('projectile', pet.x + 25, pet.y + 10),
+                    x: pet.x + 25,
+                    y: pet.y + 10,
                     velocityX: adjustedVx,
                     velocityY: adjustedVy,
-                    damage: game.pet.damage,
-                    fromPet: true
+                    damage: pet.damage,
+                    fromPet: true,
+                    owner: pet.owner  // Track which player owns this pet projectile
                 };
-                
+
                 // Use blue ender pearl for Baby Warden
                 projectile.element.innerHTML = sprites.blue_ender_pearl;
-                
+
                 game.petProjectiles.push(projectile);
                 game.canvas.appendChild(projectile.element);
             });
         } else {
             // Single projectile for other pets
             const projectile = {
-                element: createSprite('projectile', game.pet.x + 25, game.pet.y + 10),
-                x: game.pet.x + 25,
-                y: game.pet.y + 10,
+                element: createSprite('projectile', pet.x + 25, pet.y + 10),
+                x: pet.x + 25,
+                y: pet.y + 10,
                 velocityX: (dx / distance) * 8,
                 velocityY: (dy / distance) * 8,
-                damage: game.pet.damage,
-                fromPet: true
+                damage: pet.damage,
+                fromPet: true,
+                owner: pet.owner  // Track which player owns this pet projectile
             };
-            
+
             // Set projectile sprite based on pet type
-            if (game.pet.type === 'baby_ghast' && sprites.fireball) {
+            if (pet.type === 'baby_ghast' && sprites.fireball) {
                 projectile.element.innerHTML = sprites.fireball;
-            } else if (game.pet.type === 'endermite' && sprites.snowball) {
+            } else if (pet.type === 'endermite' && sprites.snowball) {
                 projectile.element.innerHTML = sprites.snowball; // Use snowball for endermite
             } else {
                 projectile.element.innerHTML = sprites.egg; // Default egg projectile
             }
-            
+
             game.petProjectiles.push(projectile);
             game.canvas.appendChild(projectile.element);
         }
-        
-        game.pet.lastShot = now;
+
+        pet.lastShot = now;
     }
 }
 

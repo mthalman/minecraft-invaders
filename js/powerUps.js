@@ -7,7 +7,6 @@ const fireballPool = pools.fireballPool;
 
 // Power-up system
 const powerUps = {
-    active: {},
     items: [],
     types: {
         goldenApple: { name: 'Golden Apple', duration: 5000, effect: 'invincibility' },
@@ -30,94 +29,108 @@ const powerUps = {
     }
 };
 
+// Helper function to get player power-up state
+function getPlayerPowerUps(player) {
+    if (!player) {
+        console.error('getPlayerPowerUps called without player');
+        return game.player1PowerUps; // Default to player1 as fallback
+    }
+    return player.playerNum === 1 ? game.player1PowerUps : game.player2PowerUps;
+}
+
 // Power-up functions
-function activatePowerUp(type) {
+function activatePowerUp(type, player) {
+    if (!player) {
+        console.error('activatePowerUp called without player');
+        return;
+    }
+
     const powerUp = powerUps.types[type];
-    
+    const playerPowerUps = getPlayerPowerUps(player);
+
     switch(powerUp.effect) {
         case 'invincibility':
-            powerUps.active.invincibility = Date.now() + powerUp.duration;
+            playerPowerUps.active.invincibility = Date.now() + powerUp.duration;
             break;
         case 'rapidFire':
-            powerUps.active.rapidFire = Date.now() + powerUp.duration;
+            playerPowerUps.active.rapidFire = Date.now() + powerUp.duration;
             break;
         case 'extraLife':
-            game.lives++;
-            dom.lives.textContent = game.lives;
+            player.lives++;
+            // Update lives display (handled in updateUI)
             break;
         case 'slowEnemies':
-            powerUps.active.slowEnemies = Date.now() + powerUp.duration;
+            playerPowerUps.active.slowEnemies = Date.now() + powerUp.duration;
             break;
         case 'explosion':
-            game.nextExplosiveShot = true;
+            const explosiveFlags = game.getPlayerFlags(player);
+            if (explosiveFlags) explosiveFlags.nextExplosiveShot = true;
             break;
         case 'spreadingFire':
-            powerUps.active.spreadingFire = Date.now() + powerUp.duration;
+            playerPowerUps.active.spreadingFire = Date.now() + powerUp.duration;
             break;
         case 'lavaChicken':
-            powerUps.active.lavaChicken = Date.now() + powerUp.duration;
+            playerPowerUps.active.lavaChicken = Date.now() + powerUp.duration;
             break;
         case 'shield':
-            powerUps.active.shield = Date.now() + powerUp.duration;
+            playerPowerUps.active.shield = Date.now() + powerUp.duration;
             break;
         case 'corruptedBeacon':
-            game.nextCorruptedBeaconShot = true;
+            const beaconFlags = game.getPlayerFlags(player);
+            if (beaconFlags) beaconFlags.nextCorruptedBeaconShot = true;
             break;
         case 'ricochetEgg':
             // Launch a ricochet egg immediately
-            launchRicochetEgg();
+            launchRicochetEgg(player);
             break;
         case 'heartstealerEgg':
-            powerUps.active.heartstealerEgg = Date.now() + powerUp.duration;
+            playerPowerUps.active.heartstealerEgg = Date.now() + powerUp.duration;
             break;
         case 'stormlander':
-            powerUps.active.stormlander = Date.now() + powerUp.duration;
+            playerPowerUps.active.stormlander = Date.now() + powerUp.duration;
             break;
         case 'swiftness':
-            powerUps.active.swiftness = Date.now() + powerUp.duration;
+            playerPowerUps.active.swiftness = Date.now() + powerUp.duration;
             break;
         case 'harpCrossbow':
-            powerUps.active.harpCrossbow = Date.now() + powerUp.duration;
+            playerPowerUps.active.harpCrossbow = Date.now() + powerUp.duration;
             break;
         case 'hungryHorror':
-            powerUps.active.hungryHorror = Date.now() + powerUp.duration;
+            playerPowerUps.active.hungryHorror = Date.now() + powerUp.duration;
             break;
         case 'nightmaresBite':
-            powerUps.active.nightmaresBite = Date.now() + powerUp.duration;
+            playerPowerUps.active.nightmaresBite = Date.now() + powerUp.duration;
             break;
         case 'sunsGrace':
-            powerUps.active.sunsGrace = Date.now() + powerUp.duration;
+            playerPowerUps.active.sunsGrace = Date.now() + powerUp.duration;
             break;
     }
-    
-    updatePowerUpDisplay();
+
+    playerPowerUps.current = type;
+    updatePowerUpDisplay(player);
 }
 
-function updatePowerUpDisplay() {
+function updatePowerUpDisplay(player) {
+    if (!player) return [];
+
     const now = Date.now();
+    const playerPowerUps = getPlayerPowerUps(player);
+    const flags = game.getPlayerFlags(player);
     const activeEffects = [];
-    
-    Object.keys(powerUps.active).forEach(effect => {
-        if (powerUps.active[effect] > now) {
+
+    Object.keys(playerPowerUps.active).forEach(effect => {
+        if (playerPowerUps.active[effect] > now) {
             activeEffects.push(effect);
         } else {
-            delete powerUps.active[effect];
+            delete playerPowerUps.active[effect];
         }
     });
-    
-    if (game.nextExplosiveShot) activeEffects.push('TNT Ready');
-    if (game.nextCorruptedBeaconShot) activeEffects.push('Corrupted Beacon Ready');
-    if (powerUps.active.spreadingFire && powerUps.active.spreadingFire > now) activeEffects.push('Spreading Fire');
-    
-    const indicator = document.getElementById('powerupIndicator');
-    const display = document.getElementById('activePowerup');
-    
-    if (activeEffects.length > 0) {
-        indicator.style.display = 'block';
-        display.textContent = activeEffects.join(', ');
-    } else {
-        indicator.style.display = 'none';
-    }
+
+    if (flags && flags.nextExplosiveShot) activeEffects.push('TNT Ready');
+    if (flags && flags.nextCorruptedBeaconShot) activeEffects.push('Corrupted Beacon Ready');
+    if (playerPowerUps.active.spreadingFire && playerPowerUps.active.spreadingFire > now) activeEffects.push('Spreading Fire');
+
+    return activeEffects;
 }
 
 function spawnPowerUp() {
@@ -156,11 +169,11 @@ function spawnPowerUp() {
     }
 }
 
-function triggerVerticalBlast() {
-    if (!game.player) return;
-    
+function triggerVerticalBlast(player) {
+    if (!player) return;
+
     const canvasSize = getCanvasDimensions();
-    const blastX = game.player.x + 50; // Center of player
+    const blastX = player.x + 50; // Center of player
     
     // Create vertical blast effect
     const blastEffect = {
@@ -295,59 +308,77 @@ function moveFireSpreadEffects() {
 
 function updateShieldEffect() {
     const now = Date.now();
-    
-    // Remove existing shield effect if shield is not active
-    const existingShield = document.getElementById('playerShield');
-    if (!powerUps.active.shield || powerUps.active.shield <= now) {
-        if (existingShield) {
+    const activePlayers = game.getActivePlayers();
+
+    // Process shields for each active player
+    activePlayers.forEach(player => {
+        if (!player) return;
+
+        const playerPowerUps = getPlayerPowerUps(player);
+        const isShielded = playerPowerUps.active.shield && playerPowerUps.active.shield > now;
+        const shieldId = `playerShield_p${player.playerNum}`;
+        const existingShield = document.getElementById(shieldId);
+
+        // Remove shield if no longer active
+        if (!isShielded && existingShield) {
             existingShield.remove();
+            return;
         }
-        return;
-    }
-    
-    // Create shield effect if it doesn't exist and shield is active
-    if (!existingShield && game.player) {
-        const shieldEffect = document.createElement('div');
-        shieldEffect.id = 'playerShield';
-        shieldEffect.className = 'sprite';
-        shieldEffect.style.width = '160px';
-        shieldEffect.style.height = '160px';
-        shieldEffect.style.pointerEvents = 'none';
-        shieldEffect.style.zIndex = '50';
-        
-        // Create animated shield SVG
-        shieldEffect.innerHTML = `
-            <svg width="160" height="160" viewBox="0 0 160 160">
-                <defs>
-                    <radialGradient id="shieldGradient" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
-                        <stop offset="70%" style="stop-color:#4A90E2;stop-opacity:0.6" />
-                        <stop offset="100%" style="stop-color:#2C5A80;stop-opacity:0.8" />
-                    </radialGradient>
-                </defs>
-                <circle cx="80" cy="80" r="75" fill="url(#shieldGradient)" stroke="#87CEEB" stroke-width="2" opacity="0.7">
-                    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="80" r="60" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.5">
-                    <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="1.5s" repeatCount="indefinite"/>
-                </circle>
-            </svg>
-        `;
-        
-        game.canvas.appendChild(shieldEffect);
-    }
-    
-    // Update shield position to follow player
-    if (existingShield && game.player) {
-        const shieldX = game.player.x - 30; // Center the shield around player
-        const shieldY = game.player.y - 40;
-        updateSpritePosition(existingShield, shieldX, shieldY);
-    }
+
+        // Create shield effect if it doesn't exist and shield is active
+        if (isShielded && !existingShield) {
+            const shieldEffect = document.createElement('div');
+            shieldEffect.id = shieldId;
+            shieldEffect.className = 'sprite';
+            shieldEffect.style.width = '160px';
+            shieldEffect.style.height = '160px';
+            shieldEffect.style.pointerEvents = 'none';
+            shieldEffect.style.zIndex = '50';
+
+            // Create animated shield SVG
+            shieldEffect.innerHTML = `
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                    <defs>
+                        <radialGradient id="shieldGradient_p${player.playerNum}" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
+                            <stop offset="70%" style="stop-color:#4A90E2;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#2C5A80;stop-opacity:0.8" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="80" cy="80" r="75" fill="url(#shieldGradient_p${player.playerNum})" stroke="#87CEEB" stroke-width="2" opacity="0.7">
+                        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.5">
+                        <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            `;
+
+            game.canvas.appendChild(shieldEffect);
+        }
+
+        // Update shield position to follow this player
+        if (isShielded && existingShield) {
+            const shieldX = player.x - 30; // Center the shield around player
+            const shieldY = player.y - 40;
+            updateSpritePosition(existingShield, shieldX, shieldY);
+        }
+    });
 }
 
 function updateFreezeEffect() {
     const now = Date.now();
-    const isFrozen = powerUps.active.freezeEnemies && powerUps.active.freezeEnemies > now;
+
+    // Check if any player has freeze effect active
+    let isFrozen = false;
+    const activePlayers = game.getActivePlayers();
+    for (const player of activePlayers) {
+        const playerPowerUps = getPlayerPowerUps(player);
+        if (playerPowerUps.active.freezeEnemies && playerPowerUps.active.freezeEnemies > now) {
+            isFrozen = true;
+            break;
+        }
+    }
 
     game.enemies.forEach((enemy, index) => {
         if (!enemy || !enemy.element) return;
@@ -409,8 +440,8 @@ function updateFreezeEffect() {
     }
 }
 
-function triggerCorruptedBeaconLaser() {
-    if (!game.player) return;
+function triggerCorruptedBeaconLaser(player) {
+    if (!player) return;
 
     // Remove any existing corrupted beacon laser first
     if (game.corruptedBeaconLaser && game.corruptedBeaconLaser.element) {
@@ -421,8 +452,8 @@ function triggerCorruptedBeaconLaser() {
     }
 
     const canvasSize = getCanvasDimensions();
-    const startX = game.player.x + 50; // Center of player
-    const startY = game.player.y; // Start from player position
+    const startX = player.x + 50; // Center of player
+    const startY = player.y; // Start from player position
     const duration = 5000; // 5 seconds
     const startTime = Date.now();
 
@@ -434,7 +465,8 @@ function triggerCorruptedBeaconLaser() {
         currentAngle: 0,
         active: true,
         startTime: startTime,
-        duration: duration
+        duration: duration,
+        owner: player // Track laser owner
     };
 
     // Create custom SVG for wide pink laser (long enough to reach any screen edge, pointing upward)
@@ -484,9 +516,8 @@ function triggerCorruptedBeaconLaser() {
     game.canvas.appendChild(laserEffect.element);
     game.corruptedBeaconLaser = laserEffect;
 
-    // Clear the ready state
-    game.nextCorruptedBeaconShot = false;
-    updatePowerUpDisplay();
+    // Note: Flag is cleared in combat.js shoot() function
+    updatePowerUpDisplay(player);
 }
 
 function updateCorruptedBeaconLaser() {
@@ -515,10 +546,10 @@ function updateCorruptedBeaconLaser() {
     const oscillation = Math.sin(progress * Math.PI * 4); // 4 complete sweeps over 5 seconds
     const currentAngle = oscillation * maxAngle;
 
-    // Update laser position to follow player
-    if (game.player) {
-        const currentPlayerX = game.player.x + 50; // Center of player
-        const currentPlayerY = game.player.y; // Player Y position
+    // Update laser position to follow the owner
+    if (laser.owner) {
+        const currentPlayerX = laser.owner.x + 50; // Center of player
+        const currentPlayerY = laser.owner.y; // Player Y position
         const canvasSize = getCanvasDimensions();
         const maxLaserLength = Math.sqrt(canvasSize.width * canvasSize.width + canvasSize.height * canvasSize.height);
         laser.startX = currentPlayerX;
@@ -603,12 +634,12 @@ function movePowerUps() {
     }
 }
 
-function launchRicochetEgg() {
-    if (!game.player) return;
+function launchRicochetEgg(player) {
+    if (!player) return;
 
     const canvasSize = getCanvasDimensions();
-    const startX = game.player.x + 50; // Center of player
-    const startY = game.player.y;
+    const startX = player.x + 50; // Center of player
+    const startY = player.y;
 
     // Create ricochet egg with random initial velocity
     const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Slightly random upward angle
@@ -750,16 +781,16 @@ function moveRicochetEggs() {
     }
 }
 
-function createStolenHealthEffect(x, y) {
-    // Create floating heart effect that moves toward the player
+function createStolenHealthEffect(x, y, targetPlayer) {
+    // Create floating heart effect that moves toward the target player
     const heartEffect = {
         element: createSprite('stolen-heart', x, y),
         x: x,
         y: y,
         startX: x,
         startY: y,
-        targetX: game.player ? game.player.x + 50 : x,
-        targetY: game.player ? game.player.y : y,
+        targetX: targetPlayer ? targetPlayer.x + 50 : x,
+        targetY: targetPlayer ? targetPlayer.y : y,
         life: 60, // frames to live
         maxLife: 60
     };
@@ -910,8 +941,8 @@ function moveLightningBolts() {
                 }
                 powerUps.items.splice(powerUpIndex, 1);
 
-                // Activate the power-up
-                activatePowerUp(powerUp.type);
+                // Activate the power-up for the lightning bolt's owner
+                activatePowerUp(powerUp.type, bolt.owner);
                 sounds.shoot(); // Collection sound
 
                 // Create electric impact effect at power-up location
@@ -1090,8 +1121,8 @@ function moveHarpArrows() {
                 }
                 powerUps.items.splice(powerUpIndex, 1);
 
-                // Activate the power-up
-                activatePowerUp(powerUp.type);
+                // Activate the power-up for the arrow's owner
+                activatePowerUp(powerUp.type, arrow.owner);
                 sounds.shoot(); // Collection sound
 
                 break; // Only collect one power-up per arrow
@@ -1187,8 +1218,8 @@ function moveSunsGraceFireballs() {
                 }
                 powerUps.items.splice(powerUpIndex, 1);
 
-                // Activate the power-up
-                activatePowerUp(powerUp.type);
+                // Activate the power-up for the fireball's owner
+                activatePowerUp(powerUp.type, fireball.owner);
                 sounds.shoot(); // Collection sound
 
                 break; // Only collect one power-up per fireball

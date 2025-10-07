@@ -14,6 +14,7 @@ const dom = {
     snowballValue: null,
 
     // Screens and overlays
+    modeSelection: null,
     startScreen: null,
     gameOver: null,
     pauseOverlay: null,
@@ -46,6 +47,7 @@ function initDOMCache() {
     dom.wins = document.getElementById('wins');
     dom.losses = document.getElementById('losses');
     dom.snowballValue = document.getElementById('snowballValue');
+    dom.modeSelection = document.getElementById('modeSelection');
     dom.startScreen = document.getElementById('startScreen');
     dom.gameOver = document.getElementById('gameOver');
     dom.pauseOverlay = document.getElementById('pauseOverlay');
@@ -71,7 +73,18 @@ let gameStats = {
 // Game state
 const game = {
     get canvas() { return dom.gameCanvas; },
-    player: null,
+
+    // Player mode
+    mode: 'single', // 'single' or 'multiplayer'
+
+    // Players
+    player1: null,
+    player2: null,
+
+    // Backward compatibility
+    get player() { return this.player1; },
+    set player(value) { this.player1 = value; },
+
     capturedPlayer: null,
     enemies: [],
     projectiles: [],
@@ -99,15 +112,85 @@ const game = {
     formationComplete: false,
     selectedDimension: 'overworld',
     selectedSubDimension: 'normal',
-    selectedSkin: 'chicken',
-    selectedPet: 'wolf',
-    pet: null,
+
+    // Skin selection (per player)
+    selectedSkin1: 'chicken',
+    selectedSkin2: 'violet',
+    get selectedSkin() { return this.selectedSkin1; }, // Backward compatibility
+    set selectedSkin(value) { this.selectedSkin1 = value; },
+
+    // Pet selection (per player)
+    selectedPet1: 'wolf',
+    selectedPet2: 'snow_fox',
+    get selectedPet() { return this.selectedPet1; }, // Backward compatibility
+    set selectedPet(value) { this.selectedPet1 = value; },
+
+    pet: null, // Legacy - will be removed
+    pet1: null,
+    pet2: null,
     petProjectiles: [],
     ricochetEggs: [],
     lightningBolts: [],
     harpArrows: [],
     tinyHorrors: [],
-    nightmareBats: []
+    nightmareBats: [],
+
+    // Power-ups (per player)
+    player1PowerUps: {
+        active: {},
+        current: null
+    },
+    player2PowerUps: {
+        active: {},
+        current: null
+    },
+
+    // Helper methods
+    getActivePlayers() {
+        if (this.mode === 'single') {
+            return this.player1 ? [this.player1] : [];
+        } else {
+            return [this.player1, this.player2].filter(p => p !== null);
+        }
+    },
+
+    getLivingPlayers() {
+        return this.getActivePlayers().filter(p => p.lives > 0);
+    },
+
+    isGameOver() {
+        return this.getLivingPlayers().length === 0;
+    },
+
+    getActivePets() {
+        return [this.pet1, this.pet2].filter(p => p !== null);
+    },
+
+    // Get or create per-player timing state
+    getPlayerTimingState(player) {
+        if (!player) return null;
+        const key = `_p${player.playerNum}_timing`;
+        if (!this[key]) {
+            this[key] = {
+                lastShot: 0,
+                lastSunsGraceShot: 0
+            };
+        }
+        return this[key];
+    },
+
+    // Get or create per-player flags
+    getPlayerFlags(player) {
+        if (!player) return null;
+        const key = `_p${player.playerNum}_flags`;
+        if (!this[key]) {
+            this[key] = {
+                nextExplosiveShot: false,
+                nextCorruptedBeaconShot: false
+            };
+        }
+        return this[key];
+    }
 };
 
 // Initialize UI
