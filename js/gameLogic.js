@@ -189,17 +189,39 @@ function startGame() {
 // Game loop
 // Update UI based on game mode
 function updateUI() {
-    // Early return for single player - no UI changes needed
-    if (game.mode === 'single') {
-        return;
-    }
-
-    // Multiplayer UI updates
     const multiplayerHud = document.getElementById('multiplayerHud');
-    const singlePlayerUI = [dom.score, dom.lives, dom.level].filter(el => el);
     const instructions = document.getElementById('instructions');
 
-    if (game.mode === 'multiplayer') {
+    if (game.mode === 'single') {
+        // Single player mode - show single-player stats, hide multiplayer HUD
+        if (multiplayerHud) {
+            multiplayerHud.style.display = 'none';
+        }
+
+        // Ensure single-player stats are visible
+        if (dom.score && dom.score.parentElement) {
+            dom.score.parentElement.style.display = '';
+        }
+        if (dom.lives && dom.lives.parentElement) {
+            dom.lives.parentElement.style.display = '';
+        }
+        if (dom.level && dom.level.parentElement) {
+            dom.level.parentElement.style.display = '';
+        }
+
+        // Update single-player power-up display
+        const powerupDisplay = document.getElementById('powerupDisplay');
+        if (powerupDisplay) {
+            powerupDisplay.style.display = '';
+            const activeEffects = updatePowerUpDisplay(game.player1) || [];
+            powerupDisplay.textContent = activeEffects.length > 0 ? activeEffects.join(', ') : '';
+        }
+
+        // Update instructions for single player
+        if (instructions) {
+            instructions.textContent = 'Use arrow keys to move • Spacebar to shoot • Defeat all hostile mobs!';
+        }
+    } else if (game.mode === 'multiplayer') {
         // Show multiplayer HUD, hide single-player stats
         if (multiplayerHud) {
             multiplayerHud.style.display = 'flex';
@@ -227,9 +249,13 @@ function updateUI() {
             }
         }
 
-        // Hide single-player lives (but keep score/level visible)
-        if (dom.lives) {
+        // Hide single-player stats in multiplayer mode
+        if (dom.lives && dom.lives.parentElement) {
             dom.lives.parentElement.style.display = 'none';
+        }
+        const powerupDisplay = document.getElementById('powerupDisplay');
+        if (powerupDisplay) {
+            powerupDisplay.style.display = 'none';
         }
 
         // Update instructions for multiplayer
