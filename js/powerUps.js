@@ -118,9 +118,28 @@ function updatePowerUpDisplay(player) {
     const flags = game.getPlayerFlags(player);
     const activeEffects = [];
 
+    // Map effect names to their display names
+    const effectToDisplayName = {
+        invincibility: 'Golden Apple',
+        rapidFire: 'Fire Potion',
+        slowEnemies: 'Redstone',
+        spreadingFire: 'Blaze Rod',
+        lavaChicken: "Steve's Lava Chicken",
+        shield: 'Shield',
+        heartstealerEgg: 'Heartstealer Egg',
+        stormlander: 'Stormlander',
+        swiftness: 'Swiftness Potion',
+        harpCrossbow: 'Harp Crossbow',
+        hungryHorror: 'Hungry Horror',
+        nightmaresBite: "Nightmare's Bite",
+        sunsGrace: "Sun's Grace",
+        freezeEnemies: 'Freeze Enemies'
+    };
+
     Object.keys(playerPowerUps.active).forEach(effect => {
         if (playerPowerUps.active[effect] > now) {
-            activeEffects.push(effect);
+            const displayName = effectToDisplayName[effect] || effect;
+            activeEffects.push(displayName);
         } else {
             delete playerPowerUps.active[effect];
         }
@@ -128,7 +147,6 @@ function updatePowerUpDisplay(player) {
 
     if (flags && flags.nextExplosiveShot) activeEffects.push('TNT Ready');
     if (flags && flags.nextCorruptedBeaconShot) activeEffects.push('Corrupted Beacon Ready');
-    if (playerPowerUps.active.spreadingFire && playerPowerUps.active.spreadingFire > now) activeEffects.push('Spreading Fire');
 
     return activeEffects;
 }
