@@ -1318,8 +1318,8 @@ function moveProjectiles() {
             }
         } else if (projectile.isTornadoDebris) {
             // Tornado debris moves in angled direction with spinning
-            projectile.x += Math.sin(projectile.angle) * projectile.speed;
-            projectile.y += Math.cos(projectile.angle) * projectile.speed;
+            projectile.x += Math.cos(projectile.angle) * projectile.speed;
+            projectile.y += Math.sin(projectile.angle) * projectile.speed;
             
             // Spin the debris
             projectile.rotation += projectile.rotationSpeed;
