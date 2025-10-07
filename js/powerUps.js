@@ -174,25 +174,26 @@ function triggerVerticalBlast(player) {
 
     const canvasSize = getCanvasDimensions();
     const blastX = player.x + 50; // Center of player
-    
-    // Create vertical blast effect
+    const blastHeight = player.y + 50; // Height from player to top of screen
+
+    // Create vertical blast effect (starting from player, going upward)
     const blastEffect = {
         element: createSprite('vertical-blast', blastX - 20, 0),
         x: blastX - 20,
         y: 0,
         width: 40,
-        height: canvasSize.height,
+        height: blastHeight,
         life: 60, // frames to show effect
         maxLife: 60
     };
-    
+
     // Create custom SVG for vertical blast effect
     blastEffect.element.innerHTML = `
-        <svg width="40" height="${canvasSize.height}" viewBox="0 0 40 ${canvasSize.height}">
-            <rect x="0" y="0" width="40" height="${canvasSize.height}" fill="#FF4500" opacity="0.8"/>
-            <rect x="5" y="0" width="30" height="${canvasSize.height}" fill="#FF6347" opacity="0.9"/>
-            <rect x="10" y="0" width="20" height="${canvasSize.height}" fill="#FFD700" opacity="0.7"/>
-            <rect x="15" y="0" width="10" height="${canvasSize.height}" fill="#FFFFFF" opacity="0.5"/>
+        <svg width="40" height="${blastHeight}" viewBox="0 0 40 ${blastHeight}">
+            <rect x="0" y="0" width="40" height="${blastHeight}" fill="#FF4500" opacity="0.8"/>
+            <rect x="5" y="0" width="30" height="${blastHeight}" fill="#FF6347" opacity="0.9"/>
+            <rect x="10" y="0" width="20" height="${blastHeight}" fill="#FFD700" opacity="0.7"/>
+            <rect x="15" y="0" width="10" height="${blastHeight}" fill="#FFFFFF" opacity="0.5"/>
         </svg>
     `;
     
@@ -200,21 +201,21 @@ function triggerVerticalBlast(player) {
     blastEffect.element.style.zIndex = '150';
     game.canvas.appendChild(blastEffect.element);
     
-    // Destroy all enemies in the vertical line
+    // Destroy all enemies in the vertical line (only above the player)
     for (let eIndex = game.enemies.length - 1; eIndex >= 0; eIndex--) {
         const enemy = game.enemies[eIndex];
         if (!enemy || !enemy.element) continue;
-        
+
         const enemyDimensions = getEnemyDimensions(enemy);
         const enemyCenterX = enemy.x + enemyDimensions.width / 2;
-        
-        // Check if enemy is within the vertical blast line
-        if (enemyCenterX >= blastX - 20 && enemyCenterX <= blastX + 20) {
+
+        // Check if enemy is within the vertical blast line AND above the player
+        if (enemyCenterX >= blastX - 20 && enemyCenterX <= blastX + 20 && enemy.y < player.y) {
             // Check if this enemy has captured player
             if (enemy.capturedPlayer) {
                 rescuePlayer(enemy);
             }
-            
+
             // Handle collision using common handler
             handleProjectileEnemyCollision(enemy, eIndex, 3, 1.5, 'verticalBlast');
         }
