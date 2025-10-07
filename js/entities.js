@@ -1078,6 +1078,10 @@ function moveSinglePet(pet) {
     const now = Date.now();
     const canvasSize = getCanvasDimensions();
 
+    // Initialize velocity if not set
+    if (!pet.velocityX) pet.velocityX = 0;
+    if (!pet.velocityY) pet.velocityY = 0;
+
     // Check if any player has freeze or slow powerup active (affects pet speed slightly)
     let speedMultiplier = 1;
     let hasFreeze = false;
@@ -1116,7 +1120,7 @@ function moveSinglePet(pet) {
     const playerCenterY = pet.owner.y + 40;
     const petCenterX = pet.x + 25;
     const petCenterY = pet.y + 20;
-    
+
     // Calculate distance to player
     const distanceToPlayer = Math.sqrt(
         Math.pow(playerCenterX - petCenterX, 2) +
@@ -1128,7 +1132,7 @@ function moveSinglePet(pet) {
         pet.movementMode = 'random';
     }
 
-    let moveX = 0, moveY = 0;
+    let targetVelocityX = 0, targetVelocityY = 0;
 
     // Use hysteresis to prevent jittery switching between modes
     if (distanceToPlayer > 220 || (pet.movementMode === 'approach' && distanceToPlayer > 180)) {
@@ -1137,8 +1141,8 @@ function moveSinglePet(pet) {
         const dx = playerCenterX - petCenterX;
         const dy = playerCenterY - petCenterY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        moveX = (dx / distance) * pet.speed * speedMultiplier;
-        moveY = (dy / distance) * pet.speed * speedMultiplier;
+        targetVelocityX = (dx / distance) * pet.speed * speedMultiplier;
+        targetVelocityY = (dy / distance) * pet.speed * speedMultiplier;
     } else if (distanceToPlayer < 40 || (pet.movementMode === 'retreat' && distanceToPlayer < 60)) {
         // Too close to player, move away slightly (with hysteresis)
         pet.movementMode = 'retreat';
@@ -1146,24 +1150,40 @@ function moveSinglePet(pet) {
         const dy = petCenterY - playerCenterY;
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance > 0) {
-            moveX = (dx / distance) * pet.speed * 0.5 * speedMultiplier;
-            moveY = (dy / distance) * pet.speed * 0.5 * speedMultiplier;
+            targetVelocityX = (dx / distance) * pet.speed * 0.5 * speedMultiplier;
+            targetVelocityY = (dy / distance) * pet.speed * 0.5 * speedMultiplier;
         }
     } else {
         // Move randomly around the player
         pet.movementMode = 'random';
-        moveX = pet.randomMovement.directionX * pet.speed * 0.7 * speedMultiplier;
-        moveY = pet.randomMovement.directionY * pet.speed * 0.7 * speedMultiplier;
+        targetVelocityX = pet.randomMovement.directionX * pet.speed * 0.7 * speedMultiplier;
+        targetVelocityY = pet.randomMovement.directionY * pet.speed * 0.7 * speedMultiplier;
     }
 
-    // Apply movement with bounds checking
-    pet.x += moveX;
-    pet.y += moveY;
+    // Very smooth interpolation (easing) towards target velocity
+    const smoothing = 0.08; // Much lower = much smoother, more floaty movement
+    pet.velocityX += (targetVelocityX - pet.velocityX) * smoothing;
+    pet.velocityY += (targetVelocityY - pet.velocityY) * smoothing;
+
+    // Add slight velocity decay for more natural movement
+    pet.velocityX *= 0.98;
+    pet.velocityY *= 0.98;
+
+    // Apply smoothed movement
+    pet.x += pet.velocityX;
+    pet.y += pet.velocityY;
 
     // Keep pet on screen and away from top enemies
     const minY = canvasSize.height * 0.5; // Pet stays in bottom half
-    pet.x = Math.max(10, Math.min(canvasSize.width - 60, pet.x));
-    pet.y = Math.max(minY, Math.min(canvasSize.height - 60, pet.y));
+    const newX = Math.max(10, Math.min(canvasSize.width - 60, pet.x));
+    const newY = Math.max(minY, Math.min(canvasSize.height - 60, pet.y));
+
+    // If hit boundary, smoothly dampen velocity to prevent bouncing
+    if (newX !== pet.x) pet.velocityX *= 0.3;
+    if (newY !== pet.y) pet.velocityY *= 0.3;
+
+    pet.x = newX;
+    pet.y = newY;
 
     // Update pet element position
     updateSpritePosition(pet.element, pet.x, pet.y);
