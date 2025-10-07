@@ -235,7 +235,7 @@ function triggerVerticalBlast(player) {
             }
 
             // Handle collision using common handler
-            handleProjectileEnemyCollision(enemy, eIndex, 3, 1.5, 'verticalBlast');
+            handleProjectileEnemyCollision(enemy, eIndex, 3, 1.5, 'verticalBlast', player);
         }
     }
     
@@ -251,14 +251,14 @@ function triggerVerticalBlast(player) {
     }, 500); // Show for 500ms
 }
 
-function createFireSpreadEffect(startX, startY) {
+function createFireSpreadEffect(startX, startY, owner = null) {
     // Create multiple fire spread sprites that move outward
     const directions = [
         {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1},
         {x: -1, y: 0},                 {x: 1, y: 0},
         {x: -1, y: 1},  {x: 0, y: 1},  {x: 1, y: 1}
     ];
-    
+
     directions.forEach((dir, index) => {
         setTimeout(() => {
             const fireSpread = {
@@ -268,9 +268,10 @@ function createFireSpreadEffect(startX, startY) {
                 vx: dir.x * 3, // velocity
                 vy: dir.y * 3,
                 life: 30, // frames to live
-                maxLife: 30
+                maxLife: 30,
+                owner: owner
             };
-            
+
             fireSpread.element.innerHTML = sprites.fireSpread;
             game.fireSpreadEffects.push(fireSpread);
             game.canvas.appendChild(fireSpread.element);
@@ -305,11 +306,11 @@ function moveFireSpreadEffects() {
             
             if (distance < 40) {
                 // Handle collision using common handler
-                const result = handleProjectileEnemyCollision(enemy, eIndex, 3, 0.75, 'fireSpread');
+                const result = handleProjectileEnemyCollision(enemy, eIndex, 3, 0.75, 'fireSpread', fire.owner);
 
                 // Create secondary fire spread from defeated enemy
                 if (result === 'defeated' && Math.random() < 0.3) { // 30% chance to spread further
-                    createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
+                    createFireSpreadEffect(enemy.x + 20, enemy.y + 20, fire.owner);
                 }
                 break;
             }
@@ -629,7 +630,7 @@ function updateCorruptedBeaconLaser() {
             if (Math.abs(rotatedX) <= beamWidthAtDistance) {
                 console.log(`Enemy hit by laser!`, {enemy: enemy.type, damage: 5, health: enemy.health});
             // Handle collision using common handler
-            handleProjectileEnemyCollision(enemy, eIndex, 5, 2.0, 'corruptedBeacon');
+            handleProjectileEnemyCollision(enemy, eIndex, 5, 2.0, 'corruptedBeacon', laser.owner);
             }
         }
     }
@@ -675,7 +676,8 @@ function launchRicochetEgg(player) {
         life: 15000, // 15 seconds lifetime
         startTime: Date.now(),
         width: 40,
-        height: 40
+        height: 40,
+        owner: player
     };
 
     // Use the ricochet egg sprite
@@ -776,7 +778,7 @@ function moveRicochetEggs() {
                 egg.y + egg.height > enemy.y) {
 
                 // Handle collision using common handler
-                handleProjectileEnemyCollision(enemy, eIndex, 2, 1.5, 'ricochetEgg');
+                handleProjectileEnemyCollision(enemy, eIndex, 2, 1.5, 'ricochetEgg', egg.owner);
 
                 // Bounce off the enemy (reflect based on hit position)
                 const eggCenterX = egg.x + egg.width / 2;
@@ -917,7 +919,7 @@ function moveLightningBolts() {
                 game.lightningBolts.splice(index, 1);
 
                 // Handle collision using common handler
-                handleProjectileEnemyCollision(enemy, eIndex, bolt.damage, 1.8, 'stormlander');
+                handleProjectileEnemyCollision(enemy, eIndex, bolt.damage, 1.8, 'stormlander', bolt.owner);
 
                 // Create electric impact effect
                 createElectricImpactEffect(currentX, bolt.y);
@@ -1099,7 +1101,7 @@ function moveHarpArrows() {
                 game.harpArrows.splice(index, 1);
 
                 // Handle collision using common handler
-                handleProjectileEnemyCollision(enemy, enemyIndex, arrow.damage, 1, 'harpArrow');
+                handleProjectileEnemyCollision(enemy, enemyIndex, arrow.damage, 1, 'harpArrow', arrow.owner);
 
                 break; // Only hit one enemy per arrow
             }
@@ -1196,7 +1198,7 @@ function moveSunsGraceFireballs() {
                 game.sunsGraceFireballs.splice(index, 1);
 
                 // Handle collision using common handler
-                handleProjectileEnemyCollision(enemy, enemyIndex, fireball.damage, 1.5, 'sunsGrace');
+                handleProjectileEnemyCollision(enemy, enemyIndex, fireball.damage, 1.5, 'sunsGrace', fireball.owner);
 
                 break; // Only hit one enemy per fireball
             }

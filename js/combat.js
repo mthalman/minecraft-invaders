@@ -1724,7 +1724,7 @@ function checkCollisions() {
                         const shooterPowerUps = getPlayerPowerUps(projectile.owner);
                         if (shooterPowerUps.active.spreadingFire && shooterPowerUps.active.spreadingFire > Date.now()) {
                             // Create visual fire spreading effect
-                            createFireSpreadEffect(enemy.x + 20, enemy.y + 20);
+                            createFireSpreadEffect(enemy.x + 20, enemy.y + 20, projectile.owner);
                         }
                     }
                 }
@@ -1806,7 +1806,7 @@ function checkCollisions() {
             // Check for Hungry Horror power-up
             if (playerPowerUps.active.hungryHorror && playerPowerUps.active.hungryHorror > now) {
                 // Spawn a tiny horror to help fight
-                spawnTinyHorror(hitPlayer.x + 50, hitPlayer.y);
+                spawnTinyHorror(hitPlayer.x + 50, hitPlayer.y, hitPlayer);
             }
 
             // Handle projectile damage (witch snowballs cause 2 damage)
@@ -2676,11 +2676,37 @@ function createSlimeProjectile(enemy, now) {
 }
 
 // Common projectile collision handler for all player projectiles
-function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier = 1, source = 'normal') {
+function handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier = 1, source = 'normal', owner = null) {
     const enemyDimensions = getEnemyDimensions(enemy);
+    const now = Date.now();
 
-    // Note: Heartstealer Egg effect is handled in the main projectile collision code
-    // Tiny horrors don't get the heartstealerEgg benefit
+    // Apply heartstealer effect if active
+    if (owner) {
+        const shooterPowerUps = getPlayerPowerUps(owner);
+        if (shooterPowerUps.active.heartstealerEgg && shooterPowerUps.active.heartstealerEgg > now) {
+            // Steal health from enemy
+            if (enemy.isBoss && enemy.health > 1) {
+                // Only steal from bosses with more than 1 health
+                enemy.health -= 1;
+                owner.lives += 1;
+
+                // Create visual effect for stolen health
+                createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, owner);
+
+                // Play special sound
+                playSound(800, 0.2, 'sine');
+            } else if (!enemy.isBoss) {
+                // For normal enemies, steal 1 health before they die
+                owner.lives += 1;
+
+                // Create visual effect for stolen health
+                createStolenHealthEffect(enemy.x + enemyDimensions.width/2, enemy.y, owner);
+
+                // Play special sound
+                playSound(800, 0.2, 'sine');
+            }
+        }
+    }
 
     // Apply damage
     enemy.health -= damage;
@@ -2743,7 +2769,7 @@ function applyHeartstealerEffect(enemy, enemyDimensions) {
 }
 
 // Hungry Horror power-up functions
-function spawnTinyHorror(x, y) {
+function spawnTinyHorror(x, y, owner = null) {
     const canvasSize = getCanvasDimensions();
 
     // Create tiny horror minion
@@ -2756,7 +2782,8 @@ function spawnTinyHorror(x, y) {
         life: 600, // Lasts 10 seconds at 60 FPS
         attackCooldown: 0,
         width: 30,
-        height: 30
+        height: 30,
+        owner: owner
     };
 
     tinyHorror.element.innerHTML = sprites.tinyHorror;
@@ -2837,7 +2864,7 @@ function moveTinyHorrors() {
                     // Handle collision using common handler
                     const damage = enemy.isBoss ? 2 : enemy.health; // 2 damage to bosses, instant kill for regular enemies
                     const pointMultiplier = enemy.isBoss ? 1 : 0.5; // Half points for regular enemies
-                    const result = handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier, 'tinyHorror');
+                    const result = handleProjectileEnemyCollision(enemy, enemyIndex, damage, pointMultiplier, 'tinyHorror', horror.owner);
 
                     // Add visual bite effect for bosses
                     if (result === 'boss_damaged') {

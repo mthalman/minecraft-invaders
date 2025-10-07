@@ -1352,7 +1352,7 @@ function moveNightmareBats() {
                 // Hit the target
                 const enemyIndex = game.enemies.indexOf(bat.target);
                 if (enemyIndex >= 0) {
-                    handleProjectileEnemyCollision(bat.target, enemyIndex, bat.damage, 1.0, 'bat');
+                    handleProjectileEnemyCollision(bat.target, enemyIndex, bat.damage, 1.0, 'bat', bat.owner);
                 }
 
                 // Find new target immediately
