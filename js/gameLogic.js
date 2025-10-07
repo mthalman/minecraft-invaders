@@ -360,10 +360,12 @@ function createPauseOverlay() {
             <div style="font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                 <p>Level: ${game.level}</p>
                 <p>Score: ${game.score}</p>
-                <p>Lives: ${game.lives}</p>
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(overlay);
+
+    // Update dom cache reference
+    dom.pauseOverlay = overlay;
 }
